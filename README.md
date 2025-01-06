@@ -3,6 +3,7 @@
 Implementation of the Tetris game in the context of the IN204 course
 
 ## Rules
+- 7 tetrominoes with different colors and shapes
 - Matrix of 10x22
 - 7 tetrominos with different colors and shapes
 - One tetromino at a time falls down from the top of the matrix and can be moved horizontally or rotated 
