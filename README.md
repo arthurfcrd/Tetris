@@ -3,7 +3,7 @@
 Implementation of the Tetris game in the context of the IN204 course
 
 ## Rules
-- 7 tetrominos with different colors and shapes
+- 7 tetrominoes with different colors and shapes
 - Matrix of 10x22
 - Points scored depends on the number of lines cleared
     - 1 line = 40
