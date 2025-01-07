@@ -31,7 +31,7 @@ private:
     Point tiles[4]; // position of the 4 blocks of the tetromino relative to the center
     Color color;
 public:
-    explicit Tetromino(TetrominoType tetroType) : type(tetroType), pos({5, 1}){
+    explicit Tetromino(TetrominoType tetroType) : type(tetroType), pos({5, 1}){ // TODO : change pos to be not hardcoded
         switch(tetroType){
             case TetrominoType::I:
                 tiles[0] = {-2, -1};
