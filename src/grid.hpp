@@ -6,7 +6,7 @@ private:
     int height;
     Color** grid;
 public:
-    Grid(int width, int height) : width(width), height(height){
+    explicit Grid(int width, int height) : width(width), height(height){
         grid = new Color*[height];
         for(int i = 0; i < height; i++){
             grid[i] = new Color[width];
