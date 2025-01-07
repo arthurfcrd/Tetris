@@ -1,3 +1,6 @@
+#pragma once
+#include "graphics.hpp"
+
 enum class TetrominoType{
     I,
     O,
@@ -8,21 +11,12 @@ enum class TetrominoType{
     L
 };
 
-enum class Color{
-    RED,
-    GREEN,
-    BLUE,
-    YELLOW,
-    CYAN,
-    MAGENTA,
-    ORANGE,
-    NONE
-};
-
 struct Point{
     int x;
     int y;
 };
+
+class Grid; // forward declaration
 
 class Tetromino{
 private:
@@ -31,7 +25,9 @@ private:
     Point tiles[4]; // position of the 4 blocks of the tetromino relative to the center
     Color color;
 public:
-    explicit Tetromino(TetrominoType tetroType) : type(tetroType), pos({5, 1}){ // TODO : change pos to be not hardcoded
+    explicit Tetromino(TetrominoType tetroType){ // TODO : change pos to be not hardcoded
+        type = tetroType;
+        pos = {5, 1};
         switch(tetroType){
             case TetrominoType::I:
                 tiles[0] = {-2, -1};
@@ -83,5 +79,8 @@ public:
                 color = Color::ORANGE;
                 break;
         }
+
     }
+    void move(Grid grid, int dx, int dy);
+    void rotate(Grid grid, int direction); // direction = 1 for clockwise, -1 for counterclockwise
 };

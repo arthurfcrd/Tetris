@@ -1,4 +1,7 @@
-#include "tetromino.hpp"
+#pragma once
+#include "graphics.hpp"
+
+class Point; // forward declaration
 
 class Grid{
 private:
@@ -22,4 +25,6 @@ public:
         }
         delete[] grid;
     }
+    friend class Tetromino;
+    friend bool isValidTile(Point point, Grid g);
 };
