@@ -1,7 +1,7 @@
 #pragma once
 #include "graphics.hpp"
 
-class Point; // forward declaration
+struct Point; // forward declaration
 
 class Grid{
 private:
@@ -26,5 +26,5 @@ public:
         delete[] grid;
     }
     friend class Tetromino;
-    friend bool isValidTile(Point point, Grid g);
+    friend bool isValidTile(Point, const Grid&);
 };

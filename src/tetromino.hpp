@@ -81,6 +81,6 @@ public:
         }
 
     }
-    void move(Grid grid, int dx, int dy);
-    void rotate(Grid grid, int direction); // direction = 1 for clockwise, -1 for counterclockwise
+    void move(const Grid&, int, int);
+    void rotate(const Grid&, int); // direction = 1 for clockwise, -1 for counterclockwise
 };
