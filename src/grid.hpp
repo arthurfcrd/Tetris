@@ -25,6 +25,6 @@ public:
         }
         delete[] grid;
     }
+    bool isValidTile(Point) const; // checks if a tile is within the grid and is not occupied
     friend class Tetromino;
-    friend bool isValidTile(Point, const Grid&);
 };

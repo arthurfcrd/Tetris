@@ -60,7 +60,7 @@ Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not ha
 
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (auto point : tiles){
-        if (isValidTile({pos.x + point.x + dx, pos.y + point.y + dy}, g) == false){
+        if (g.isValidTile({pos.x + point.x + dx, pos.y + point.y + dy}) == false){
             return;
         }
     }
@@ -74,7 +74,7 @@ void Tetromino::rotate(const Grid& g, int direction){ // direction = 1 for clock
         Point point = tiles[i];
         int newX = -direction * point.y;
         int newY = direction * point.x;
-        if (isValidTile({pos.x + newX, pos.y + newY}, g) == false){
+        if (g.isValidTile({pos.x + newX, pos.y + newY}) == false){
             return;
         }
         newTiles[i] = {newX, newY};
