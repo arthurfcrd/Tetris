@@ -1,10 +1,8 @@
 #pragma once
 #include "graphics.hpp"
 
-struct Point; // forward declaration
-
 class Grid{
-private:
+public:
     int width;
     int height;
     Color** grid;
@@ -18,7 +16,7 @@ public:
             }
         }
     }
-    Grid() : Grid(10, 22){}
+    Grid() : Grid(GRID_WIDTH, GRID_HEIGHT){}
     ~Grid(){
         for(int i = 0; i < height; i++){
             delete[] grid[i];
@@ -26,5 +24,6 @@ public:
         delete[] grid;
     }
     bool isValidTile(Point) const; // checks if a tile is within the grid and is not occupied
+    void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
     friend class Tetromino;
 };
