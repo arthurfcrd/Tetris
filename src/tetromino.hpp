@@ -26,6 +26,5 @@ public:
     void rotate(const Grid&, int direction); // direction = 1 for clockwise, -1 for counterclockwise
     void drawTetromino(SDL_Renderer* renderer) const;
     void drawCenter(SDL_Renderer* renderer) const;
+    void applyOffsetI(int rotationIndex, int newRotationIndex);
 };
-
-void applyOffsetI(Point& pos, int rotationIndex, int newRotationIndex);

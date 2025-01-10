@@ -82,12 +82,12 @@ void Tetromino::rotate(const Grid& g, int direction){ // direction = 1 for clock
         newblocks[i] = {newX, newY};
     }
     if (type == TetrominoType::I){
-        applyOffsetI(pos, rotationIndex, newRotationIndex);
+        applyOffsetI(rotationIndex, newRotationIndex);
     }
     for (int i = 0; i < 4; i++){
         if (g.isValidTile({pos.x + newblocks[i].x, pos.y + newblocks[i].y}) == false){
             if (type == TetrominoType::I){
-                applyOffsetI(pos, rotationIndex, newRotationIndex);
+                applyOffsetI(rotationIndex, newRotationIndex);
             }
             return;
         }
@@ -98,7 +98,7 @@ void Tetromino::rotate(const Grid& g, int direction){ // direction = 1 for clock
     rotationIndex = newRotationIndex;
 }
 
-void applyOffsetI(Point& pos, int rotationIndex, int newRotationIndex){
+void Tetromino::applyOffsetI(int rotationIndex, int newRotationIndex){
     Point offsetTable[4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
     Point offset = offsetTable[newRotationIndex] - offsetTable[rotationIndex];
     pos = pos + offset;
