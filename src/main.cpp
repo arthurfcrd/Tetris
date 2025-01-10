@@ -17,19 +17,41 @@ int main(int argc, char* argv[]) {
 
     Grid grid;
     Tetromino tetromino(TetrominoType::I);
-    grid.drawGrid(renderer);
-    tetromino.drawTetromino(renderer);
-
-    SDL_RenderPresent(renderer);
-
+    
     SDL_Event event;
     bool done = false;
     while (!done) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                done = true;
+            switch (event.type){
+                case SDL_QUIT :
+                    done = true;
+                    break;
+                // Z key
+                case SDL_KEYDOWN:
+                    switch (event.key.keysym.sym){
+                        case SDLK_z:
+                            tetromino.rotate(grid, -1);
+                            break;
+                        case SDLK_x:
+                            tetromino.rotate(grid, 1);
+                            break;
+                        case SDLK_LEFT:
+                            tetromino.move(grid, -1, 0);
+                            break;
+                        case SDLK_RIGHT:
+                            tetromino.move(grid, 1, 0);
+                            break;
+                        case SDLK_DOWN:
+                            tetromino.move(grid, 0, 1);
+                            break;
+                    }
+                    break;
             }
         }
+        grid.drawGrid(renderer);
+        tetromino.drawTetromino(renderer);
+
+        SDL_RenderPresent(renderer);
     }
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

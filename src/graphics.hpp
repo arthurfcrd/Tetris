@@ -35,6 +35,7 @@ struct Point{
         return {x - other.x, y - other.y};
     }
 };
+Point operator*(int scalar, const Point& point);
 
 class Grid; // forward declaration
 

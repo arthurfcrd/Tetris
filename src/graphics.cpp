@@ -33,3 +33,7 @@ void drawSquare(SDL_Renderer* renderer, SDL_Rect rect, Color color){
     SDL_RenderFillRect(renderer, &rect);
 }
 
+// operator for scalar * Point
+Point operator*(int scalar, const Point& point){
+    return {scalar * point.x, scalar * point.y};
+}
