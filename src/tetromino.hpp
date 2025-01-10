@@ -16,7 +16,7 @@ class Grid; // forward declaration
 class Tetromino{
 private:
     TetrominoType type;
-    Point pos; // x, y position of the center of the tetromino 
+    Point pos; // x, y position of the center of the tetromino (in grid coordinates)
     Point blocks[4]; // position of the 4 blocks of the tetromino relative to the center
     Color color;
     int rotationIndex = 0;
