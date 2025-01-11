@@ -1,7 +1,4 @@
 #include "graphics.hpp"
-#include "grid.hpp"
-
-
 
 void drawSquare(SDL_Renderer* renderer, SDL_Rect rect, Color color){
     switch(color){
@@ -33,7 +30,6 @@ void drawSquare(SDL_Renderer* renderer, SDL_Rect rect, Color color){
     SDL_RenderFillRect(renderer, &rect);
 }
 
-// operator for scalar * Point
-Point operator*(int scalar, const Point& point){
+Point operator*(int scalar, const Point& point){ // operator for scalar * Point
     return {scalar * point.x, scalar * point.y};
 }

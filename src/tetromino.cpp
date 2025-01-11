@@ -1,7 +1,12 @@
 #include "tetromino.hpp"
 #include "grid.hpp"
+#include <random>
+#include <iostream>
+
+std::mt19937 rng(std::random_device{}());
 
 Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not hardcoded
+        std::cout << "Creating Tetromino of type " << static_cast<int>(tetroType) << std::endl;
         type = tetroType;
         pos = {5, 1};
         switch(tetroType){
@@ -16,7 +21,7 @@ Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not ha
             case TetrominoType::O:
                 blocks[0] = {0, -1};
                 blocks[1] = {0, 0};
-                blocks[2] = {-1, 1};
+                blocks[2] = {1, -1};
                 blocks[3] = {1, 0};
                 color = Color::YELLOW;
                 break;
@@ -59,6 +64,8 @@ Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not ha
 
     }
 
+Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}
+
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (auto point : blocks){
         if (g.isValidTile({pos.x + point.x + dx, pos.y + point.y + dy}) == false){
@@ -76,9 +83,8 @@ void Tetromino::rotate(const Grid& g, int direction){ // direction = 1 for clock
     Point newblocks[4];
     int newRotationIndex = (rotationIndex + direction + 4) % 4;
     for (int i = 0; i < 4; i++){
-        Point block = blocks[i];
-        int newX = -direction * block.y;
-        int newY = direction * block.x;
+        int newX = -direction * blocks[i].y;
+        int newY = direction * blocks[i].x;
         newblocks[i] = {newX, newY};
     }
     if (type == TetrominoType::I){

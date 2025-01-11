@@ -1,7 +1,7 @@
 #pragma once
 #include "graphics.hpp"
 
-enum class TetrominoType{
+enum class TetrominoType : int {
     I,
     O,
     T,
@@ -22,6 +22,7 @@ private:
     int rotationIndex = 0;
 public:
     explicit Tetromino(TetrominoType type);
+    explicit Tetromino(); // creates a random tetromino
     void move(const Grid&, int dx, int dy);
     void rotate(const Grid&, int direction); // direction = 1 for clockwise, -1 for counterclockwise
     void drawTetromino(SDL_Renderer* renderer) const;

@@ -35,8 +35,6 @@ struct Point{
         return {x - other.x, y - other.y};
     }
 };
-Point operator*(int scalar, const Point& point);
-
-class Grid; // forward declaration
+Point operator*(int scalar, const Point& point); // operator for scalar * Point
 
 void drawSquare(SDL_Renderer* renderer, SDL_Rect rect, Color color); // draws a square of a given color at a given position
