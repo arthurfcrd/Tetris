@@ -1,6 +1,6 @@
 #include "keyboard.hpp"
 
-void KeyboardHandler::handleEvent(SDL_KeyboardEvent event){ // updates the state of the keys according to the event received
+void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){ // updates the state of the keys according to the event received
     Key key = Key::NONE;
     switch (event.keysym.sym) {
         case (SDLK_ESCAPE):
