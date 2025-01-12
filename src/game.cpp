@@ -1,6 +1,6 @@
 #include "game.hpp"
 
-void Game::update(SDL_Event event){
+void Game::update(const SDL_Event& event){
     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP){
         keyboardHandler.handleEvent(event.key);
     }

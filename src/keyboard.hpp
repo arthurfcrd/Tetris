@@ -36,6 +36,6 @@ public:
     ~KeyboardHandler(){
         delete[] keyStates;
     }
-    void handleEvent(SDL_KeyboardEvent event);
+    void handleEvent(const SDL_KeyboardEvent& event);
     friend class Game;
 };

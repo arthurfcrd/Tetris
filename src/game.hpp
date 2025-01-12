@@ -13,7 +13,7 @@ private:
     KeyboardHandler keyboardHandler;
 public:
     explicit Game() : grid(), currentTetromino(), score(0), lastMoveTime(std::chrono::system_clock::now()), keyboardHandler(){}
-    void update(SDL_Event event);
+    void update(const SDL_Event& event);
     void update();
     void draw(SDL_Renderer* renderer) const;
 };
