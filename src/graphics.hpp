@@ -37,4 +37,4 @@ struct Point{
 };
 Point operator*(int scalar, const Point& point); // operator for scalar * Point
 
-void drawSquare(SDL_Renderer* renderer, SDL_Rect rect, Color color); // draws a square of a given color at a given position
+void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color); // draws a square of a given color at a given position

@@ -1,6 +1,6 @@
 #include "graphics.hpp"
 
-void drawSquare(SDL_Renderer* renderer, SDL_Rect rect, Color color){
+void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color){
     switch(color){
         case Color::RED:
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);

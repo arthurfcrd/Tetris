@@ -112,7 +112,7 @@ void Tetromino::applyOffsetI(int rotationIndex, int newRotationIndex){
 
 void Tetromino::drawTetromino(SDL_Renderer* renderer) const{
     SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
-    for (auto block : blocks){
+    for (const auto& block : blocks){
         rect.x = (pos.x + block.x) * rect.w;
         rect.y = (pos.y + block.y) * rect.h;
         drawSquare(renderer, rect, color);
