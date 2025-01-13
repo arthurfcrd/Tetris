@@ -25,6 +25,9 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){
         case (SDLK_x):
             key = Key::X;
             break;
+        case (SDLK_q):
+            key = Key::Q;
+            break;
         default:
             break;
     }

@@ -6,7 +6,6 @@
 std::mt19937 rng(std::random_device{}());
 
 Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not hardcoded
-        std::cout << "Creating Tetromino of type " << static_cast<int>(tetroType) << std::endl;
         type = tetroType;
         pos = {5, 1};
         switch(tetroType){

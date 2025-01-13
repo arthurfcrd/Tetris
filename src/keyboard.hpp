@@ -6,7 +6,7 @@
 #include <SDL.h>
 #endif
 
-#define DEFAULT_N_KEYS (10)
+#define DEFAULT_N_KEYS (15)
 
 enum class Key : int {
     Z, // rotate counter-clockwise
@@ -15,7 +15,8 @@ enum class Key : int {
     RIGHT,
     DOWN,
     UP, // rotate clockwise
-    ESC,
+    ESC, // quit
+    Q, // quit
     NONE
 };
 

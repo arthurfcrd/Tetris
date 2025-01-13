@@ -13,12 +13,15 @@ private:
     Grid grid;
     Tetromino currentTetromino;
     int score;
+    bool running;
+    bool gameOver;
     std::chrono::time_point<std::chrono::system_clock> lastFallTime;
     std::chrono::time_point<std::chrono::system_clock> lastMoveTime;
     std::chrono::time_point<std::chrono::system_clock> lastRotationTime;
     KeyboardHandler keyboardHandler;
 public:
     explicit Game() : grid(), currentTetromino(), score(0), 
+                    running(true), gameOver(false),
                     lastFallTime(std::chrono::system_clock::now()), 
                     lastMoveTime(std::chrono::system_clock::now()), 
                     lastRotationTime(std::chrono::system_clock::now()), 
@@ -27,4 +30,6 @@ public:
     void update();
     void updateHandler(const SDL_Event& event);
     void draw(SDL_Renderer* renderer) const;
+    bool isRunning() const;
+    void setRunning(bool);
 };

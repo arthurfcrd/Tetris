@@ -8,6 +8,13 @@ void Game::updateHandler(const SDL_Event& event){
 }
 
 void Game::update(){
+    if (keyboardHandler.getKeyState(Key::ESC) || keyboardHandler.getKeyState(Key::Q)){
+        running = false;
+        return;
+    }
+    if (gameOver){
+        return;
+    }
     std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
     // fall of the tetromino
     std::chrono::duration<double> elapsedSecondsFromFall = currentTime - lastFallTime;
@@ -47,8 +54,14 @@ void Game::update(){
     // check for collision
     if (currentTetromino.checkCollision(grid)){
         grid.insertTetromino(currentTetromino);
+        if (grid.isTopOut()){ // check for top out
+            gameOver = true;
+            return;
+        }
+        int scoreTable[5] = {0, 40, 100, 300, 1200};
         int n = grid.clearLines();
-        std::cout << n << " lines have been cleared" << std::endl;
+        assert(n < 5);
+        score += scoreTable[n];
         currentTetromino = Tetromino();
     }
 }
@@ -56,4 +69,12 @@ void Game::update(){
 void Game::draw(SDL_Renderer* renderer) const{
     grid.drawGrid(renderer);
     currentTetromino.drawTetromino(renderer);
+}
+
+bool Game::isRunning() const{
+    return running;
+}
+
+void Game::setRunning(bool newRunning){
+    this->running = newRunning;
 }

@@ -15,16 +15,13 @@ int main(int argc, char* argv[]) {
     Game game;
     
     SDL_Event event;
-    bool done = false;
-    while (!done) {
+    while (game.isRunning()) {
         while (SDL_PollEvent(&event)) {
-            switch (event.type){
-                case SDL_QUIT :
-                    done = true;
-                    break;
-                default:
-                    game.updateHandler(event);
-                    break;
+            if (event.type == SDL_QUIT) {
+                game.setRunning(false);
+            }
+            else{
+                game.updateHandler(event);
             }
         }
         game.update();

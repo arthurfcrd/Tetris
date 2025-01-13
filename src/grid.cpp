@@ -78,3 +78,14 @@ int Grid::clearLines() {
     }
     return nCleared;
 }
+
+bool Grid::isTopOut() const{ // checks if the tetromino has been insert at least partially in the spawn zone
+    for (int i = 0; i < 2; i++){
+        for (int j = 0; j < width; j++){
+            if (matrix[i][j] != Color::NONE){
+                return true;
+            }
+        }
+    }
+    return false;
+}
