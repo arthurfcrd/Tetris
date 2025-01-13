@@ -1,5 +1,6 @@
 #pragma once
 #include "graphics.hpp"
+#include "grid.hpp"
 
 enum class TetrominoType : int {
     I,
@@ -10,8 +11,6 @@ enum class TetrominoType : int {
     J,
     L
 };
-
-class Grid; // forward declaration
 
 class Tetromino{
 private:
