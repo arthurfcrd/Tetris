@@ -1,6 +1,7 @@
 #include "keyboard.hpp"
 
-void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){ // updates the state of the keys according to the event received
+// updates the state of the keys according to the event received
+void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){ 
     Key key = Key::NONE;
     switch (event.keysym.sym) {
         case (SDLK_ESCAPE):
@@ -30,4 +31,8 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){ // updates th
     if (key != Key::NONE){
         keyStates[static_cast<int>(key)] = (event.state == SDL_PRESSED);
     }
+}
+
+bool KeyboardHandler::getKeyState(Key key) const {
+    return keyStates[static_cast<int>(key)];
 }

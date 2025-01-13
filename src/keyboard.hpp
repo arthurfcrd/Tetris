@@ -9,12 +9,12 @@
 #define DEFAULT_N_KEYS (10)
 
 enum class Key : int {
-    Z,
-    X,
+    Z, // rotate counter-clockwise
+    X, // rotate clockwise
     LEFT,
     RIGHT,
     DOWN,
-    UP,
+    UP, // rotate clockwise
     ESC,
     NONE
 };
@@ -35,5 +35,6 @@ public:
         delete[] keyStates;
     }
     void handleEvent(const SDL_KeyboardEvent& event);
-    friend class Game;
+    bool getKeyState(Key key) const;
+    //friend class Game;
 };
