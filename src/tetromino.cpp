@@ -112,7 +112,8 @@ void Tetromino::applyOffsetI(int rotationIndex, int newRotationIndex){
     pos = pos + offset;
 }
 
-bool Tetromino::checkCollision(const Grid& g) const{ // true if the tetromino has reached the bottom or another block
+// true if the tetromino has reached the bottom or another block
+bool Tetromino::checkCollision(const Grid& g) const{ 
     for (const auto& point : blocks){
         Point downTile = point + pos + Point{0, 1};
         if (!g.isInbounds(downTile) || !g.isUnoccupied(downTile)){ // if the block is at the bottom or another block is below
