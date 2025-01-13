@@ -4,6 +4,8 @@
 #include "tetromino.hpp"
 #include "keyboard.hpp"
 
+const double FALL_SPEED = 0.7;
+
 class Game{
 private:
     Grid grid;
