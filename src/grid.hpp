@@ -1,8 +1,8 @@
 #pragma once
 #include "graphics.hpp"
-#include <cassert>
 
 class Tetromino; // forward declaration
+struct Point; // forward declaration
 
 class Grid{
 private:

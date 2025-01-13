@@ -1,7 +1,6 @@
 #include "tetromino.hpp"
 #include "grid.hpp"
 #include <random>
-#include <iostream>
 
 std::mt19937 rng(std::random_device{}());
 

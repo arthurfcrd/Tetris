@@ -1,6 +1,6 @@
 #pragma once
+#include "point.hpp"
 #include "graphics.hpp"
-#include "grid.hpp"
 
 enum class TetrominoType : int {
     I,
@@ -11,6 +11,8 @@ enum class TetrominoType : int {
     J,
     L
 };
+
+class Grid;
 
 class Tetromino{
 private:
@@ -28,5 +30,5 @@ public:
     bool checkCollision(const Grid& g) const;
     void drawTetromino(SDL_Renderer* renderer) const;
     void drawCenter(SDL_Renderer* renderer) const;
-    friend void Grid::insertTetromino(const Tetromino& tetromino);
+    friend class Grid;
 };

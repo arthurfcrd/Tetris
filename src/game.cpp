@@ -1,5 +1,4 @@
 #include "game.hpp"
-#include <iostream>
 
 void Game::updateHandler(const SDL_Event& event){
     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP){
@@ -60,7 +59,6 @@ void Game::update(){
         }
         int scoreTable[5] = {0, 40, 100, 300, 1200};
         int n = grid.clearLines();
-        assert(n < 5);
         score += scoreTable[n];
         currentTetromino = Tetromino();
     }

@@ -1,6 +1,7 @@
 #include "grid.hpp"
 #include "tetromino.hpp"
-#include <iostream>
+#include "point.hpp"
+#include <cassert>
 
 bool Grid::isInbounds(Point point) const{ // checks if a tile is within the grid and is not occupied
     return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height;
@@ -76,6 +77,7 @@ int Grid::clearLines() {
         if (nNotFull == height)
             done = true;
     }
+    assert(nCleared < 5);
     return nCleared;
 }
 
