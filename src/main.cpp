@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
                     done = true;
                     break;
                 default:
-                    game.update(event);
+                    game.updateHandler(event);
                     break;
             }
         }
