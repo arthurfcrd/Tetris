@@ -9,6 +9,7 @@
 #endif
 
 #define TILE_SIZE (30)
+#define TILE_PADDING (2)
 #define GRID_WIDTH (10)
 #define GRID_HEIGHT (22)
 
