@@ -29,16 +29,12 @@ public:
     bool isInbounds(Point) const; // checks if a tile is within the grid
     bool isUnoccupied(Point) const; // checks if a tile is not occupied
     void insertTetromino(const Tetromino&); // inserts a tetromino into the grid
+    int clearLines(); // clear full lines and return their number
     void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
-
-    // check if the player has cleared lines, clear them and return the number of lines cleared
-    int clearLines();
-    // Check if the line has to be cleared
-    bool lineIsFull(int lineNum) const;
-
-    void moveLineDown(int lineNum);
-    // move every lines above lineNum down 1 block
-    void moveLinesDown(int baseLine);
+private:
+    bool lineIsFull(int lineNum) const; // Check if the line has to be cleared
+    void moveLineDown(int lineNum); 
+    void moveLinesDown(int baseLine); // move every lines above (when seeing in game) lineNum down 1 block
     
     friend class Tetromino;
 };

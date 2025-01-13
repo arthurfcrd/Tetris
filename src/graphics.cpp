@@ -19,8 +19,8 @@ void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color){
     SDL_Rect newRect = rect;
     newRect.x += TILE_PADDING;
     newRect.y += TILE_PADDING;
-    newRect.h -= 2*TILE_PADDING;
-    newRect.w -= 2*TILE_PADDING;
+    newRect.h -= 2 * TILE_PADDING;
+    newRect.w -= 2 * TILE_PADDING;
 
     switch(color){
         case Color::RED:

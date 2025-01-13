@@ -63,7 +63,7 @@ int Grid::clearLines() {
     while (!done) {
         int nNotFull = 0;
         // check the lines starting from the bottom
-        for (int currLine = height-1; currLine >= 0; currLine--) {
+        for (int currLine = height - 1; currLine >= 0; currLine--) {
             if (lineIsFull(currLine)) {
                 //std::cout << currLine << " must be cleared" << std::endl;
                 moveLinesDown(currLine);
