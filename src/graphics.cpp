@@ -1,5 +1,17 @@
 #include "graphics.hpp"
 
+Point Point::operator+(const Point& other) const{
+    return {x + other.x, y + other.y};
+}
+
+Point Point::operator-(const Point& other) const{
+    return {x - other.x, y - other.y};
+}
+
+Point operator*(int scalar, const Point& point){ // operator for scalar * Point
+    return {scalar * point.x, scalar * point.y};
+}
+
 void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color){
     switch(color){
         case Color::RED:
@@ -28,8 +40,4 @@ void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color){
             break;
     }
     SDL_RenderFillRect(renderer, &rect);
-}
-
-Point operator*(int scalar, const Point& point){ // operator for scalar * Point
-    return {scalar * point.x, scalar * point.y};
 }
