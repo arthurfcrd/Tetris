@@ -1,5 +1,8 @@
 #pragma once
 #include "graphics.hpp"
+#include <cassert>
+
+class Tetromino; // forward declaration
 
 class Grid{
 private:
@@ -23,7 +26,9 @@ public:
         }
         delete[] matrix;
     }
-    bool isValidTile(Point) const; // checks if a tile is within the grid and is not occupied
+    bool isInbounds(Point) const; // checks if a tile is within the grid
+    bool isUnoccupied(Point) const; // checks if a tile is not occupied
+    void insertTetromino(const Tetromino&); // inserts a tetromino into the grid
     void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
     friend class Tetromino;
 };

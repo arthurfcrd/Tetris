@@ -67,8 +67,9 @@ Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not ha
 Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}
 
 void Tetromino::move(const Grid& g, int dx, int dy){
-    for (auto point : blocks){
-        if (g.isValidTile({pos.x + point.x + dx, pos.y + point.y + dy}) == false){
+    for (const auto& point : blocks){
+        Point dstTile = point + pos + Point{dx, dy};
+        if (!g.isInbounds(dstTile) || !g.isUnoccupied(dstTile)){
             return;
         }
     }
@@ -91,7 +92,8 @@ void Tetromino::rotate(const Grid& g, int direction){ // direction = 1 for clock
         applyOffsetI(rotationIndex, newRotationIndex);
     }
     for (int i = 0; i < 4; i++){
-        if (g.isValidTile({pos.x + newblocks[i].x, pos.y + newblocks[i].y}) == false){
+        Point dstTilei = newblocks[i] + pos;
+        if (!g.isInbounds(dstTilei) || !g.isUnoccupied(dstTilei)){
             if (type == TetrominoType::I){
                 applyOffsetI(rotationIndex, newRotationIndex);
             }
@@ -108,6 +110,16 @@ void Tetromino::applyOffsetI(int rotationIndex, int newRotationIndex){
     Point offsetTable[4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
     Point offset = offsetTable[newRotationIndex] - offsetTable[rotationIndex];
     pos = pos + offset;
+}
+
+bool Tetromino::checkCollision(const Grid& g) const{ // true if the tetromino has reached the bottom or another block
+    for (const auto& point : blocks){
+        Point downTile = point + pos + Point{0, 1};
+        if (!g.isInbounds(downTile) || !g.isUnoccupied(downTile)){ // if the block is at the bottom or another block is below
+            return true;
+        }
+    }
+    return false;
 }
 
 void Tetromino::drawTetromino(SDL_Renderer* renderer) const{
