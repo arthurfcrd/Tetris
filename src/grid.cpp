@@ -1,7 +1,21 @@
 #include "grid.hpp"
+#include "tetromino.hpp"
 
-bool Grid::isValidTile(Point point) const{ // checks if a tile is within the grid and is not occupied
-    return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height && matrix[point.y][point.x] == Color::NONE;
+bool Grid::isInbounds(Point point) const{ // checks if a tile is within the grid and is not occupied
+    return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height;
+}
+
+bool Grid::isUnoccupied(Point point) const{
+    // assert the point is within the grid
+    assert(isInbounds(point));
+    return matrix[point.y][point.x] == Color::NONE;
+}
+
+void Grid::insertTetromino(const Tetromino& tetromino){
+    for (const auto& block : tetromino.blocks){
+        Point tile = block + tetromino.pos;
+        matrix[tile.y][tile.x] = tetromino.color;
+    }
 }
 
 void Grid::drawGrid(SDL_Renderer* renderer) const{

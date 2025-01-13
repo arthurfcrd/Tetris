@@ -25,7 +25,9 @@ public:
     explicit Tetromino(); // creates a random tetromino
     void move(const Grid&, int dx, int dy);
     void rotate(const Grid&, int direction); // direction = 1 for clockwise, -1 for counterclockwise
+    void applyOffsetI(int rotationIndex, int newRotationIndex);
+    bool checkCollision(const Grid& g) const;
     void drawTetromino(SDL_Renderer* renderer) const;
     void drawCenter(SDL_Renderer* renderer) const;
-    void applyOffsetI(int rotationIndex, int newRotationIndex);
+    friend void Grid::insertTetromino(const Tetromino& tetromino);
 };

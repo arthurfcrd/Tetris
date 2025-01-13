@@ -23,7 +23,6 @@ void Game::update(const SDL_Event& event){
     if (keyboardHandler.getKeyState(Key::X) || keyboardHandler.getKeyState(Key::UP)){
         currentTetromino.rotate(grid, 1);
     }
-    //lastMoveTime = std::chrono::system_clock::now();
 }
 
 void Game::update(){
