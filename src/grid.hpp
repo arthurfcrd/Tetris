@@ -23,7 +23,9 @@ public:
         }
         delete[] matrix;
     }
-    bool isValidTile(Point) const; // checks if a tile is within the grid and is not occupied
-    void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
+    // checks if a tile is within the grid and is not occupied
+    bool isValidTile(Point) const; 
+    // draws the grid on the screen
+    void drawGrid(SDL_Renderer* renderer) const; 
     friend class Tetromino;
 };
