@@ -34,11 +34,11 @@ public:
     // check if the player has cleared lines, clear them and return the number of lines cleared
     int clearLines();
     // Check if the line has to be cleared
-    bool Grid::lineIsFull(int lineNum) const;
+    bool lineIsFull(int lineNum) const;
 
-    void Grid::moveLineDown(int lineNum);
+    void moveLineDown(int lineNum);
     // move every lines above lineNum down 1 block
-    void Grid::moveLinesDown(int lineNum);
+    void moveLinesDown(int baseLine);
     
     friend class Tetromino;
 };

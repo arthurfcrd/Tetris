@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include <iostream>
 
 void Game::updateHandler(const SDL_Event& event){
     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP){
@@ -46,6 +47,8 @@ void Game::update(){
     // check for collision
     if (currentTetromino.checkCollision(grid)){
         grid.insertTetromino(currentTetromino);
+        int n = grid.clearLines();
+        std::cout << n << " lines have been cleared" << std::endl;
         currentTetromino = Tetromino();
     }
 }

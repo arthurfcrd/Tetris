@@ -1,5 +1,6 @@
 #include "grid.hpp"
 #include "tetromino.hpp"
+#include <iostream>
 
 bool Grid::isInbounds(Point point) const{ // checks if a tile is within the grid and is not occupied
     return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height;
@@ -31,7 +32,7 @@ void Grid::drawGrid(SDL_Renderer* renderer) const{
 
 // move the line lineNum down 1 block
 void Grid::moveLineDown(int lineNum) {
-    assert(lineNum > 0 && lineNum < height);
+    assert(lineNum >= 0 && lineNum < height-1);
 
     for (int col = 0; col < width; col++) {
         matrix[lineNum+1][col] = matrix[lineNum][col];
@@ -42,7 +43,7 @@ void Grid::moveLineDown(int lineNum) {
 
 // move every lines above baseLine down 1 block
 void Grid::moveLinesDown(int baseLine) {
-    for (int line = baseLine-1; line >= 0; line++) {
+    for (int line = baseLine-1; line > 0; line--) {
         moveLineDown(line);
     }
 }
@@ -64,6 +65,7 @@ int Grid::clearLines() {
         // check the lines starting from the bottom
         for (int currLine = height-1; currLine >= 0; currLine--) {
             if (lineIsFull(currLine)) {
+                //std::cout << currLine << " must be cleared" << std::endl;
                 moveLinesDown(currLine);
                 nCleared++;
             } else {
