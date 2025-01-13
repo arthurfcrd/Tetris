@@ -32,10 +32,10 @@ void Grid::drawGrid(SDL_Renderer* renderer) const{
 
 // move the line lineNum down 1 block
 void Grid::moveLineDown(int lineNum) {
-    assert(lineNum >= 0 && lineNum < height-1);
+    assert(lineNum >= 0 && lineNum < height - 1);
 
     for (int col = 0; col < width; col++) {
-        matrix[lineNum+1][col] = matrix[lineNum][col];
+        matrix[lineNum + 1][col] = matrix[lineNum][col];
         matrix[lineNum][col] = Color::NONE;
     }
 
@@ -43,7 +43,7 @@ void Grid::moveLineDown(int lineNum) {
 
 // move every lines above baseLine down 1 block
 void Grid::moveLinesDown(int baseLine) {
-    for (int line = baseLine-1; line > 0; line--) {
+    for (int line = baseLine - 1; line > 0; line--) {
         moveLineDown(line);
     }
 }
