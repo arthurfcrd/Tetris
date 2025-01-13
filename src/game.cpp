@@ -7,28 +7,29 @@ void Game::update(const SDL_Event& event){
     else{
         return;
     }
-    if (keyboardHandler.keyStates[static_cast<int>(Key::LEFT)]){
+
+    if (keyboardHandler.getKeyState(Key::LEFT)){
         currentTetromino.move(grid, -1, 0);
     }
-    if (keyboardHandler.keyStates[static_cast<int>(Key::RIGHT)]){
+    if (keyboardHandler.getKeyState(Key::RIGHT)){
         currentTetromino.move(grid, 1, 0);
     }
-    if (keyboardHandler.keyStates[static_cast<int>(Key::DOWN)]){
+    if (keyboardHandler.getKeyState(Key::DOWN)){
         currentTetromino.move(grid, 0, 1);
     }
-    if (keyboardHandler.keyStates[static_cast<int>(Key::Z)]){
+    if (keyboardHandler.getKeyState(Key::Z)){
         currentTetromino.rotate(grid, -1);
     }
-    if (keyboardHandler.keyStates[static_cast<int>(Key::X)]){
+    if (keyboardHandler.getKeyState(Key::X) || keyboardHandler.getKeyState(Key::UP)){
         currentTetromino.rotate(grid, 1);
     }
-    lastMoveTime = std::chrono::system_clock::now();
+    //lastMoveTime = std::chrono::system_clock::now();
 }
 
 void Game::update(){
     std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = currentTime - lastMoveTime;
-    if (elapsed_seconds.count() > 0.7){
+    if (elapsed_seconds.count() > FALL_SPEED){
         currentTetromino.move(grid, 0, 1);
         lastMoveTime = currentTime;
     }
