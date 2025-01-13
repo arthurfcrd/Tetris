@@ -28,3 +28,51 @@ void Grid::drawGrid(SDL_Renderer* renderer) const{
         }
     }
 }
+
+// move the line lineNum down 1 block
+void Grid::moveLineDown(int lineNum) {
+    assert(lineNum > 0 && lineNum < height);
+
+    for (int col = 0; col < width; col++) {
+        matrix[lineNum+1][col] = matrix[lineNum][col];
+        matrix[lineNum][col] = Color::NONE;
+    }
+
+}
+
+// move every lines above baseLine down 1 block
+void Grid::moveLinesDown(int baseLine) {
+    for (int line = baseLine-1; line >= 0; line++) {
+        moveLineDown(line);
+    }
+}
+
+
+bool Grid::lineIsFull(int lineNum) const {
+    for (int col = 0; col < width; col++) {
+        if (matrix[lineNum][col] == Color::NONE)
+            return false;
+    }
+    return true;
+}
+
+int Grid::clearLines() {
+    int nCleared = 0;
+    bool done = false;
+    while (!done) {
+        int nNotFull = 0;
+        // check the lines starting from the bottom
+        for (int currLine = height-1; currLine >= 0; currLine--) {
+            if (lineIsFull(currLine)) {
+                moveLinesDown(currLine);
+                nCleared++;
+            } else {
+                nNotFull++;
+            }
+        }
+
+        if (nNotFull == height)
+            done = true;
+    }
+    return nCleared;
+}

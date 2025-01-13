@@ -30,5 +30,15 @@ public:
     bool isUnoccupied(Point) const; // checks if a tile is not occupied
     void insertTetromino(const Tetromino&); // inserts a tetromino into the grid
     void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
+
+    // check if the player has cleared lines, clear them and return the number of lines cleared
+    int clearLines();
+    // Check if the line has to be cleared
+    bool Grid::lineIsFull(int lineNum) const;
+
+    void Grid::moveLineDown(int lineNum);
+    // move every lines above lineNum down 1 block
+    void Grid::moveLinesDown(int lineNum);
+    
     friend class Tetromino;
 };
