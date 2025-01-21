@@ -10,6 +10,7 @@ void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color){
     newRect.h -= 2 * TILE_PADDING;
     newRect.w -= 2 * TILE_PADDING;
 
+    // draw the actual square
     switch(color){
         case Color::RED:
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);

@@ -29,6 +29,7 @@ public:
     void update(const SDL_Event& event);
     void update();
     void updateHandler(const SDL_Event& event);
+    void draw_hud(SDL_Renderer* renderer) const;
     void draw(SDL_Renderer* renderer) const;
     bool isRunning() const;
     void setRunning(bool);

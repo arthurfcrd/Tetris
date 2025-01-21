@@ -66,7 +66,7 @@ Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_d
 
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (const auto& point : blocks){
-        Point dstTile = point + pos + Point{dx, dy};
+        Point dstTile = pos + point + Point{dx, dy};
         if (!g.isInbounds(dstTile) || !g.isUnoccupied(dstTile)){
             return;
         }
@@ -124,7 +124,7 @@ bool Tetromino::checkCollision(const Grid& g) const{
 void Tetromino::drawTetromino(SDL_Renderer* renderer) const{
     SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
     for (const auto& block : blocks){
-        rect.x = (pos.x + block.x) * rect.w;
+        rect.x = PANE_SIZE + (pos.x + block.x) * rect.w;
         rect.y = (pos.y + block.y) * rect.h;
         drawSquare(renderer, rect, color);
     }

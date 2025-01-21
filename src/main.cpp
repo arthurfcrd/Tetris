@@ -7,7 +7,9 @@ int main(int argc, char* argv[]) {
     }
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
-    if (SDL_CreateWindowAndRenderer(TILE_SIZE * GRID_WIDTH, TILE_SIZE * GRID_HEIGHT, 0, &window, &renderer) < 0) {
+    int width = TILE_SIZE * GRID_WIDTH + PANE_SIZE*2;
+    int height = TILE_SIZE * GRID_HEIGHT;
+    if (SDL_CreateWindowAndRenderer(width, height, 0, &window, &renderer) < 0) {
         SDL_Log("Unable to create window and renderer: %s", SDL_GetError());
         return 1;
     }

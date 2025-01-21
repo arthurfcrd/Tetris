@@ -64,10 +64,17 @@ void Game::update(){
     }
 }
 
+void Game::draw_hud(SDL_Renderer* renderer) const {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 200);
+    SDL_RenderClear(renderer);
+}
+
 void Game::draw(SDL_Renderer* renderer) const{
+    draw_hud(renderer);
     grid.drawGrid(renderer);
     currentTetromino.drawTetromino(renderer);
 }
+
 
 bool Game::isRunning() const{
     return running;
