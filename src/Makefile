@@ -2,12 +2,12 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 CFLAGS = -I/opt/homebrew/include/SDL2 -D_THREAD_SAFE -std=c++14
-LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image
+LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf
 endif
 
 ifeq ($(UNAME), Linux)
 CFLAGS= -Wall -Werror -std=c++14
-LDFLAGS= -lSDL2 -lSDL2_image
+LDFLAGS= -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf
 endif
 
 CC = g++
