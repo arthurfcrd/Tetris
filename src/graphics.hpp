@@ -2,9 +2,14 @@
 
 #ifdef __linux__
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #elif __APPLE__
 #include <SDL.h>
+#include <SDL_ttf.h>
 #endif
+
+#include "point.hpp"
+#include <string>
 
 #define TILE_SIZE (30)
 #define TILE_PADDING (2)
@@ -25,3 +30,5 @@ enum class Color{
 
 // draws a square of a given color at a given position
 void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color); 
+void drawText(SDL_Renderer* renderer, SDL_Rect* textRect, std::string message);
+void drawHUD(SDL_Renderer* renderer, unsigned int score);

@@ -1,8 +1,13 @@
 #include "game.hpp"
 
+
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        return 1;
+    }
+    if (TTF_Init() < 0 ) {
+	    SDL_Log("Error initializing SDL_ttf: %s", TTF_GetError());
         return 1;
     }
     SDL_Window* window = nullptr;
@@ -36,6 +41,7 @@ int main(int argc, char* argv[]) {
     SDL_DestroyWindow(window);
 
     SDL_Quit();
+    TTF_Quit();
 
     return 0;
 }
