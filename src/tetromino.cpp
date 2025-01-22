@@ -135,3 +135,43 @@ void Tetromino::drawCenter(SDL_Renderer* renderer) const{
     SDL_Rect rect = {pos.x * TILE_SIZE + TILE_SIZE * 3 / 8, pos.y * TILE_SIZE + TILE_SIZE * 3 / 8, TILE_SIZE / 4, TILE_SIZE / 4};
     drawSquare(renderer, rect, Color::NONE);
 }
+
+
+
+void TetrominoBag::createBag() {
+    tetroList.clear();
+    tetroList.push_back(TetrominoType::I);
+    tetroList.push_back(TetrominoType::O);
+    tetroList.push_back(TetrominoType::T);
+    tetroList.push_back(TetrominoType::S);
+    tetroList.push_back(TetrominoType::Z);
+    tetroList.push_back(TetrominoType::J);
+    tetroList.push_back(TetrominoType::L);
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(tetroList.begin(), tetroList.end(), g);
+}
+
+void TetrominoBag::drawTetromino() {
+    // fill up the bag again if it is empty
+    if (tetroList.empty()) {
+        createBag();
+    }
+    currentTetromino = Tetromino(tetroList.back());
+    tetroList.pop_back();
+}
+
+void TetrominoBag::drawNextTetromino() {
+    if (tetroList.empty()) {
+        createBag();
+    }
+    nextTetromino = Tetromino(tetroList.back());
+    tetroList.pop_back();
+}
+
+void TetrominoBag::switchTetromino() {
+    //delete currentTetromino;
+    currentTetromino = nextTetromino;
+    drawNextTetromino();
+}

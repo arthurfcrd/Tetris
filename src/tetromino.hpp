@@ -2,6 +2,10 @@
 #include "point.hpp"
 #include "graphics.hpp"
 
+#include <vector>
+#include <algorithm>
+#include <random>
+
 enum class TetrominoType : int {
     I,
     O,
@@ -31,4 +35,35 @@ public:
     void drawTetromino(SDL_Renderer* renderer) const;
     void drawCenter(SDL_Renderer* renderer) const;
     friend class Grid;
+};
+
+
+// Implementation of the Random Generator used by Tetris games
+// A bag containing all seven tetrominoes is shuffled and each tetromino
+// is drawn one by one
+class TetrominoBag {
+    private:
+        std::vector<TetrominoType> tetroList;
+    public:
+        Tetromino currentTetromino;
+        Tetromino nextTetromino;
+        Tetromino holdTetromino;
+
+        explicit TetrominoBag() {
+            createBag();
+            drawTetromino();
+            drawNextTetromino();
+        };
+
+        // create the bag by shuffling the seven different tetrominoes in tetroList
+        void createBag();
+
+        // draw a tetromino from the bag and stores it in currentTetromino
+        void drawTetromino();
+
+        // draw a tetromino from the bag and stores it in nextTetromino
+        void drawNextTetromino();
+
+        // place the next tetromino into current tetromino and draw the next one
+        void switchTetromino();
 };
