@@ -59,14 +59,15 @@ void Game::update(){
         }
         int scoreTable[5] = {0, 40, 100, 300, 1200};
         int n = grid.clearLines();
-        score += scoreTable[n];
+        hud.setScore(hud.getScore() + scoreTable[n]);
+        hud.setLinesCleared(hud.getLinesCleared() + n);
         tetroBag.switchTetromino();
     }
 }
 
 
-void Game::draw(SDL_Renderer* renderer) const{
-    drawHUD(renderer, score);
+void Game::draw(SDL_Renderer* renderer) {
+    hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.currentTetromino);
     grid.drawGrid(renderer);
     tetroBag.currentTetromino.drawTetromino(renderer);
 }
