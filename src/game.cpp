@@ -18,7 +18,7 @@ void Game::update(){
     // fall of the tetromino
     std::chrono::duration<double> elapsedSecondsFromFall = currentTime - lastFallTime;
     if (elapsedSecondsFromFall.count() > FALL_RATE){
-        currentTetromino.move(grid, 0, 1);
+        tetroBag.currentTetromino.move(grid, 0, 1);
         lastFallTime = currentTime;
     }
 
@@ -27,13 +27,13 @@ void Game::update(){
     if (elapsedSecondsFromMove.count() > MOVE_RATE){
         
         if (keyboardHandler.getKeyState(Key::LEFT)){
-            currentTetromino.move(grid, -1, 0);
+            tetroBag.currentTetromino.move(grid, -1, 0);
         }
         if (keyboardHandler.getKeyState(Key::RIGHT)){
-            currentTetromino.move(grid, 1, 0);
+            tetroBag.currentTetromino.move(grid, 1, 0);
         }
         if (keyboardHandler.getKeyState(Key::DOWN)){
-            currentTetromino.move(grid, 0, 1);
+            tetroBag.currentTetromino.move(grid, 0, 1);
         }
         lastMoveTime = currentTime;
     }
@@ -42,17 +42,17 @@ void Game::update(){
     std::chrono::duration<double> elapsedSecondsFromRotation = currentTime - lastRotationTime;
     if (elapsedSecondsFromRotation.count() > ROTATE_RATE){
         if (keyboardHandler.getKeyState(Key::Z)){
-            currentTetromino.rotate(grid, -1);
+            tetroBag.currentTetromino.rotate(grid, -1);
         }
         if (keyboardHandler.getKeyState(Key::X) || keyboardHandler.getKeyState(Key::UP)){
-            currentTetromino.rotate(grid, 1);
+            tetroBag.currentTetromino.rotate(grid, 1);
         }
         lastRotationTime = currentTime;
     }
 
     // check for collision
-    if (currentTetromino.checkCollision(grid)){
-        grid.insertTetromino(currentTetromino);
+    if (tetroBag.currentTetromino.checkCollision(grid)){
+        grid.insertTetromino(tetroBag.currentTetromino);
         if (grid.isTopOut()){ // check for top out
             gameOver = true;
             return;
@@ -60,7 +60,7 @@ void Game::update(){
         int scoreTable[5] = {0, 40, 100, 300, 1200};
         int n = grid.clearLines();
         score += scoreTable[n];
-        currentTetromino = Tetromino();
+        tetroBag.switchTetromino();
     }
 }
 
@@ -68,7 +68,7 @@ void Game::update(){
 void Game::draw(SDL_Renderer* renderer) const{
     drawHUD(renderer, score);
     grid.drawGrid(renderer);
-    currentTetromino.drawTetromino(renderer);
+    tetroBag.currentTetromino.drawTetromino(renderer);
 }
 
 

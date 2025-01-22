@@ -11,7 +11,7 @@ const double ROTATE_RATE = 0.15; // seconds between rotations
 class Game{
 private:
     Grid grid;
-    Tetromino currentTetromino;
+    TetrominoBag tetroBag;
     int score;
     bool running;
     bool gameOver;
@@ -20,7 +20,7 @@ private:
     std::chrono::time_point<std::chrono::system_clock> lastRotationTime;
     KeyboardHandler keyboardHandler;
 public:
-    explicit Game() : grid(), currentTetromino(), score(0), 
+    explicit Game() : grid(), tetroBag(), score(0), 
                     running(true), gameOver(false),
                     lastFallTime(std::chrono::system_clock::now()), 
                     lastMoveTime(std::chrono::system_clock::now()), 
