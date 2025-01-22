@@ -9,14 +9,16 @@
 #define DEFAULT_N_KEYS (15)
 
 enum class Key : int {
-    Z, // rotate counter-clockwise
-    X, // rotate clockwise
-    LEFT,
-    RIGHT,
-    DOWN,
-    UP, // rotate clockwise
-    ESC, // quit
-    Q, // quit
+    Z,      // rotate counter-clockwise
+    X,      // rotate clockwise
+    LEFT,   // move to the left
+    RIGHT,  // move to the right
+    DOWN,   // accelerates fall
+    UP,     // rotate clockwise
+    SPACE,  // hard drop
+    H,      // hold key
+    ESC,    // quit
+    Q,      // quit
     NONE
 };
 
@@ -37,5 +39,5 @@ public:
     }
     void handleEvent(const SDL_KeyboardEvent& event);
     bool getKeyState(Key key) const;
-    //friend class Game;
+    void setKeyState(Key key, bool val);
 };

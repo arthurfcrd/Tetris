@@ -4,11 +4,14 @@
 void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){ 
     Key key = Key::NONE;
     switch (event.keysym.sym) {
-        case (SDLK_ESCAPE):
-            key = Key::ESC;
+        case (SDLK_z):
+            key = Key::Z;
             break;
-        case (SDLK_UP):
-            key = Key::UP;
+        case (SDLK_x):
+            key = Key::X;
+            break;
+        case (SDLK_LEFT):
+            key = Key::LEFT;
             break;
         case (SDLK_RIGHT):
             key = Key::RIGHT;
@@ -16,14 +19,17 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){
         case(SDLK_DOWN):
             key = Key::DOWN;
             break;
-        case (SDLK_LEFT):
-            key = Key::LEFT;
+        case (SDLK_UP):
+            key = Key::UP;
             break;
-        case (SDLK_z):
-            key = Key::Z;
+        case (SDLK_SPACE):
+            key = Key::SPACE;
             break;
-        case (SDLK_x):
-            key = Key::X;
+        case (SDLK_h):
+            key = Key::H;
+            break;
+        case (SDLK_ESCAPE):
+            key = Key::ESC;
             break;
         case (SDLK_q):
             key = Key::Q;
@@ -38,4 +44,8 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){
 
 bool KeyboardHandler::getKeyState(Key key) const {
     return keyStates[static_cast<int>(key)];
+}
+
+void KeyboardHandler::setKeyState(Key key, bool val) {
+    keyStates[static_cast<int>(key)] = val;
 }
