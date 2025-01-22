@@ -12,6 +12,13 @@ int Grid::getHeight() const {
     return height;
 }
 
+void Grid::clearGrid() {
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++)
+            matrix[i][j] = Color::NONE;
+    }
+}
+
 bool Grid::isInbounds(Point point) const{ // checks if a tile is within the grid and is not occupied
     return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height;
 }

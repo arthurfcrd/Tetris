@@ -30,6 +30,8 @@ public:
     int getWidth() const;
     int getHeight() const;
 
+    void clearGrid();
+
     bool isInbounds(Point) const; // checks if a tile is within the grid
     bool isUnoccupied(Point) const; // checks if a tile is not occupied
     void insertTetromino(const Tetromino&); // inserts a tetromino into the grid
