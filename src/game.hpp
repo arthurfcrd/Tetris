@@ -7,7 +7,9 @@
 
 const double FALL_RATE = 0.7; // seconds between falls
 const double MOVE_RATE = 0.05; // seconds between moves
-const double ROTATE_RATE = 0.15; // seconds between rotations
+const double ROTATE_RATE = 0.12; // seconds between rotations
+
+const double LOCK_DELAY = 1.2; // seconds before a locking a tetromino that has touched the ground
 
 class Game{
 private:
@@ -19,6 +21,7 @@ private:
     std::chrono::time_point<std::chrono::system_clock> lastFallTime;
     std::chrono::time_point<std::chrono::system_clock> lastMoveTime;
     std::chrono::time_point<std::chrono::system_clock> lastRotationTime;
+    std::chrono::time_point<std::chrono::system_clock> touchedGroundTime;
     KeyboardHandler keyboardHandler;
 public:
     explicit Game() : grid(), hud(), tetroBag(), 

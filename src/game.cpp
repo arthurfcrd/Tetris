@@ -15,14 +15,17 @@ void Game::update(){
         return;
     }
     std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
+    Tetromino* curTetro = &(tetroBag.currentTetromino); // useful shorthand
+
     // fall of the tetromino
     std::chrono::duration<double> elapsedSecondsFromFall = currentTime - lastFallTime;
-    if (elapsedSecondsFromFall.count() > FALL_RATE){
+    if (!curTetro->hasTouchedGround() && elapsedSecondsFromFall.count() > FALL_RATE){
+        // falls only if the tetromino has not yet touched the ground
         tetroBag.currentTetromino.move(grid, 0, 1);
         lastFallTime = currentTime;
     }
 
-    // handle moves
+    // handle moves (even when the tetromino has touched the ground)
     std::chrono::duration<double> elapsedSecondsFromMove = currentTime - lastMoveTime;
     if (elapsedSecondsFromMove.count() > MOVE_RATE){
         
@@ -34,13 +37,17 @@ void Game::update(){
         }
         if (keyboardHandler.getKeyState(Key::DOWN)){
             tetroBag.currentTetromino.move(grid, 0, 1);
+            // pressing the Down key while touching the ground activates the locking
+            if (curTetro->hasTouchedGround())
+                curTetro->setLocked(true);
         }
         lastMoveTime = currentTime;
     }
 
     // handle rotations
     std::chrono::duration<double> elapsedSecondsFromRotation = currentTime - lastRotationTime;
-    if (elapsedSecondsFromRotation.count() > ROTATE_RATE){
+    if (!curTetro->hasTouchedGround() && elapsedSecondsFromRotation.count() > ROTATE_RATE){
+        // only rotates if the tetrominio has not yet touched the ground
         if (keyboardHandler.getKeyState(Key::Z)){
             tetroBag.currentTetromino.rotate(grid, -1);
         }
@@ -51,7 +58,24 @@ void Game::update(){
     }
 
     // check for collision
-    if (tetroBag.currentTetromino.checkCollision(grid)){
+    if (curTetro->checkCollision(grid)){
+        if (!curTetro->hasTouchedGround()) {
+            curTetro->setTouchedGround(true);
+            touchedGroundTime = std::chrono::system_clock::now();
+        }
+    } else {
+        // a tetromino can be moved laterally before locking so it can continue the falling
+        curTetro->setTouchedGround(false);
+    }
+
+    if (curTetro->hasTouchedGround()) {
+        std::chrono::duration<double> elapsedGround = currentTime - touchedGroundTime;
+        if (elapsedGround.count() > LOCK_DELAY) {
+            curTetro->setLocked(true);
+        }
+    }
+
+    if (curTetro->isLocked()) {
         grid.insertTetromino(tetroBag.currentTetromino);
         if (grid.isTopOut()){ // check for top out
             gameOver = true;
@@ -62,6 +86,7 @@ void Game::update(){
         hud.setScore(hud.getScore() + scoreTable[n]);
         hud.setLinesCleared(hud.getLinesCleared() + n);
         tetroBag.switchTetromino();
+        
     }
 }
 
