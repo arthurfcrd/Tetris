@@ -26,12 +26,19 @@ public:
         }
         delete[] matrix;
     }
+
+    int getWidth() const;
+    int getHeight() const;
+
     bool isInbounds(Point) const; // checks if a tile is within the grid
     bool isUnoccupied(Point) const; // checks if a tile is not occupied
     void insertTetromino(const Tetromino&); // inserts a tetromino into the grid
     bool isTopOut() const; // checks if the tetromino has been insert at least partially in the spawn zone
     int clearLines(); // clear full lines and return their number
     void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
+    // draws the grid on the screen starting at position (startX, startY)
+    void drawGrid(SDL_Renderer* renderer, int startX, int startY) const;
+
 private:
     bool lineIsFull(int lineNum) const; // Check if the line has to be cleared
     void moveLineDown(int lineNum); 

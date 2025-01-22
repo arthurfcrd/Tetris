@@ -3,6 +3,15 @@
 #include "point.hpp"
 #include <cassert>
 
+
+int Grid::getWidth() const {
+    return width;
+}
+
+int Grid::getHeight() const {
+    return height;
+}
+
 bool Grid::isInbounds(Point point) const{ // checks if a tile is within the grid and is not occupied
     return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height;
 }
@@ -21,11 +30,15 @@ void Grid::insertTetromino(const Tetromino& tetromino){
 }
 
 void Grid::drawGrid(SDL_Renderer* renderer) const{
+    drawGrid(renderer, PANE_SIZE, 0);
+}
+
+void Grid::drawGrid(SDL_Renderer* renderer, int startX, int startY) const {
     SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
     for(int i = 0; i < height; i++){
         for(int j = 0; j < width; j++){
-            rect.x = PANE_SIZE + j * rect.w;
-            rect.y = i * rect.h;
+            rect.x = startX + j * rect.w;
+            rect.y = startY + i * rect.h;
             drawSquare(renderer, rect, matrix[i][j]);
         }
     }
