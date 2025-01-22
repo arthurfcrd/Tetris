@@ -5,29 +5,28 @@ Implementation of the Tetris game in the context of the IN204 course
 ## Rules
 - 7 tetrominoes with different colors and shapes
 - Matrix of 10x22
-- 7 tetrominos with different colors and shapes
 - One tetromino at a time falls down from the top of the matrix and can be moved horizontally or rotated 
-- Once the tetromino touches the ground or another piece, you have half a second to move the piece before it locks down
-- ?? Rotating or moving the block during this half second resets the counter
-- There are 15 levels and the level increases by 1 when each time 10 lines are cleared
-- As the level get more difficult, the falling speed of the tetrominos increases
+- Once the tetromino touches the ground or another piece, you have half a brief daly to move the piece before it locks down
+- [TODO?] Rotating or moving the block during this half second resets the counter
+- [TODO] There are 15 levels and the level increases by 1 when each time 10 lines are cleared
+- [TODO] As the level get more difficult, the falling speed of the tetrominos increases
 
 ### Features
 - See what the next tetromino will be
 - Do a hard drop : the current tetromino will fall immediatly
-- Swap current tetromino with the next
-- Hold one tetromino for later use
-- Perform a T-Spin
-- Add a Ghost piece to see the outline of the falling tetromino
+- [TODO] Swap current tetromino with the next
+- [TODO] Hold one tetromino for later use
+- [TODO] Perform a T-Spin
+- [TODO] Add a Ghost piece to see the outline of the falling tetromino
 
 ### Scoring system
 - Clear lines to score points
-    - 1 line = 40
-    - 2 lines = 100
-    - 3 lines = 300
-    - 4 lines = 1200
+    - 1 line = 100
+    - 2 lines = 300
+    - 3 lines = 500
+    - 4 lines = 800
 - Hard drop = 2 x distance
-- T-spin
+- [TODO] T-spin
 
 
 ### Gamemodes
@@ -38,13 +37,14 @@ Implementation of the Tetris game in the context of the IN204 course
 ### Controls:
     - Left: move the tetromino left
     - Right: move the tetromino right
-    - Up: rotate the tetromino clockwise
     - Down: hold to increase the falling speed
-    - ?? : rotate counter-clockwise
+    - X (or Up): rotate the tetromino clockwise
+    - Z : rotate counter-clockwise
     - Space : do a hard drop
     - H : hold a tetromino
     - ?? : swap current and next tetrominos
     - Enter: Pause
+    - Escape (or Q): Quit the game
 
 
 ## Ideas
