@@ -42,8 +42,11 @@ void Game::update(){
                 curTetro->setLocked(true);
         }
         if (keyboardHandler.getKeyState(Key::SPACE)) {
+            int hardDropPos = curTetro->getPosY();
             while (!curTetro->checkCollision(grid))
                 curTetro->move(grid, 0, 1);
+            // adds two times the hard drop distance to the score
+            hud.setScore(hud.getScore() + 2*(curTetro->getPosY()-hardDropPos)); 
             curTetro->setTouchedGround(true);
             curTetro->setLocked(true);
             keyboardHandler.setKeyState(Key::SPACE, false);
@@ -89,7 +92,7 @@ void Game::update(){
             gameOver = true;
             return;
         }
-        int scoreTable[5] = {0, 40, 100, 300, 1200};
+        int scoreTable[5] = {0, 100, 300, 500, 800};
         int n = grid.clearLines();
         hud.setScore(hud.getScore() + scoreTable[n]);
         hud.setLinesCleared(hud.getLinesCleared() + n);
