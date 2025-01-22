@@ -147,7 +147,7 @@ void Tetromino::drawTetromino(SDL_Renderer* renderer) const{
         rect.y = (pos.y + block.y) * rect.h;
         drawSquare(renderer, rect, color);
     }
-    drawCenter(renderer); // for debugging 
+    //drawCenter(renderer); // for debugging 
 }
 
 void Tetromino::drawCenter(SDL_Renderer* renderer) const{
