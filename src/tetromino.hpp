@@ -25,15 +25,23 @@ private:
     Point blocks[4]; // position of the 4 blocks of the tetromino relative to the center
     Color color;
     int rotationIndex = 0;
+    bool touchedGround = false;
+    bool locked = false; // there is a delay between the tetromino touching the ground/other tetrominos and the tetromino locking
 public:
+    // Constructors
     explicit Tetromino(TetrominoType type);
     explicit Tetromino(); // creates a random tetromino
     Tetromino(const Tetromino& other);
 
+    // Getter and setter methods
     TetrominoType getType() const;
     void setPos(int x, int y);
+    bool isLocked() const;
+    bool hasTouchedGround() const;
+    void setLocked(bool newVal);
+    void setTouchedGround(bool newVal);
 
-
+    // Other methods
     void move(const Grid&, int dx, int dy);
     void rotate(const Grid&, int direction); // direction = 1 for clockwise, -1 for counterclockwise
     void applyOffsetI(int rotationIndex, int newRotationIndex);

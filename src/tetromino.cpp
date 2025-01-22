@@ -13,6 +13,22 @@ void Tetromino::setPos(int x, int y) {
         pos.y = y;
 }
 
+bool Tetromino::isLocked() const {
+    return locked;
+}
+
+bool Tetromino::hasTouchedGround() const {
+    return touchedGround;
+}
+
+void Tetromino::setLocked(bool newVal) {
+    locked = newVal;
+}
+
+void Tetromino::setTouchedGround(bool newVal) {
+    touchedGround = newVal;
+}
+
 Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not hardcoded
         type = tetroType;
         pos = {5, 1};
