@@ -35,6 +35,8 @@ public:
 
     // Getter and setter methods
     TetrominoType getType() const;
+    int getPosX() const;
+    int getPosY() const;
     void setPos(int x, int y);
     bool isLocked() const;
     bool hasTouchedGround() const;

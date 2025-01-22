@@ -8,6 +8,14 @@ TetrominoType Tetromino::getType() const {
     return type;
 }
 
+int Tetromino::getPosX() const {
+    return pos.x;
+}
+
+int Tetromino::getPosY() const {
+    return pos.y;
+}
+
 void Tetromino::setPos(int x, int y) {
         pos.x = x;
         pos.y = y;
