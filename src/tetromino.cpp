@@ -4,6 +4,15 @@
 
 std::mt19937 rng(std::random_device{}());
 
+TetrominoType Tetromino::getType() const {
+    return type;
+}
+
+void Tetromino::setPos(int x, int y) {
+        pos.x = x;
+        pos.y = y;
+}
+
 Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not hardcoded
         type = tetroType;
         pos = {5, 1};
@@ -63,6 +72,16 @@ Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not ha
     }
 
 Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}
+
+Tetromino::Tetromino(const Tetromino& other) {
+    type = other.type;
+    pos.x = other.pos.x; 
+    pos.y = other.pos.y;
+    for (int i = 0; i < 4; i++)
+        blocks[i] = other.blocks[i];
+    color = other.color;
+    rotationIndex = other.rotationIndex;
+}
 
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (const auto& point : blocks){
@@ -128,11 +147,11 @@ void Tetromino::drawTetromino(SDL_Renderer* renderer) const{
         rect.y = (pos.y + block.y) * rect.h;
         drawSquare(renderer, rect, color);
     }
-    // drawCenter(renderer); // for debugging 
+    drawCenter(renderer); // for debugging 
 }
 
 void Tetromino::drawCenter(SDL_Renderer* renderer) const{
-    SDL_Rect rect = {pos.x * TILE_SIZE + TILE_SIZE * 3 / 8, pos.y * TILE_SIZE + TILE_SIZE * 3 / 8, TILE_SIZE / 4, TILE_SIZE / 4};
+    SDL_Rect rect = {PANE_SIZE + pos.x * TILE_SIZE + TILE_SIZE * 3 / 8, pos.y * TILE_SIZE + TILE_SIZE * 3 / 8, TILE_SIZE / 4, TILE_SIZE / 4};
     drawSquare(renderer, rect, Color::NONE);
 }
 

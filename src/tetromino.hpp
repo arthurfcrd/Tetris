@@ -28,6 +28,12 @@ private:
 public:
     explicit Tetromino(TetrominoType type);
     explicit Tetromino(); // creates a random tetromino
+    Tetromino(const Tetromino& other);
+
+    TetrominoType getType() const;
+    void setPos(int x, int y);
+
+
     void move(const Grid&, int dx, int dy);
     void rotate(const Grid&, int direction); // direction = 1 for clockwise, -1 for counterclockwise
     void applyOffsetI(int rotationIndex, int newRotationIndex);
