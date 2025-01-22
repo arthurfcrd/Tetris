@@ -41,6 +41,18 @@ void Grid::drawGrid(SDL_Renderer* renderer) const{
 }
 
 void Grid::drawGrid(SDL_Renderer* renderer, int startX, int startY) const {
+    /*SDL_Rect wholeGrid = {PANE_SIZE, 0, width*TILE_SIZE, height*TILE_SIZE};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &wholeGrid);
+
+    SDL_SetRenderDrawColor(renderer, 122, 120, 116, 255);
+    for (int y = 1; y < height; y++) {
+        SDL_RenderDrawLine(renderer, PANE_SIZE, y*TILE_SIZE, PANE_SIZE+width*TILE_SIZE, y*TILE_SIZE);
+    }
+    for (int x = 1; x < width; x++) {
+        SDL_RenderDrawLine(renderer, PANE_SIZE+x*TILE_SIZE, 0, PANE_SIZE+x*TILE_SIZE, height*TILE_SIZE);
+    }*/
+
     SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
     for(int i = 0; i < height; i++){
         for(int j = 0; j < width; j++){
