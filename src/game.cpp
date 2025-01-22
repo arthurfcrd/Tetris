@@ -21,7 +21,7 @@ void Game::update(){
     std::chrono::duration<double> elapsedSecondsFromFall = currentTime - lastFallTime;
     if (!curTetro->hasTouchedGround() && elapsedSecondsFromFall.count() > FALL_RATE){
         // falls only if the tetromino has not yet touched the ground
-        tetroBag.currentTetromino.move(grid, 0, 1);
+        curTetro->move(grid, 0, 1);
         lastFallTime = currentTime;
     }
 
@@ -30,17 +30,25 @@ void Game::update(){
     if (elapsedSecondsFromMove.count() > MOVE_RATE){
         
         if (keyboardHandler.getKeyState(Key::LEFT)){
-            tetroBag.currentTetromino.move(grid, -1, 0);
+            curTetro->move(grid, -1, 0);
         }
         if (keyboardHandler.getKeyState(Key::RIGHT)){
-            tetroBag.currentTetromino.move(grid, 1, 0);
+            curTetro->move(grid, 1, 0);
         }
         if (keyboardHandler.getKeyState(Key::DOWN)){
-            tetroBag.currentTetromino.move(grid, 0, 1);
+            curTetro->move(grid, 0, 1);
             // pressing the Down key while touching the ground activates the locking
             if (curTetro->hasTouchedGround())
                 curTetro->setLocked(true);
         }
+        if (keyboardHandler.getKeyState(Key::SPACE)) {
+            while (!curTetro->checkCollision(grid))
+                curTetro->move(grid, 0, 1);
+            curTetro->setTouchedGround(true);
+            curTetro->setLocked(true);
+            keyboardHandler.setKeyState(Key::SPACE, false);
+        }   
+
         lastMoveTime = currentTime;
     }
 
@@ -49,10 +57,10 @@ void Game::update(){
     if (!curTetro->hasTouchedGround() && elapsedSecondsFromRotation.count() > ROTATE_RATE){
         // only rotates if the tetrominio has not yet touched the ground
         if (keyboardHandler.getKeyState(Key::Z)){
-            tetroBag.currentTetromino.rotate(grid, -1);
+            curTetro->rotate(grid, -1);
         }
         if (keyboardHandler.getKeyState(Key::X) || keyboardHandler.getKeyState(Key::UP)){
-            tetroBag.currentTetromino.rotate(grid, 1);
+            curTetro->rotate(grid, 1);
         }
         lastRotationTime = currentTime;
     }
