@@ -3,7 +3,7 @@
 #include <random>
 #include <cassert>
 
-const Point wallkicksJLSTZ[5][4] = {
+const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T, Z
     {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
     {{0, 0}, {-1, 0}, {0, 0}, {1, 0}},
     {{0, 0}, {-1, -1}, {0, 0}, {1, -1}},
@@ -11,7 +11,7 @@ const Point wallkicksJLSTZ[5][4] = {
     {{0, 0}, {-1, 2}, {0, 0}, {1, 2}}
 };
 
-const Point wallkicksI[5][4] = {
+const Point wallkicksI[5][4] = { // wallkick offsets for I
     {{0, 0}, {1, 0}, {1, 1}, {0, 1}},
     {{1, 0}, {0, 0}, {-1, 1}, {0, 1}},
     {{-2, 0}, {0, 0}, {2, 1}, {0, 1}},
