@@ -110,15 +110,15 @@ void HUD::setLinesCleared(int newVal) {
     nLinesCleared = newVal;
 }
 
-void HUD::insertIntoNextBox(Tetromino& tetro) {
-    nextBox->clearGrid();
+void HUD::insertIntoBox(Grid* box, Tetromino& tetro) {
+    box->clearGrid();
     if (tetro.getType() == TetrominoType::I)
         tetro.setPos(1,1);
     else if (tetro.getType() == TetrominoType::O)
         tetro.setPos(1,2);
     else
         tetro.setPos(2,2);
-    nextBox->insertTetromino(tetro);
+    box->insertTetromino(tetro);
 }
 
 void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) {
@@ -136,7 +136,8 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     // Box holding the next tetromino
     int startX = rightPaneX+(PANE_SIZE - nextBox->getWidth()*TILE_SIZE)/2;
     int startY = nextTextRect.y+nextTextRect.h+PADDING;
-    insertIntoNextBox(nextTetro);
+    if (nextTetro.getType() != TetrominoType::NONE)
+        insertIntoBox(nextBox, nextTetro);
     nextBox->drawGrid(renderer, startX, startY);
 
     // Display the score
@@ -158,6 +159,8 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     drawText(renderer, &holdTextRect, "HOLD", 50);
     int holdStartX = (PANE_SIZE - holdBox->getWidth()*TILE_SIZE) / 2;
     int holdStartY = holdTextRect.y + holdTextRect.h + PADDING;
+    if (holdTetro.getType() != TetrominoType::NONE)
+        insertIntoBox(holdBox, holdTetro);
     holdBox->drawGrid(renderer, holdStartX, holdStartY);
 }
 
