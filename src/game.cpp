@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include <iostream>
 
 void Game::updateHandler(const SDL_Event& event){
     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP){
@@ -54,7 +55,17 @@ void Game::update(){
         hud.setScore(hud.getScore() + 2*(curTetro->getPosY()-hardDropPos)); 
         curTetro->setTouchedGround(true);
         curTetro->setLocked(true);
-    }   
+    }
+
+    // handle piece holding
+    if (keyboardHandler.getKeyState(Key::H)) {
+        keyboardHandler.setKeyState(Key::H, false);
+
+        if (canHold()) {
+            tetroBag.hold();
+            setHoldLock();
+        }
+    }
 
     // handle rotations
     std::chrono::duration<double> elapsedSecondsFromRotation = currentTime - lastRotationTime;
@@ -98,13 +109,13 @@ void Game::update(){
         hud.setScore(hud.getScore() + scoreTable[n]);
         hud.setLinesCleared(hud.getLinesCleared() + n);
         tetroBag.switchTetromino();
-        
+        releaseHoldLock();
     }
 }
 
 
 void Game::draw(SDL_Renderer* renderer) {
-    hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.currentTetromino);
+    hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
     grid.drawGrid(renderer);
     tetroBag.currentTetromino.drawTetromino(renderer);
 }
@@ -117,3 +128,16 @@ bool Game::isRunning() const{
 void Game::setRunning(bool newRunning){
     this->running = newRunning;
 }
+
+void Game::setHoldLock() {
+    canHold_ = false;
+}
+
+void Game::releaseHoldLock() {
+    canHold_ = true;
+}
+
+bool Game::canHold() const {
+    return canHold_;
+}
+

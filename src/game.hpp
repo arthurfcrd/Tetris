@@ -18,6 +18,8 @@ private:
     TetrominoBag tetroBag;
     bool running;
     bool gameOver;
+    // after holding a tetromino the player must place the next tetromino before holding again
+    bool canHold_ = true; 
     std::chrono::time_point<std::chrono::system_clock> lastFallTime;
     std::chrono::time_point<std::chrono::system_clock> lastMoveTime;
     std::chrono::time_point<std::chrono::system_clock> lastRotationTime;
@@ -36,4 +38,9 @@ public:
     void draw(SDL_Renderer* renderer);
     bool isRunning() const;
     void setRunning(bool);
+
+    void setHoldLock();
+    void releaseHoldLock();
+    bool canHold() const;
+
 };
