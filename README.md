@@ -14,9 +14,9 @@ Implementation of the Tetris game in the context of the IN204 course
 ### Features
 - See what the next tetromino will be
 - Do a hard drop : the current tetromino will fall immediatly
-- [TODO] Swap current tetromino with the next
-- [TODO] Hold one tetromino for later use
+- Hold one tetromino for later use
 - [TODO] Perform a T-Spin
+- [TODO] Swap current tetromino with the next
 - [TODO] Add a Ghost piece to see the outline of the falling tetromino
 
 ### Scoring system
