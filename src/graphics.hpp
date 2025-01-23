@@ -56,7 +56,7 @@ class HUD {
         unsigned int getLinesCleared() const;
         void setLinesCleared(int newVal);
 
-        void insertIntoNextBox(Tetromino& tetro);
+        void insertIntoBox(Grid* box, Tetromino& tetro);
         void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
         ~HUD();
 };
