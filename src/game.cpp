@@ -48,6 +48,7 @@ void Game::update(){
         lastHorizontalMoveTime = currentTime;
     }
 
+    // handle hard drop
     if (keyboardHandler.getKeyState(Key::SPACE)) {
         int hardDropPos = curTetro->getPosY();
         while (!curTetro->checkCollision(grid))
@@ -60,15 +61,17 @@ void Game::update(){
     }   
 
     // handle rotations
-    std::chrono::duration<double> elapsedSecondsFromRotation = currentTime - lastRotationTime;
-    if (elapsedSecondsFromRotation.count() > ROTATE_RATE){
-        if (keyboardHandler.getKeyState(Key::Z)){
-            curTetro->rotate(grid, -1);
-        }
-        if (keyboardHandler.getKeyState(Key::X) || keyboardHandler.getKeyState(Key::UP)){
-            curTetro->rotate(grid, 1);
-        }
-        lastRotationTime = currentTime;
+    if (keyboardHandler.getKeyState(Key::Z)){
+        curTetro->rotate(grid, -1);
+        keyboardHandler.setKeyState(Key::Z, false);
+    }
+    if (keyboardHandler.getKeyState(Key::X)){
+        curTetro->rotate(grid, 1);
+        keyboardHandler.setKeyState(Key::X, false);
+    }
+    if (keyboardHandler.getKeyState(Key::UP)){
+        curTetro->rotate(grid, 1);
+        keyboardHandler.setKeyState(Key::UP, false);
     }
 
     // check for collision
@@ -78,7 +81,7 @@ void Game::update(){
             touchedGroundTime = std::chrono::system_clock::now();
         }
     } else {
-        // a tetromino can be moved laterally before locking so it can continue the falling
+        // a tetromino can be moved laterally before locking so it can keep falling
         curTetro->setTouchedGround(false);
     }
 

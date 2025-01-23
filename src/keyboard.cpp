@@ -40,7 +40,6 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){
     }
     if (key != Key::NONE){
         int keyIndex = static_cast<int>(key);
-        assert(keyIndex >= 0 && keyIndex < nKeys);
         keyStates[keyIndex] = (event.state == SDL_PRESSED);
     }
 }

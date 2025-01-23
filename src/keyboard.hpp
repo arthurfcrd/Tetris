@@ -6,6 +6,8 @@
 #include <SDL.h>
 #endif
 
+#include <vector>
+
 #define DEFAULT_N_KEYS (15)
 
 enum class Key : int {
@@ -24,19 +26,10 @@ enum class Key : int {
 
 class KeyboardHandler{
 private:
-    int nKeys;
-    bool* keyStates; // false for released, true for pressed
+    std::vector<bool> keyStates;
 public:
-    explicit KeyboardHandler(int nKeys) : nKeys(nKeys){
-        keyStates = new bool[nKeys];
-        for(int i = 0; i < nKeys; i++){
-            keyStates[i] = false;
-        }
-    }
+    explicit KeyboardHandler(int nKeys) : keyStates(nKeys, false){}
     explicit KeyboardHandler() : KeyboardHandler(DEFAULT_N_KEYS){}
-    ~KeyboardHandler(){
-        delete[] keyStates;
-    }
     void handleEvent(const SDL_KeyboardEvent& event);
     bool getKeyState(Key key) const;
     void setKeyState(Key key, bool val);

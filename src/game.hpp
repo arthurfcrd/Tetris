@@ -23,7 +23,6 @@ private:
     std::chrono::time_point<std::chrono::system_clock> lastFallTime;
     std::chrono::time_point<std::chrono::system_clock> lastHorizontalMoveTime;
     std::chrono::time_point<std::chrono::system_clock> lastVerticalMoveTime;
-    std::chrono::time_point<std::chrono::system_clock> lastRotationTime;
     std::chrono::time_point<std::chrono::system_clock> touchedGroundTime;
     KeyboardHandler keyboardHandler;
 public:
@@ -32,7 +31,6 @@ public:
                     lastFallTime(std::chrono::system_clock::now()), 
                     lastHorizontalMoveTime(std::chrono::system_clock::now()), 
                     lastVerticalMoveTime(std::chrono::system_clock::now()), 
-                    lastRotationTime(std::chrono::system_clock::now()), 
                     keyboardHandler(){}
     void update(const SDL_Event& event);
     void update();
