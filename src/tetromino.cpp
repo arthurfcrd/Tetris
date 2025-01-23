@@ -4,39 +4,7 @@
 
 std::mt19937 rng(std::random_device{}());
 
-TetrominoType Tetromino::getType() const {
-    return type;
-}
-
-int Tetromino::getPosX() const {
-    return pos.x;
-}
-
-int Tetromino::getPosY() const {
-    return pos.y;
-}
-
-void Tetromino::setPos(int x, int y) {
-        pos.x = x;
-        pos.y = y;
-}
-
-bool Tetromino::isLocked() const {
-    return locked;
-}
-
-bool Tetromino::hasTouchedGround() const {
-    return touchedGround;
-}
-
-void Tetromino::setLocked(bool newVal) {
-    locked = newVal;
-}
-
-void Tetromino::setTouchedGround(bool newVal) {
-    touchedGround = newVal;
-}
-
+// Tetromino constructors
 Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not hardcoded
         type = tetroType;
         pos = {5, 1};
@@ -91,6 +59,8 @@ Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not ha
                 blocks[3] = {1, -1};
                 color = Color::ORANGE;
                 break;
+            case TetrominoType::NONE:
+                break;
         }
 
     }
@@ -107,6 +77,44 @@ Tetromino::Tetromino(const Tetromino& other) {
     rotationIndex = other.rotationIndex;
 }
 
+
+
+// Tetromino setters and getters
+TetrominoType Tetromino::getType() const {
+    return type;
+}
+
+int Tetromino::getPosX() const {
+    return pos.x;
+}
+
+int Tetromino::getPosY() const {
+    return pos.y;
+}
+
+void Tetromino::setPos(int x, int y) {
+        pos.x = x;
+        pos.y = y;
+}
+
+bool Tetromino::isLocked() const {
+    return locked;
+}
+
+bool Tetromino::hasTouchedGround() const {
+    return touchedGround;
+}
+
+void Tetromino::setLocked(bool newVal) {
+    locked = newVal;
+}
+
+void Tetromino::setTouchedGround(bool newVal) {
+    touchedGround = newVal;
+}
+
+
+// Tetromino other methods
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (const auto& point : blocks){
         Point dstTile = pos + point + Point{dx, dy};
@@ -180,6 +188,8 @@ void Tetromino::drawCenter(SDL_Renderer* renderer) const{
 }
 
 
+// TetrominoBag methods
+
 
 void TetrominoBag::createBag() {
     tetroList.clear();
@@ -217,4 +227,15 @@ void TetrominoBag::switchTetromino() {
     //delete currentTetromino;
     currentTetromino = nextTetromino;
     drawNextTetromino();
+}
+
+void TetrominoBag::hold() {
+    if (heldTetromino.getType() == TetrominoType::NONE) {
+        heldTetromino = Tetromino(currentTetromino.getType());
+        switchTetromino();
+    } else {
+        TetrominoType heldType = heldTetromino.getType();
+        heldTetromino = Tetromino(currentTetromino.getType());
+        currentTetromino = Tetromino(heldType);
+    }
 }

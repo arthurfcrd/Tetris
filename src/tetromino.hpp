@@ -13,7 +13,8 @@ enum class TetrominoType : int {
     S,
     Z,
     J,
-    L
+    L,
+    NONE
 };
 
 class Grid;
@@ -63,9 +64,10 @@ class TetrominoBag {
     public:
         Tetromino currentTetromino;
         Tetromino nextTetromino;
-        Tetromino holdTetromino;
+        Tetromino heldTetromino;
 
-        explicit TetrominoBag() {
+        explicit TetrominoBag(): currentTetromino(TetrominoType::NONE), 
+        nextTetromino(TetrominoType::NONE), heldTetromino(TetrominoType::NONE){
             createBag();
             drawTetromino();
             drawNextTetromino();
@@ -82,4 +84,7 @@ class TetrominoBag {
 
         // place the next tetromino into current tetromino and draw the next one
         void switchTetromino();
+
+        // hold the current tetromino
+        void hold();
 };
