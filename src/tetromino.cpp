@@ -233,7 +233,8 @@ void TetrominoBag::hold() {
     if (heldTetromino.getType() == TetrominoType::NONE) {
         heldTetromino = Tetromino(currentTetromino.getType());
         switchTetromino();
-    } else {
+    } else if (heldTetromino.getType() != currentTetromino.getType()){
+        // do not switch if current tetromino is the same as the held one
         TetrominoType heldType = heldTetromino.getType();
         heldTetromino = Tetromino(currentTetromino.getType());
         currentTetromino = Tetromino(heldType);
