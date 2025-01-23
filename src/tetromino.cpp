@@ -54,63 +54,62 @@ void Tetromino::setTouchedGround(bool newVal) {
     touchedGround = newVal;
 }
 
-Tetromino::Tetromino(TetrominoType tetroType){ // TODO : change pos to be not hardcoded
-        type = tetroType;
-        pos = {5, 1};
-        switch(tetroType){
-            case TetrominoType::I:
-                blocks[0] = {-1, 0};
-                blocks[1] = {0, 0};
-                blocks[2] = {1, 0};
-                blocks[3] = {2, 0};
-                color = Color::CYAN;
-                pos.y = 0;
-                break;
-            case TetrominoType::O:
-                blocks[0] = {0, -1};
-                blocks[1] = {0, 0};
-                blocks[2] = {1, -1};
-                blocks[3] = {1, 0};
-                color = Color::YELLOW;
-                break;
-            case TetrominoType::T:
-                blocks[0] = {-1, 0};
-                blocks[1] = {0, 0};
-                blocks[2] = {0, -1};
-                blocks[3] = {1, 0};
-                color = Color::MAGENTA;
-                break;
-            case TetrominoType::S:
-                blocks[0] = {-1, 0};
-                blocks[1] = {0, 0};
-                blocks[2] = {0, -1};
-                blocks[3] = {1, -1};
-                color = Color::GREEN;
-                break;
-            case TetrominoType::Z:
-                blocks[0] = {-1, -1};
-                blocks[1] = {0, -1};
-                blocks[2] = {0, 0};
-                blocks[3] = {1, 0};
-                color = Color::RED;
-                break;
-            case TetrominoType::J:
-                blocks[0] = {-1, -1};
-                blocks[1] = {-1, 0};
-                blocks[2] = {0, 0};
-                blocks[3] = {1, 0};
-                color = Color::BLUE;
-                break;
-            case TetrominoType::L:
-                blocks[0] = {-1, 0};
-                blocks[1] = {0, 0};
-                blocks[2] = {1, 0};
-                blocks[3] = {1, -1};
-                color = Color::ORANGE;
-                break;
-        }
-
+Tetromino::Tetromino(TetrominoType tetroType) : // TODO : change pos to be not hardcoded if the size of the grid changes
+    type(tetroType), pos({5, 1}), rotationIndex(0), 
+    touchedGround(false), locked(false) {
+    switch(tetroType){
+        case TetrominoType::I:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, 0};
+            blocks[3] = {2, 0};
+            color = Color::CYAN;
+            pos.y = 0;
+            break;
+        case TetrominoType::O:
+            blocks[0] = {0, -1};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, -1};
+            blocks[3] = {1, 0};
+            color = Color::YELLOW;
+            break;
+        case TetrominoType::T:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {0, -1};
+            blocks[3] = {1, 0};
+            color = Color::MAGENTA;
+            break;
+        case TetrominoType::S:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {0, -1};
+            blocks[3] = {1, -1};
+            color = Color::GREEN;
+            break;
+        case TetrominoType::Z:
+            blocks[0] = {-1, -1};
+            blocks[1] = {0, -1};
+            blocks[2] = {0, 0};
+            blocks[3] = {1, 0};
+            color = Color::RED;
+            break;
+        case TetrominoType::J:
+            blocks[0] = {-1, -1};
+            blocks[1] = {-1, 0};
+            blocks[2] = {0, 0};
+            blocks[3] = {1, 0};
+            color = Color::BLUE;
+            break;
+        case TetrominoType::L:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, 0};
+            blocks[3] = {1, -1};
+            color = Color::ORANGE;
+            break;
     }
+}
 
 Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}
 

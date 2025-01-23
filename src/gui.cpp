@@ -61,7 +61,6 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     SDL_Rect linesClearedRect = {rightPaneX, linesTextRect.y + linesTextRect.h + PADDING / 2, 0, 0};
     drawText(renderer, &linesClearedRect, std::to_string(nLinesCleared), DEFAULT_PTSIZE);
 
-
     // Draw the left pane
     SDL_Rect holdTextRect = {0, PADDING, 0, 0};
     drawText(renderer, &holdTextRect, "HOLD", 50);
