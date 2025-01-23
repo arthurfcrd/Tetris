@@ -3,7 +3,7 @@
 #include "tetromino.hpp"
 
 // HUD methods definition
-HUD::HUD() : score(0), nLinesCleared(0), nextBox(5, 4), holdBox(5, 4) {}
+HUD::HUD() : nextBox(5, 4), holdBox(5, 4), score(0), nLinesCleared(0) {}
 
 unsigned int HUD::getScore() const {
     return score;

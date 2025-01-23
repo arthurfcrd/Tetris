@@ -1,4 +1,5 @@
 #include "keyboard.hpp"
+#include <cassert>
 
 // updates the state of the keys according to the event received
 void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){ 
@@ -38,7 +39,9 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){
             break;
     }
     if (key != Key::NONE){
-        keyStates[static_cast<int>(key)] = (event.state == SDL_PRESSED);
+        int keyIndex = static_cast<int>(key);
+        assert(keyIndex >= 0 && keyIndex < nKeys);
+        keyStates[keyIndex] = (event.state == SDL_PRESSED);
     }
 }
 
