@@ -41,19 +41,20 @@ void Game::update(){
             if (curTetro->hasTouchedGround())
                 curTetro->setLocked(true);
         }
-        if (keyboardHandler.getKeyState(Key::SPACE)) {
-            int hardDropPos = curTetro->getPosY();
-            while (!curTetro->checkCollision(grid))
-                curTetro->move(grid, 0, 1);
-            // adds two times the hard drop distance to the score
-            hud.setScore(hud.getScore() + 2*(curTetro->getPosY()-hardDropPos)); 
-            curTetro->setTouchedGround(true);
-            curTetro->setLocked(true);
-            keyboardHandler.setKeyState(Key::SPACE, false);
-        }   
-
         lastMoveTime = currentTime;
     }
+
+    // handle hard drop
+    if (keyboardHandler.getKeyState(Key::SPACE)) {
+        keyboardHandler.setKeyState(Key::SPACE, false);
+        int hardDropPos = curTetro->getPosY();
+        while (!curTetro->checkCollision(grid))
+            curTetro->move(grid, 0, 1);
+        // adds two times the hard drop distance to the score
+        hud.setScore(hud.getScore() + 2*(curTetro->getPosY()-hardDropPos)); 
+        curTetro->setTouchedGround(true);
+        curTetro->setLocked(true);
+    }   
 
     // handle rotations
     std::chrono::duration<double> elapsedSecondsFromRotation = currentTime - lastRotationTime;
