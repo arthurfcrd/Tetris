@@ -1,6 +1,23 @@
 #include "tetromino.hpp"
 #include "grid.hpp"
 #include <random>
+#include <cassert>
+
+const Point wallkicksJLSTZ[5][4] = {
+    {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
+    {{0, 0}, {-1, 0}, {0, 0}, {1, 0}},
+    {{0, 0}, {-1, -1}, {0, 0}, {1, -1}},
+    {{0, 0}, {0, 2}, {0, 0}, {0, 2}},
+    {{0, 0}, {-1, 2}, {0, 0}, {1, 2}}
+};
+
+const Point wallkicksI[5][4] = {
+    {{0, 0}, {1, 0}, {1, 1}, {0, 1}},
+    {{1, 0}, {0, 0}, {-1, 1}, {0, 1}},
+    {{-2, 0}, {0, 0}, {2, 1}, {0, 1}},
+    {{1, 0}, {0, 1}, {-1, 0}, {0, -1}},
+    {{-2, 0}, {0, -2}, {2, 0}, {0, 2}}
+};
 
 std::mt19937 rng(std::random_device{}());
 
@@ -119,38 +136,43 @@ void Tetromino::move(const Grid& g, int dx, int dy){
 }
 
 void Tetromino::rotate(const Grid& g, int direction){ // direction = 1 for clockwise, -1 for counterclockwise
-    if (type == TetrominoType::O){
+    if (this->type == TetrominoType::O){
         return;
     }
+    int newRotationIndex = (this->rotationIndex + direction + 4) % 4;
     Point newblocks[4];
-    int newRotationIndex = (rotationIndex + direction + 4) % 4;
     for (int i = 0; i < 4; i++){
         int newX = -direction * blocks[i].y;
         int newY = direction * blocks[i].x;
         newblocks[i] = {newX, newY};
     }
-    if (type == TetrominoType::I){
-        applyOffsetI(rotationIndex, newRotationIndex);
-    }
-    for (int i = 0; i < 4; i++){
-        Point dstTilei = newblocks[i] + pos;
-        if (!g.isInbounds(dstTilei) || !g.isUnoccupied(dstTilei)){
-            if (type == TetrominoType::I){
-                applyOffsetI(rotationIndex, newRotationIndex);
+    for (int offsetIndex = 0; offsetIndex < 5; offsetIndex++){
+        Point newPos = getOffsetPos(offsetIndex, this->type, this->rotationIndex, newRotationIndex);
+        int i;
+        for (i = 0; i < 4; i++){
+            Point dstTilei = newblocks[i] + newPos;
+            if (!g.isInbounds(dstTilei) || !g.isUnoccupied(dstTilei)){
+                break;
             }
-            return;
+        }
+        if (i == 4){
+            for (int k = 0; k < 4; k++){
+                this->blocks[k] = newblocks[k];
+            }
+            this->pos = newPos;
+            this->rotationIndex = newRotationIndex;
+            break;
         }
     }
-    for (int i = 0; i < 4; i++){
-        blocks[i] = newblocks[i];
-    }
-    rotationIndex = newRotationIndex;
 }
 
-void Tetromino::applyOffsetI(int rotationIndex, int newRotationIndex){
-    Point offsetTable[4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+Point Tetromino::getOffsetPos(int offsetIndex, TetrominoType tetroType, int rotationIndex, int newRotationIndex){
+    assert(tetroType != TetrominoType::O);
+    assert(offsetIndex >= 0 && offsetIndex < 5);
+    assert(rotationIndex >= 0 && rotationIndex < 4);
+    const Point* offsetTable = (tetroType == TetrominoType::I) ? wallkicksI[offsetIndex] : wallkicksJLSTZ[offsetIndex];
     Point offset = offsetTable[newRotationIndex] - offsetTable[rotationIndex];
-    pos = pos + offset;
+    return this->pos + offset;
 }
 
 // true if the tetromino has reached the bottom or another block
@@ -179,8 +201,6 @@ void Tetromino::drawCenter(SDL_Renderer* renderer) const{
     drawSquare(renderer, rect, Color::NONE);
 }
 
-
-
 void TetrominoBag::createBag() {
     tetroList.clear();
     tetroList.push_back(TetrominoType::I);
@@ -191,12 +211,10 @@ void TetrominoBag::createBag() {
     tetroList.push_back(TetrominoType::J);
     tetroList.push_back(TetrominoType::L);
 
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(tetroList.begin(), tetroList.end(), g);
+    std::shuffle(tetroList.begin(), tetroList.end(), rng);
 }
 
-void TetrominoBag::drawTetromino() {
+void TetrominoBag::pickTetromino() {
     // fill up the bag again if it is empty
     if (tetroList.empty()) {
         createBag();
@@ -205,7 +223,7 @@ void TetrominoBag::drawTetromino() {
     tetroList.pop_back();
 }
 
-void TetrominoBag::drawNextTetromino() {
+void TetrominoBag::pickNextTetromino() {
     if (tetroList.empty()) {
         createBag();
     }
@@ -214,7 +232,7 @@ void TetrominoBag::drawNextTetromino() {
 }
 
 void TetrominoBag::switchTetromino() {
-    //delete currentTetromino;
+    // delete currentTetromino;
     currentTetromino = nextTetromino;
-    drawNextTetromino();
+    pickNextTetromino();
 }

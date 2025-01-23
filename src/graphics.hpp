@@ -32,31 +32,6 @@ enum class Color{
     NONE
 };
 
-// foward declaration (defined in tetromino.hpp)
-class Tetromino;
-// forward declaration (defined in grid.hpp)
-class Grid;
-
 // draws a square of a given color at a given position
 void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color); 
 void drawText(SDL_Renderer* renderer, SDL_Rect* textRect, std::string message, int ptsize);
-
-
-class HUD {
-    private:
-        Grid* nextBox;
-        Grid* holdBox;
-        unsigned int score;
-        unsigned int nLinesCleared;
-    public:
-        HUD();
-        unsigned int getScore() const;
-        void setScore(int newScore);
-
-        unsigned int getLinesCleared() const;
-        void setLinesCleared(int newVal);
-
-        void insertIntoNextBox(Tetromino& tetro);
-        void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
-        ~HUD();
-};

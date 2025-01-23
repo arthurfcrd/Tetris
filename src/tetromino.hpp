@@ -46,10 +46,11 @@ public:
     // Other methods
     void move(const Grid&, int dx, int dy);
     void rotate(const Grid&, int direction); // direction = 1 for clockwise, -1 for counterclockwise
-    void applyOffsetI(int rotationIndex, int newRotationIndex);
     bool checkCollision(const Grid& g) const;
     void drawTetromino(SDL_Renderer* renderer) const;
+private:
     void drawCenter(SDL_Renderer* renderer) const;
+    Point getOffsetPos(int offsetIndex, TetrominoType tetroType, int rotationIndex, int newRotationIndex);
     friend class Grid;
 };
 
@@ -67,18 +68,18 @@ class TetrominoBag {
 
         explicit TetrominoBag() {
             createBag();
-            drawTetromino();
-            drawNextTetromino();
+            pickTetromino();
+            pickNextTetromino();
         };
 
         // create the bag by shuffling the seven different tetrominoes in tetroList
         void createBag();
 
-        // draw a tetromino from the bag and stores it in currentTetromino
-        void drawTetromino();
+        // pick a tetromino from the bag and stores it in currentTetromino
+        void pickTetromino();
 
-        // draw a tetromino from the bag and stores it in nextTetromino
-        void drawNextTetromino();
+        // pick a tetromino from the bag and stores it in nextTetromino
+        void pickNextTetromino();
 
         // place the next tetromino into current tetromino and draw the next one
         void switchTetromino();
