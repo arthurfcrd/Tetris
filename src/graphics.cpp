@@ -61,7 +61,7 @@ void drawText(SDL_Renderer* renderer, SDL_Rect* textRect, std::string message, i
     if (textFont != NULL) {
         TTF_CloseFont(textFont);
     }
-    textFont = TTF_OpenFont("../assets/mightysouly.ttf", ptsize);
+    textFont = TTF_OpenFont("../assets/fonts/mightysouly.ttf", ptsize);
     if (!textFont) {
         SDL_Log("Failed to load font: %s", TTF_GetError());
         return;
