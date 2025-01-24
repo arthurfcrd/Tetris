@@ -1,6 +1,164 @@
 #include "gui.hpp"
-
 #include "tetromino.hpp"
+#include <iostream>
+
+void printRect(SDL_Rect* rect) {
+    std::cout << "x=" << rect->x << ", y=" << rect->y << ", w=" << rect->w <<", h=" << rect->h << std::endl;
+}
+
+SDL_Texture* createTextureFromIMG(SDL_Renderer* renderer, std::string path) {
+    SDL_Surface* surf = IMG_Load(path.c_str());
+    if (surf == NULL) {
+        SDL_Log("Unable to load the image: %s", SDL_GetError());
+        return NULL;
+    }
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
+    if (texture== NULL) {
+        SDL_Log("Unable to create texture: %s", SDL_GetError());
+        return NULL;
+    }
+    return texture;
+}
+
+TTF_Font* loadFont(std::string path, int ptsize) {
+    TTF_Font* textFont = TTF_OpenFont(path.c_str(), ptsize);
+    if (textFont == NULL) {
+        SDL_Log("Failed to load font: %s", TTF_GetError());
+    }
+    return textFont;
+    
+}
+
+// draw a centered text at position yDelta and returns the y coordinate of the bottom
+int drawCenteredText(SDL_Renderer* renderer, int yDelta, std::string message, int ptsize) {
+    TTF_Font* textFont = loadFont("../assets/fonts/mightysouly.ttf", ptsize);
+
+    SDL_Color white = {255,255,255,255};
+    SDL_Surface* textSurf = TTF_RenderText_Blended(textFont, message.c_str(), white);
+    if (!textSurf) {
+        SDL_Log("Failed to create text surface: %s", TTF_GetError());
+        return 0;
+    }
+    SDL_Texture* textTex = SDL_CreateTextureFromSurface(renderer, textSurf);
+    SDL_FreeSurface(textSurf);
+
+    SDL_Rect textRect = {0, yDelta, textSurf->w, textSurf->h};
+    SDL_GetRendererOutputSize(renderer, &textRect.x, NULL);
+    textRect.x  = (textRect.x - textRect.w) / 2;
+    //std::cout << textRect.h << std::endl;
+    SDL_RenderCopy(renderer, textTex, NULL, &textRect);
+    SDL_DestroyTexture(textTex);
+
+    TTF_CloseFont(textFont);
+
+    return textRect.y + textRect.h;
+}
+
+
+// Button methods
+Button::Button(SDL_Renderer* r, std::string textVal, std::string normalBtnFile, std::string hgBtnFile) {
+    renderer = r;
+    btnText = createTextureFromIMG(r, normalBtnFile);
+    hgBtnText = createTextureFromIMG(r, hgBtnFile);
+    isHighlighted = false;
+    text = textVal;
+}
+
+bool Button::getHighlighted() const {
+    return isHighlighted;
+}
+
+void Button::setHighlighted(bool newVal) {
+    isHighlighted = newVal;
+}
+
+void Button::draw(int y, int width) {
+    SDL_Texture* texture = btnText;
+    if (isHighlighted)
+        texture = hgBtnText;
+
+    btnRect.x = 0;
+    btnRect.y = y;
+    btnRect.w = width;
+    SDL_QueryTexture(texture, NULL, NULL, NULL, &btnRect.h);
+
+    SDL_RenderCopy(renderer, texture, NULL, &btnRect);
+    
+    drawCenteredText(renderer, btnRect.y+30, text, 60);
+}
+
+// BaseUI methods
+
+BaseUI::BaseUI(SDL_Renderer* r, std::string firstTitle, std::vector<std::string> buttonsText) {
+    renderer = r;
+    SDL_GetRendererOutputSize(r, &windowWidth, &windowHeight);
+    title = firstTitle;
+    buttons.clear();
+    for (std::string text : buttonsText) {
+        buttons.push_back(Button(renderer, text));
+    }
+
+    // Load the background texture once
+    background = createTextureFromIMG(renderer, "../assets/img/background/bg_dullstars5.png");
+    bgRect = {0, 0, windowWidth, windowWidth};
+    SDL_QueryTexture(background, NULL, NULL, &bgRect.x, &bgRect.y);
+    bgRect.x = (bgRect.x - windowWidth) / 2;
+    bgRect.y = (bgRect.y - windowHeight) / 2;
+}
+
+void BaseUI::drawTitle() {
+    titleBottom = drawCenteredText(renderer, titlePaddding, title, 100);
+}
+
+void BaseUI::drawBackground() {
+    SDL_RenderCopy(renderer, background, &bgRect, NULL);
+}
+
+void BaseUI::drawButtons() {
+    int buttonSpace = (windowHeight-titleBottom) / buttons.size();
+    //std::cout << windowHeight << " " << titleBottom << " " << buttonPadding << std::endl;
+    int y = titleBottom;
+    for (int i = 0; i < (int)buttons.size(); i++) {
+        buttons[i].draw(y, windowWidth);
+        y += buttonSpace;
+    }
+}
+
+void BaseUI::drawUI() {
+    drawBackground();
+    drawTitle();
+    drawButtons();
+    SDL_RenderPresent(renderer);
+}
+
+MainOption BaseUI::getChoice(SDL_Event& event) {
+    if (event.type == SDL_MOUSEMOTION) {
+        SDL_Point curPos = {event.motion.x, event.motion.y};
+        for (int i = 0; i < (int)buttons.size(); i++) {
+            if (SDL_PointInRect(&curPos, &buttons[i].btnRect)) {
+                buttons[i].setHighlighted(true);
+            } else {
+                buttons[i].setHighlighted(false);
+            }
+        }
+    }
+
+    if (event.type == SDL_MOUSEBUTTONUP) {
+        SDL_Point curPos = {event.button.x, event.button.y};
+        for (int i = 0; i < (int)buttons.size(); i++) {
+            if (SDL_PointInRect(&curPos, &buttons[i].btnRect))
+                return static_cast<MainOption>(i);
+        }
+    }
+    return MainOption::NONE;
+}
+
+BaseUI::~BaseUI() {
+    SDL_DestroyTexture(background);
+}
+
+
+
 
 // HUD methods definition
 HUD::HUD() : score(0), nLinesCleared(0) {
