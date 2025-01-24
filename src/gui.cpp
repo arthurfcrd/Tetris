@@ -3,7 +3,11 @@
 #include "tetromino.hpp"
 
 // HUD methods definition
-HUD::HUD() : nextBox(5, 4), holdBox(5, 4), score(0), nLinesCleared(0) {}
+HUD::HUD() : score(0), nLinesCleared(0) {
+    nextBox = new Grid(5, 4);
+    holdBox = new Grid(5, 4);
+}
+
 
 unsigned int HUD::getScore() const {
     return score;
@@ -21,15 +25,15 @@ void HUD::setLinesCleared(int newVal) {
     nLinesCleared = newVal;
 }
 
-void HUD::insertIntoNextBox(Tetromino& tetro) {
-    nextBox.clearGrid();
+void HUD::insertIntoBox(Grid* box, Tetromino& tetro) {
+    box->clearGrid();
     if (tetro.getType() == TetrominoType::I)
         tetro.setPos(1, 1);
     else if (tetro.getType() == TetrominoType::O)
         tetro.setPos(1, 2);
     else
         tetro.setPos(2, 2);
-    nextBox.insertTetromino(tetro);
+    box->insertTetromino(tetro);
 }
 
 void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) {
@@ -44,13 +48,14 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     drawText(renderer, &nextTextRect, "NEXT", DEFAULT_PTSIZE);
 
     // Box holding the next tetromino
-    int startX = rightPaneX + (PANE_SIZE - nextBox.getWidth() * TILE_SIZE) / 2;
+    int startX = rightPaneX + (PANE_SIZE - nextBox->getWidth() * TILE_SIZE) / 2;
     int startY = nextTextRect.y + nextTextRect.h + PADDING;
-    insertIntoNextBox(nextTetro);
-    nextBox.drawGrid(renderer, startX, startY);
+     if (nextTetro.getType() != TetrominoType::NONE)
+        insertIntoBox(nextBox, nextTetro);
+    nextBox->drawGrid(renderer, startX, startY);
 
     // Display the score
-    SDL_Rect scoreTextRect = {rightPaneX, startY + nextBox.getHeight() * TILE_SIZE + 2 * PADDING, 0, 0};
+    SDL_Rect scoreTextRect = {rightPaneX, startY + nextBox->getHeight() * TILE_SIZE + 2 * PADDING, 0, 0};
     drawText(renderer, &scoreTextRect, "SCORE", DEFAULT_PTSIZE);
     SDL_Rect scoreRect = {rightPaneX, scoreTextRect.y + scoreTextRect.h + PADDING, 0, 0};
     drawText(renderer, &scoreRect, std::to_string(score), DEFAULT_PTSIZE);
@@ -64,7 +69,14 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     // Draw the left pane
     SDL_Rect holdTextRect = {0, PADDING, 0, 0};
     drawText(renderer, &holdTextRect, "HOLD", 50);
-    int holdStartX = (PANE_SIZE - holdBox.getWidth() * TILE_SIZE) / 2;
+    int holdStartX = (PANE_SIZE - holdBox->getWidth() * TILE_SIZE) / 2;
     int holdStartY = holdTextRect.y + holdTextRect.h + PADDING;
-    holdBox.drawGrid(renderer, holdStartX, holdStartY);
+    if (holdTetro.getType() != TetrominoType::NONE)
+        insertIntoBox(holdBox, holdTetro);
+    holdBox->drawGrid(renderer, holdStartX, holdStartY);
+}
+
+HUD::~HUD() {
+    delete nextBox;
+    delete holdBox;
 }
