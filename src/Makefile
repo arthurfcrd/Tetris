@@ -24,7 +24,7 @@ main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o
 	$(CC) $(CFLAGS) -c $^
 
 solo: main.cpp
-	$(CC) $(CFLAGS) main.cpp -o main.exe $(LDFLAGS)
+	$(CC) $(CFLAGS) gui.cpp main.cpp -o main.exe $(LDFLAGS)
 	./main.exe
 
 clean:
