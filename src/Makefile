@@ -23,6 +23,9 @@ main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $^
 
+onlymain: main.cpp
+	$(CC) $(CFLAGS) main.cpp -o main.exe $(LDFLAGS)
+
 clean:
 	rm -f *.o
 
