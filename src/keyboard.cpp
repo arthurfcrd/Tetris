@@ -4,6 +4,7 @@
 // updates the state of the keys according to the event received
 void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){ 
     Key key = Key::NONE;
+    bool canBeHeld = true;
     switch (event.keysym.sym) {
         case (SDLK_z):
             key = Key::Z;
@@ -25,9 +26,11 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){
             break;
         case (SDLK_SPACE):
             key = Key::SPACE;
+            canBeHeld = false;
             break;
         case (SDLK_h):
             key = Key::H;
+            canBeHeld = false;
             break;
         case (SDLK_ESCAPE):
             key = Key::ESC;
@@ -39,8 +42,8 @@ void KeyboardHandler::handleEvent(const SDL_KeyboardEvent& event){
             break;
     }
     if (key != Key::NONE){
-        int keyIndex = static_cast<int>(key);
-        keyStates[keyIndex] = (event.state == SDL_PRESSED);
+        if (canBeHeld || (!canBeHeld && event.repeat == 0))
+            keyStates[static_cast<int>(key)] = (event.state == SDL_PRESSED);
     }
 }
 

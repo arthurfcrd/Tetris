@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include <iostream>
 
 void Game::updateHandler(const SDL_Event& event){
     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP){
@@ -50,15 +51,25 @@ void Game::update(){
 
     // handle hard drop
     if (keyboardHandler.getKeyState(Key::SPACE)) {
+        keyboardHandler.setKeyState(Key::SPACE, false);
         int hardDropPos = curTetro->getPosY();
         while (!curTetro->checkCollision(grid))
             curTetro->move(grid, 0, 1);
         // adds two times the hard drop distance to the score
-        hud.setScore(hud.getScore() + 2 * (curTetro->getPosY() - hardDropPos)); 
+        hud.setScore(hud.getScore() + 2*(curTetro->getPosY()-hardDropPos)); 
         curTetro->setTouchedGround(true);
         curTetro->setLocked(true);
-        keyboardHandler.setKeyState(Key::SPACE, false);
-    }   
+    }
+
+    // handle piece holding
+    if (keyboardHandler.getKeyState(Key::H)) {
+        keyboardHandler.setKeyState(Key::H, false);
+
+        if (canHold()) {
+            tetroBag.hold();
+            setHoldLock();
+        }
+    }
 
     // handle rotations
     if (keyboardHandler.getKeyState(Key::Z)){
@@ -103,12 +114,13 @@ void Game::update(){
         hud.setScore(hud.getScore() + scoreTable[n]);
         hud.setLinesCleared(hud.getLinesCleared() + n);
         tetroBag.switchTetromino();
+        releaseHoldLock();
     }
 }
 
 
 void Game::draw(SDL_Renderer* renderer) {
-    hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.currentTetromino);
+    hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
     grid.drawGrid(renderer);
     tetroBag.currentTetromino.drawTetromino(renderer);
 }
@@ -121,3 +133,16 @@ bool Game::isRunning() const{
 void Game::setRunning(bool newRunning){
     this->running = newRunning;
 }
+
+void Game::setHoldLock() {
+    canHold_ = false;
+}
+
+void Game::releaseHoldLock() {
+    canHold_ = true;
+}
+
+bool Game::canHold() const {
+    return canHold_;
+}
+

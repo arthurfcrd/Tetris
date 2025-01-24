@@ -21,39 +21,8 @@ const Point wallkicksI[5][4] = { // wallkick offsets for I
 
 std::mt19937 rng(std::random_device{}());
 
-TetrominoType Tetromino::getType() const {
-    return type;
-}
 
-int Tetromino::getPosX() const {
-    return pos.x;
-}
-
-int Tetromino::getPosY() const {
-    return pos.y;
-}
-
-void Tetromino::setPos(int x, int y) {
-        pos.x = x;
-        pos.y = y;
-}
-
-bool Tetromino::isLocked() const {
-    return locked;
-}
-
-bool Tetromino::hasTouchedGround() const {
-    return touchedGround;
-}
-
-void Tetromino::setLocked(bool newVal) {
-    locked = newVal;
-}
-
-void Tetromino::setTouchedGround(bool newVal) {
-    touchedGround = newVal;
-}
-
+/* Tetromino constructors */
 Tetromino::Tetromino(TetrominoType tetroType) : // TODO : change pos to be not hardcoded if the size of the grid changes
     type(tetroType), pos({5, 1}), rotationIndex(0), 
     touchedGround(false), locked(false) {
@@ -108,7 +77,10 @@ Tetromino::Tetromino(TetrominoType tetroType) : // TODO : change pos to be not h
             blocks[3] = {1, -1};
             color = Color::ORANGE;
             break;
-    }
+        case TetrominoType::NONE:
+            break;
+        }
+
 }
 
 Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}
@@ -123,6 +95,44 @@ Tetromino::Tetromino(const Tetromino& other) {
     rotationIndex = other.rotationIndex;
 }
 
+
+/* Tetromino getters and setters */
+TetrominoType Tetromino::getType() const {
+    return type;
+}
+
+int Tetromino::getPosX() const {
+    return pos.x;
+}
+
+int Tetromino::getPosY() const {
+    return pos.y;
+}
+
+void Tetromino::setPos(int x, int y) {
+        pos.x = x;
+        pos.y = y;
+}
+
+bool Tetromino::isLocked() const {
+    return locked;
+}
+
+bool Tetromino::hasTouchedGround() const {
+    return touchedGround;
+}
+
+void Tetromino::setLocked(bool newVal) {
+    locked = newVal;
+}
+
+void Tetromino::setTouchedGround(bool newVal) {
+    touchedGround = newVal;
+}
+
+
+
+/* Tetromino other methods*/
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (const auto& point : blocks){
         Point dstTile = pos + point + Point{dx, dy};
@@ -200,6 +210,13 @@ void Tetromino::drawCenter(SDL_Renderer* renderer) const{
     drawSquare(renderer, rect, Color::NONE);
 }
 
+
+
+
+
+/* TetrominoBag methods */
+
+
 void TetrominoBag::createBag() {
     tetroList.clear();
     tetroList.push_back(TetrominoType::I);
@@ -234,4 +251,16 @@ void TetrominoBag::switchTetromino() {
     // delete currentTetromino;
     currentTetromino = nextTetromino;
     pickNextTetromino();
+}
+
+void TetrominoBag::hold() {
+    if (heldTetromino.getType() == TetrominoType::NONE) {
+        heldTetromino = Tetromino(currentTetromino.getType());
+        switchTetromino();
+    } else if (heldTetromino.getType() != currentTetromino.getType()){
+        // do not switch if current tetromino is the same as the held one
+        TetrominoType heldType = heldTetromino.getType();
+        heldTetromino = Tetromino(currentTetromino.getType());
+        currentTetromino = Tetromino(heldType);
+    }
 }
