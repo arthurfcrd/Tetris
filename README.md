@@ -30,6 +30,7 @@ Implementation of the Tetris game in the context of the IN204 course
 
 
 ### Gamemodes
+- Normal: Clear 40 lines with no time limit
 - Marathon: Clear 150 lines with no time limit
 - Ultra: Clear as many lines as possible within 3 minutes
 - 1v1 multiplayer: each player has its own grid
