@@ -8,7 +8,7 @@ Implementation of the Tetris game in the context of the IN204 course
 - One tetromino at a time falls down from the top of the matrix and can be moved horizontally or rotated 
 - Once the tetromino touches the ground or another piece, you have half a brief daly to move the piece before it locks down
 - [TODO?] Rotating or moving the block during this half second resets the counter
-- [TODO] There are 15 levels and the level increases by 1 when each time 10 lines are cleared
+- [TODO] There are 15 levels and the level increases by 1 each time 10 lines are cleared
 - [TODO] As the level get more difficult, the falling speed of the tetrominos increases
 
 ### Features
@@ -33,7 +33,8 @@ Implementation of the Tetris game in the context of the IN204 course
 - Normal: Clear 40 lines with no time limit
 - Marathon: Clear 150 lines with no time limit
 - Ultra: Clear as many lines as possible within 3 minutes
-- 1v1 multiplayer: each player has its own grid
+- [TODO] Infinite: Play as long as you want
+- [TODO] 1v1 multiplayer: each player has its own grid
 
 ### Controls:
     - Left: move the tetromino left
@@ -43,8 +44,8 @@ Implementation of the Tetris game in the context of the IN204 course
     - Z : rotate counter-clockwise
     - Space : do a hard drop
     - H : hold a tetromino
-    - ?? : swap current and next tetrominos
-    - Enter: Pause
+    - [TODO] ?? : swap current and next tetrominos
+    - [TODO] Enter: Pause
     - Escape (or Q): Quit the game
 
 
