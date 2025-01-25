@@ -16,6 +16,10 @@ void Game::updateHandler(const SDL_Event& event){
     }
 }
 
+void Game::updateHandler(Key key){
+    keyboardHandler.setKeyState(key, true);
+}
+
 void Game::update(){
     if (keyboardHandler.getKeyState(Key::ESC) || keyboardHandler.getKeyState(Key::Q)){
         running = false;

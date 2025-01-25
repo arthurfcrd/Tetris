@@ -26,6 +26,7 @@ std::mt19937 rng(std::random_device{}());
 Tetromino::Tetromino(TetrominoType tetroType) : // TODO : change pos to be not hardcoded if the size of the grid changes
     type(tetroType), pos({5, 1}), rotationIndex(0), 
     touchedGround(false), locked(false) {
+    color = Color::NONE;
     switch(tetroType){
         case TetrominoType::I:
             blocks[0] = {-1, 0};
@@ -79,8 +80,10 @@ Tetromino::Tetromino(TetrominoType tetroType) : // TODO : change pos to be not h
             break;
         case TetrominoType::NONE:
             break;
+        default:
+            assert(false); // should never happen
+            break;
         }
-
 }
 
 Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}

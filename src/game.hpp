@@ -40,6 +40,7 @@ public:
     void update(const SDL_Event& event);
     void update();
     void updateHandler(const SDL_Event& event);
+    void updateHandler(Key key);
     void draw(SDL_Renderer* renderer);
     bool hasWon() const;
 
