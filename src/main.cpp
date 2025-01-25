@@ -56,12 +56,12 @@ int main(int argc, char* argv[]) {
     SDL_Renderer* renderer = nullptr;
     int width = TILE_SIZE * GRID_WIDTH + PANE_SIZE*2; 
     int height = TILE_SIZE * GRID_HEIGHT;
-    //std::cout << width << "x" << height << std::endl;
     if (SDL_CreateWindowAndRenderer(width, height, 0, &window, &renderer) < 0) {
         SDL_Log("Unable to create window and renderer: %s", SDL_GetError());
         return 1;
     }
 
+    // Load the user inteface
     BaseUI mainUI(renderer, "TETRIS", {"SOLO", "MULTIPLAYER", "CONTROLS", "QUIT"});
     BaseUI soloUI(renderer, "SOLO", {"START", "GAMEMODE", "BACK"});
     BaseUI gamemodeUI(renderer, "GAMEMODE", {"NORMAL", "MARATHON", "ULTRA", "BACK"});
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
                     }
                 } else if (currentUI == &gamemodeUI) {
                     if (choice == "NORMAL")
-                        soloGame(renderer);
+                        soloGame(renderer, GameType::LINES_BASED, 40, 0);
                     else if (choice == "MARATHON")
                         soloGame(renderer, GameType::LINES_BASED, 150, 0);
                     else if (choice == "ULTRA")
@@ -109,6 +109,5 @@ int main(int argc, char* argv[]) {
 
     SDL_Quit();
     TTF_Quit();
-
     return 0;
 }
