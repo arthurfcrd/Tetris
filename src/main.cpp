@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     // Load the user inteface
     BaseUI mainUI(renderer, "TETRIS", {"SOLO", "MULTIPLAYER", "CONTROLS", "QUIT"});
     BaseUI soloUI(renderer, "SOLO", {"START", "GAMEMODE", "BACK"});
-    BaseUI gamemodeUI(renderer, "GAMEMODE", {"NORMAL", "MARATHON", "ULTRA", "BACK"});
+    BaseUI gamemodeUI(renderer, "GAMEMODE", {"NORMAL", "CLASSIC", "MARATHON", "ULTRA", "INFINITE", "BACK"});
     BaseUI* currentUI = &mainUI;
     
     bool isRunning = true;
