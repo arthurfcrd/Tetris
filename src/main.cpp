@@ -28,6 +28,7 @@ void soloGame(SDL_Renderer* renderer) {
     }
 }
 
+
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -54,7 +55,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    BaseUI mainUI(renderer, "TETRIS", {"Solo", "Multiplayer", "Controls", "Quit"});
+    BaseUI mainUI(renderer, "TETRIS", {"SOLO", "MULTIPLAYER", "CONTROLS", "QUIT"});
+    BaseUI soloUI(renderer, "SOLO", {"START", "GAMEMODE", "BACK"});
+    BaseUI gamemodeUI(renderer, "GAMEMODE", {"NORMAL", "MARATHON", "ULTRA", "BACK"});
+    BaseUI* currentUI = &mainUI;
     
     bool isRunning = true;
     SDL_Event event;
@@ -63,22 +67,29 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT)
                 isRunning = false;
             else {
-                switch(mainUI.getChoice(event)) {
-                    case MainOption::SOLO:
-                        soloGame(renderer);
-                        break;
-                    case MainOption::MULTIPLAYER:
-                        break;
-                    case MainOption::CONTROLS:
-                        break;
-                    case MainOption::QUIT:
+                std::string choice = currentUI->getChoice(event);
+                if (currentUI == &mainUI) {
+                    if (choice == "SOLO") {
+                        currentUI = &soloUI;
+                    } else if (choice == "QUIT") {
                         isRunning = false;
-                        break;
-                    case MainOption::NONE:
-                        break;
+                    }
+                } else if (currentUI == &soloUI) {
+                    if (choice == "START") {
+                        soloGame(renderer);
+                    } else if (choice == "GAMEMODE") {
+                        currentUI = &gamemodeUI;
+                    } else if (choice == "BACK") {
+                        currentUI = &mainUI;
+                    }
+                } else if (currentUI == &gamemodeUI) {
+                    if (choice == "NORMAL")
+                        soloGame(renderer);
+                    else if (choice == "BACK")
+                        currentUI = &mainUI;
                 }
             }
-            mainUI.drawUI();
+            currentUI->drawUI();
         }
     }
 
