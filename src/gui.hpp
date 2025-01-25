@@ -12,6 +12,11 @@ class Tetromino; // forward declaration
 #define BUTTON_TO_PADDING_RATIO (0.95)
 #define FONTSIZE_TO_BUTTON_RATIO (0.5)
 
+#define MAX_LEVEL (15)
+#define STARTING_FALL_RATE (0.7)
+#define FALL_RATE_DECREASE (0.15)
+#define LINES_PER_LEVEL (1)
+
 
 SDL_Texture* createTextureFromIMG(SDL_Renderer* renderer, std::string path);
 
@@ -61,7 +66,7 @@ class BaseUI {
 };
 
 enum class GameType : int {
-    TIME_BASED, LINES_BASED
+    TIME_BASED, LINES_BASED, CLASSIC, INFINITE
 };
 
 
@@ -69,21 +74,31 @@ class HUD {
     private:
         Grid* nextBox;
         Grid* holdBox;
-        unsigned int score;
-        unsigned int nLinesCleared;
+
         GameType gameType;
-        unsigned int nLinesToClear;
+        int score;
+        int nLinesCleared;
+        int nLinesToClear;
         std::chrono::time_point<std::chrono::system_clock> gameChrono;
         double timeToClear; // number of seconds the player has in time-based gamemodes
+
+        int currentLevel;
+        double fallRate;
     public:
         HUD(GameType gt, int nltc, int ttc);
 
-        unsigned int getScore() const;
+        int getScore() const;
         void setScore(int newScore);
-        unsigned int getLinesCleared() const;
+        int getLinesCleared() const;
         void setLinesCleared(int newVal);
-        unsigned int getLinesToClear() const;
+        int getLinesToClear() const;
         GameType getGameType() const;
+        int getCurrentLevel() const;
+        double getFallRate() const;
+        void setFallRate(double newVal);
+
+        void increaseLevel();
+        void updateLevel();
 
         void insertIntoBox(Grid* box, Tetromino& tetro);
         double getTimeLeft() const;

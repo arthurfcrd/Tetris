@@ -186,18 +186,22 @@ BaseUI::~BaseUI() {
 
 // HUD methods definition
 HUD::HUD(GameType gt, int nltc, int ttc){
-    score = 0;
-    nLinesCleared = 0;
-    gameType = gt;
-    nLinesToClear = nltc;
-    timeToClear = ttc;
     nextBox = new Grid(5, 4);
     holdBox = new Grid(5, 4);
+
+    gameType = gt;
+    score = 0;
+    nLinesCleared = 0;
+    nLinesToClear = nltc;
     gameChrono = std::chrono::system_clock::now();
+    timeToClear = ttc;
+
+    currentLevel = 1;
+    fallRate = STARTING_FALL_RATE;
 }
 
 
-unsigned int HUD::getScore() const {
+int HUD::getScore() const {
     return score;
 }
 
@@ -205,7 +209,7 @@ void HUD::setScore(int newScore) {
     score = newScore;
 }
 
-unsigned int HUD::getLinesCleared() const {
+int HUD::getLinesCleared() const {
     return nLinesCleared;
 }
 
@@ -217,8 +221,27 @@ GameType HUD::getGameType() const {
     return gameType;
 }
 
-unsigned int HUD::getLinesToClear() const {
+int HUD::getLinesToClear() const {
     return nLinesToClear;
+}
+
+int HUD::getCurrentLevel() const {
+    return currentLevel;
+}
+
+double HUD::getFallRate() const {
+    return fallRate;
+}
+
+
+
+void HUD::updateLevel() {
+    if (gameType == GameType::CLASSIC) {
+        if (nLinesCleared / LINES_PER_LEVEL >= currentLevel && currentLevel < MAX_LEVEL) {
+            currentLevel++;
+            fallRate = fallRate*(1-FALL_RATE_DECREASE);
+        }
+    }
 }
 
 void HUD::insertIntoBox(Grid* box, Tetromino& tetro) {
@@ -274,7 +297,9 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
         linesIndicator += ("/" + std::to_string(nLinesToClear));
     drawText(renderer, &linesClearedRect, linesIndicator, DEFAULT_PTSIZE);
 
-    // Draw the left pane
+    /* Left pane */
+
+    // Hold box
     SDL_Rect holdTextRect = {0, PADDING, 0, 0};
     drawText(renderer, &holdTextRect, "HOLD", 50);
     int holdStartX = (PANE_SIZE - holdBox->getWidth() * TILE_SIZE) / 2;
@@ -283,18 +308,24 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
         insertIntoBox(holdBox, holdTetro);
     holdBox->drawGrid(renderer, holdStartX, holdStartY);
 
-    // Draw the timer
-    if (gameType == GameType::TIME_BASED) {
+    // Timer or current level depending on gamemode
+    if (gameType == GameType::TIME_BASED || gameType == GameType::CLASSIC) {
+        std::string messageTitle;
+        std::string message;
+        if (gameType == GameType::TIME_BASED) {
+            messageTitle = "TIME LEFT";
+            double timeLeft = getTimeLeft();
+            int minutes = timeLeft / 60;
+            int seconds = (timeLeft - 60*minutes);
+            message = std::to_string(minutes) + ":" + std::to_string(seconds);
+        } else if (gameType == GameType::CLASSIC) {
+            messageTitle = "LEVEL";
+            message = std::to_string(currentLevel);
+        }
         SDL_Rect timeTextRect = {0, holdStartY+TILE_SIZE*holdBox->getWidth() , 0, 0};
-        drawText(renderer, &timeTextRect, "TIME LEFT", 50);
-
-        double timeLeft = getTimeLeft();
-        int minutes = timeLeft / 60;
-        int seconds = (timeLeft - 60*minutes);
-        std::string timeMessage = std::to_string(minutes) + ":" + std::to_string(seconds);
-
+        drawText(renderer, &timeTextRect, messageTitle, 50);
         SDL_Rect timeRect = {0, timeTextRect.y+timeTextRect.h+PADDING, 0, 0};
-        drawText(renderer, &timeRect, timeMessage, 50);
+        drawText(renderer, &timeRect, message, 50);
     }
 }
 

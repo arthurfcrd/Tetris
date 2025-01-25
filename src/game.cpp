@@ -33,8 +33,9 @@ void Game::update(){
     Tetromino* curTetro = &(tetroBag.currentTetromino); // useful shorthand
 
     // fall of the tetromino
+    double fallRate = (hud.getGameType() == GameType::CLASSIC) ? hud.getFallRate() : FALL_RATE;
     std::chrono::duration<double> elapsedSecondsFromFall = currentTime - lastFallTime;
-    if (!curTetro->hasTouchedGround() && elapsedSecondsFromFall.count() > FALL_RATE){
+    if (!curTetro->hasTouchedGround() && elapsedSecondsFromFall.count() > fallRate){
         // falls only if the tetromino has not yet touched the ground
         curTetro->move(grid, 0, 1);
         lastFallTime = currentTime;
@@ -127,6 +128,7 @@ void Game::update(){
         int n = grid.clearLines();
         hud.setScore(hud.getScore() + scoreTable[n]);
         hud.setLinesCleared(hud.getLinesCleared() + n);
+        hud.updateLevel();
         tetroBag.switchTetromino();
         releaseHoldLock();
     }
