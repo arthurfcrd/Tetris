@@ -1,11 +1,19 @@
-#include "grid.hpp"
-#include "graphics.hpp"
-
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 #include <string>
 #include <vector>
 #include <chrono>
+
+#ifdef __linux__
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#elif __APPLE__
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#endif
+
+#include "grid.hpp"
+#include "graphics.hpp"
 
 class Tetromino; // forward declaration
 
@@ -15,7 +23,7 @@ class Tetromino; // forward declaration
 #define MAX_LEVEL (15)
 #define STARTING_FALL_RATE (0.7)
 #define FALL_RATE_DECREASE (0.15)
-#define LINES_PER_LEVEL (1)
+#define LINES_PER_LEVEL (5)
 
 
 SDL_Texture* createTextureFromIMG(SDL_Renderer* renderer, std::string path);
