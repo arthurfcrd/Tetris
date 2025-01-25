@@ -131,7 +131,7 @@ void BaseUI::drawUI() {
     SDL_RenderPresent(renderer);
 }
 
-MainOption BaseUI::getChoice(SDL_Event& event) {
+std::string BaseUI::getChoice(SDL_Event& event) {
     if (event.type == SDL_MOUSEMOTION) {
         SDL_Point curPos = {event.motion.x, event.motion.y};
         for (int i = 0; i < (int)buttons.size(); i++) {
@@ -147,10 +147,10 @@ MainOption BaseUI::getChoice(SDL_Event& event) {
         SDL_Point curPos = {event.button.x, event.button.y};
         for (int i = 0; i < (int)buttons.size(); i++) {
             if (SDL_PointInRect(&curPos, &buttons[i].btnRect))
-                return static_cast<MainOption>(i);
+                return buttons[i].text;
         }
     }
-    return MainOption::NONE;
+    return "NONE";
 }
 
 BaseUI::~BaseUI() {

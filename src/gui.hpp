@@ -8,13 +8,6 @@
 
 class Tetromino; // forward declaration
 
-enum class MainOption: int {
-    SOLO,
-    MULTIPLAYER,
-    CONTROLS,
-    QUIT,
-    NONE
-};
 
 SDL_Texture* createTextureFromIMG(SDL_Renderer* renderer, std::string path);
 
@@ -58,9 +51,10 @@ class BaseUI {
         void drawTitle();
         void drawButtons();
         void drawUI();
-        MainOption getChoice(SDL_Event& event);
+        std::string getChoice(SDL_Event& event);
         ~BaseUI();
 };
+
 
 class HUD {
     private:
