@@ -161,9 +161,15 @@ BaseUI::~BaseUI() {
 
 
 // HUD methods definition
-HUD::HUD() : score(0), nLinesCleared(0) {
+HUD::HUD(GameType gt, int nltc, int ttc){
+    score = 0;
+    nLinesCleared = 0;
+    gameType = gt;
+    nLinesToClear = nltc;
+    timeToClear = ttc;
     nextBox = new Grid(5, 4);
     holdBox = new Grid(5, 4);
+    gameChrono = std::chrono::system_clock::now();
 }
 
 
@@ -183,6 +189,14 @@ void HUD::setLinesCleared(int newVal) {
     nLinesCleared = newVal;
 }
 
+GameType HUD::getGameType() const {
+    return gameType;
+}
+
+unsigned int HUD::getLinesToClear() const {
+    return nLinesToClear;
+}
+
 void HUD::insertIntoBox(Grid* box, Tetromino& tetro) {
     box->clearGrid();
     if (tetro.getType() == TetrominoType::I)
@@ -192,6 +206,15 @@ void HUD::insertIntoBox(Grid* box, Tetromino& tetro) {
     else
         tetro.setPos(2, 2);
     box->insertTetromino(tetro);
+}
+
+double HUD::getTimeLeft() const {
+    auto currentTime = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed = (currentTime - gameChrono);
+    double timeLeft = timeToClear - elapsed.count();
+    if (timeLeft < 0)
+        timeLeft = 0;
+    return timeLeft;
 }
 
 void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) {
@@ -222,7 +245,10 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     SDL_Rect linesTextRect = {rightPaneX, scoreRect.y + scoreRect.h + 3 * PADDING, 0, 0};
     drawText(renderer, &linesTextRect, "Lines cleared", 30);
     SDL_Rect linesClearedRect = {rightPaneX, linesTextRect.y + linesTextRect.h + PADDING / 2, 0, 0};
-    drawText(renderer, &linesClearedRect, std::to_string(nLinesCleared), DEFAULT_PTSIZE);
+    std::string linesIndicator = std::to_string(nLinesCleared);
+    if (gameType == GameType::LINES_BASED)
+        linesIndicator += ("/" + std::to_string(nLinesToClear));
+    drawText(renderer, &linesClearedRect, linesIndicator, DEFAULT_PTSIZE);
 
     // Draw the left pane
     SDL_Rect holdTextRect = {0, PADDING, 0, 0};
@@ -232,6 +258,20 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     if (holdTetro.getType() != TetrominoType::NONE)
         insertIntoBox(holdBox, holdTetro);
     holdBox->drawGrid(renderer, holdStartX, holdStartY);
+
+    // Draw the timer
+    if (gameType == GameType::TIME_BASED) {
+        SDL_Rect timeTextRect = {0, holdStartY+TILE_SIZE*holdBox->getWidth() , 0, 0};
+        drawText(renderer, &timeTextRect, "TIME LEFT", 50);
+
+        double timeLeft = getTimeLeft();
+        int minutes = timeLeft / 60;
+        int seconds = (timeLeft - 60*minutes);
+        std::string timeMessage = std::to_string(minutes) + ":" + std::to_string(seconds);
+
+        SDL_Rect timeRect = {0, timeTextRect.y+timeTextRect.h+PADDING, 0, 0};
+        drawText(renderer, &timeRect, timeMessage, 50);
+    }
 }
 
 HUD::~HUD() {

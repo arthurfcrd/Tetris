@@ -5,6 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <vector>
+#include <chrono>
 
 class Tetromino; // forward declaration
 
@@ -55,6 +56,10 @@ class BaseUI {
         ~BaseUI();
 };
 
+enum class GameType : int {
+    TIME_BASED, LINES_BASED
+};
+
 
 class HUD {
     private:
@@ -62,15 +67,22 @@ class HUD {
         Grid* holdBox;
         unsigned int score;
         unsigned int nLinesCleared;
+        GameType gameType;
+        unsigned int nLinesToClear;
+        std::chrono::time_point<std::chrono::system_clock> gameChrono;
+        double timeToClear; // number of seconds the player has in time-based gamemodes
     public:
-        HUD();
+        HUD(GameType gt, int nltc, int ttc);
+
         unsigned int getScore() const;
         void setScore(int newScore);
-
         unsigned int getLinesCleared() const;
         void setLinesCleared(int newVal);
+        unsigned int getLinesToClear() const;
+        GameType getGameType() const;
 
         void insertIntoBox(Grid* box, Tetromino& tetro);
+        double getTimeLeft() const;
         void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
         ~HUD();
 };

@@ -8,24 +8,31 @@
 
 #define ERROR 1
 
+void playGame(SDL_Renderer* renderer, Game* game) {
+    SDL_Event event;
+    while (game->isRunning()) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                game->setRunning(false);
+            }
+            else{
+                game->updateHandler(event);
+            }
+        }
+        game->update();
+        game->draw(renderer);
+        SDL_RenderPresent(renderer);
+    }
+}
 
 void soloGame(SDL_Renderer* renderer) {
     Game game;
-    SDL_Event event;
-    while (game.isRunning()) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                game.setRunning(false);
-            }
-            else{
-                game.updateHandler(event);
-            }
-        }
-        game.update();
-        game.draw(renderer);
+    playGame(renderer, &game);
+}
 
-        SDL_RenderPresent(renderer);
-    }
+void soloGame(SDL_Renderer* renderer, GameType gametype, int nLinesToClear, double timeToClear) {
+    Game game(gametype, nLinesToClear, timeToClear);
+    playGame(renderer, &game);
 }
 
 
@@ -85,6 +92,10 @@ int main(int argc, char* argv[]) {
                 } else if (currentUI == &gamemodeUI) {
                     if (choice == "NORMAL")
                         soloGame(renderer);
+                    else if (choice == "MARATHON")
+                        soloGame(renderer, GameType::LINES_BASED, 150, 0);
+                    else if (choice == "ULTRA")
+                        soloGame(renderer, GameType::TIME_BASED, 0, 3*60);
                     else if (choice == "BACK")
                         currentUI = &mainUI;
                 }
