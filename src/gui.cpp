@@ -45,7 +45,6 @@ int drawCenteredText(SDL_Renderer* renderer, int yDelta, std::string message, in
     SDL_Rect textRect = {0, yDelta, textSurf->w, textSurf->h};
     SDL_GetRendererOutputSize(renderer, &textRect.x, NULL);
     textRect.x  = (textRect.x - textRect.w) / 2;
-    //std::cout << textRect.h << std::endl;
     SDL_RenderCopy(renderer, textTex, NULL, &textRect);
     SDL_DestroyTexture(textTex);
 
@@ -72,7 +71,30 @@ void Button::setHighlighted(bool newVal) {
     isHighlighted = newVal;
 }
 
-void Button::draw(int y, int width) {
+void Button::drawButtonText() {
+    TTF_Font* textFont = loadFont("../assets/fonts/mightysouly.ttf", btnRect.h*FONTSIZE_TO_BUTTON_RATIO);
+
+    SDL_Color white = {255,255,255,255};
+    SDL_Surface* textSurf = TTF_RenderText_Blended(textFont, text.c_str(), white);
+    if (!textSurf) {
+        SDL_Log("Failed to create text surface: %s", TTF_GetError());
+        return;
+    }
+    SDL_Texture* textTex = SDL_CreateTextureFromSurface(renderer, textSurf);
+    SDL_FreeSurface(textSurf);
+
+    SDL_Rect textRect = {0, 0, textSurf->w, textSurf->h};
+    textRect.x  = btnRect.x + (btnRect.w - textRect.w) / 2;
+    textRect.y = btnRect.y + (btnRect.h - textRect.h) / 2;
+
+
+    SDL_RenderCopy(renderer, textTex, NULL, &textRect);
+    SDL_DestroyTexture(textTex);
+
+    TTF_CloseFont(textFont);
+}
+
+void Button::draw(int y, int width, int height) {
     SDL_Texture* texture = btnText;
     if (isHighlighted)
         texture = hgBtnText;
@@ -80,12 +102,14 @@ void Button::draw(int y, int width) {
     btnRect.x = 0;
     btnRect.y = y;
     btnRect.w = width;
-    SDL_QueryTexture(texture, NULL, NULL, NULL, &btnRect.h);
+    btnRect.h = height;
+    //SDL_QueryTexture(texture, NULL, NULL, NULL, &btnRect.h);
 
     SDL_RenderCopy(renderer, texture, NULL, &btnRect);
-    
-    drawCenteredText(renderer, btnRect.y+30, text, 60);
+    drawButtonText();
 }
+
+
 
 // BaseUI methods
 
@@ -119,7 +143,7 @@ void BaseUI::drawButtons() {
     //std::cout << windowHeight << " " << titleBottom << " " << buttonPadding << std::endl;
     int y = titleBottom;
     for (int i = 0; i < (int)buttons.size(); i++) {
-        buttons[i].draw(y, windowWidth);
+        buttons[i].draw(y, windowWidth, BUTTON_TO_PADDING_RATIO*buttonSpace);
         y += buttonSpace;
     }
 }

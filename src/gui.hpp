@@ -9,6 +9,9 @@
 
 class Tetromino; // forward declaration
 
+#define BUTTON_TO_PADDING_RATIO (0.95)
+#define FONTSIZE_TO_BUTTON_RATIO (0.5)
+
 
 SDL_Texture* createTextureFromIMG(SDL_Renderer* renderer, std::string path);
 
@@ -30,7 +33,8 @@ class Button {
         bool getHighlighted() const;
         void setHighlighted(bool newVal);
 
-        void draw(int y, int width);
+        void draw(int y, int width, int height);
+        void drawButtonText();
 };
 
 class BaseUI {
