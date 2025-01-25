@@ -92,10 +92,14 @@ int main(int argc, char* argv[]) {
                 } else if (currentUI == &gamemodeUI) {
                     if (choice == "NORMAL")
                         soloGame(renderer, GameType::LINES_BASED, 40, 0);
+                    else if (choice == "CLASSIC")
+                        soloGame(renderer, GameType::CLASSIC, 0, 0);
                     else if (choice == "MARATHON")
                         soloGame(renderer, GameType::LINES_BASED, 150, 0);
                     else if (choice == "ULTRA")
                         soloGame(renderer, GameType::TIME_BASED, 0, 3*60);
+                    else if (choice == "INFINITE")
+                        soloGame(renderer, GameType::INFINITE, 0, 0);
                     else if (choice == "BACK")
                         currentUI = &mainUI;
                 }
