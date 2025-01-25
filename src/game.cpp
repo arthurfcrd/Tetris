@@ -1,6 +1,15 @@
 #include "game.hpp"
 #include <iostream>
 
+
+bool Game::hasWon() const{
+    if (hud.getGameType() == GameType::LINES_BASED)
+        return hud.getLinesCleared() >= hud.getLinesToClear();
+    else if (hud.getGameType() == GameType::TIME_BASED)
+        return hud.getTimeLeft() == 0;
+    return false;
+}
+
 void Game::updateHandler(const SDL_Event& event){
     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP){
         keyboardHandler.handleEvent(event.key);
@@ -15,6 +24,11 @@ void Game::update(){
     if (gameOver){
         return;
     }
+
+    if (hasWon()) {
+        return;
+    }
+
     std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
     Tetromino* curTetro = &(tetroBag.currentTetromino); // useful shorthand
 

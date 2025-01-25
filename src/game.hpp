@@ -15,8 +15,8 @@ const double LOCK_DELAY = 0.5; // seconds before a locking a tetromino that has 
 
 class Game{
 private:
-    Grid grid;
     HUD hud;
+    Grid grid;
     TetrominoBag tetroBag;
     bool running;
     bool gameOver;
@@ -28,19 +28,23 @@ private:
     std::chrono::time_point<std::chrono::system_clock> touchedGroundTime;
     KeyboardHandler keyboardHandler;
 public:
-    explicit Game() : grid(), hud(), tetroBag(), 
-                    running(true), gameOver(false),
-                    lastFallTime(std::chrono::system_clock::now()), 
-                    lastHorizontalMoveTime(std::chrono::system_clock::now()), 
-                    lastVerticalMoveTime(std::chrono::system_clock::now()), 
-                    keyboardHandler(){}
+    explicit Game(GameType gt, int nltc, int ttc) : 
+            hud(gt, nltc, ttc), grid(), tetroBag(), 
+            running(true), gameOver(false),
+            lastFallTime(std::chrono::system_clock::now()), 
+            lastHorizontalMoveTime(std::chrono::system_clock::now()), 
+            lastVerticalMoveTime(std::chrono::system_clock::now()), 
+            keyboardHandler() {}
+    // default gamemode
+    explicit Game() : Game(GameType::LINES_BASED, 10, 0) {}
     void update(const SDL_Event& event);
     void update();
     void updateHandler(const SDL_Event& event);
     void draw(SDL_Renderer* renderer);
+    bool hasWon() const;
+
     bool isRunning() const;
     void setRunning(bool);
-
     void setHoldLock();
     void releaseHoldLock();
     bool canHold() const;
