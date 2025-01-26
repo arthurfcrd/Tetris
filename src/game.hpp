@@ -21,6 +21,7 @@ private:
     BaseTetromino curTetromino;
 public:
     BaseGame() : grid(), running(true), curTetromino() {}
+    friend class OnlineGame;
 };
 
 class Game : public BaseGame {

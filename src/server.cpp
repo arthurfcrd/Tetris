@@ -1,17 +1,43 @@
 #include "server.hpp"
 
+std::string OnlineGame::serialize(){
+    std::string res = game.grid.serialize() + ":" + game.curTetromino.serialize() 
+    + ":" + std::to_string(hud.getScore());
+    if (garbageToSend > 0){
+        res += ":" + std::to_string(garbageToSend);
+        garbageToSend = 0;
+    }
+    return res;
+}
+
+void OnlineGame::updateFromServer(std::string serializedData){ // update the other player's game according to the data received from the server
+    // cut the string into 3 parts separated by ':'
+    std::istringstream iss(serializedData);
+    std::string serializedGrid, serializedTetromino, score, garbage;
+    std::getline(iss, serializedGrid, ':');
+    std::getline(iss, serializedTetromino, ':');
+    std::getline(iss, score, ':');
+    // update the other player's game
+    otherGame.grid = Grid(serializedGrid);
+    otherGame.curTetromino = BaseTetromino(serializedTetromino);
+    hud.setScore(std::stoi(score));
+    if (std::getline(iss, garbage)){
+        int nGarbageLines = std::stoi(garbage);
+        game.grid.addGarbageLines(nGarbageLines);
+    }
+}
+
 void TetrisSession::handleData(std::size_t length) {
     // handle incoming data from the client
     std::string receivedData(data, length);
     std::cout << "Received data: " << receivedData << std::endl;
 
-    // TODO: handle the received data
     // update this->otherGame (drawing) and this->game (add garbage lines)
+    // according to the data received from the server
+    onlineGame.updateFromServer(receivedData);
 
     // send the serialized game to the server
-
-    // Préparez les données à envoyer aux clients
-    std::string gameState = "game state data"; // Remplacez par l'état réel du jeu
+    std::string gameState = onlineGame.serialize();
     std::copy(gameState.begin(), gameState.end(), data);
 }
 

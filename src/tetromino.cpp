@@ -2,6 +2,7 @@
 #include "grid.hpp"
 #include <random>
 #include <cassert>
+#include <sstream>
 
 const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T and Z
     {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
@@ -273,18 +274,15 @@ std::string BaseTetromino::serialize() const {
 BaseTetromino::BaseTetromino(std::string serializedTetromino) { 
     // Tetrominoes reconstructed this way will only be displayed and not interacted with
     // so rotationIndex, touchedGround and locked are not set
-    int i = 0;
-    type = static_cast<TetrominoType>(serializedTetromino[i] - '0');
-    i += 2;
-    pos.x = serializedTetromino[i] - '0';
-    i += 2;
-    pos.y = serializedTetromino[i] - '0';
-    i += 2;
+    std::istringstream iss(serializedTetromino);
+    // set type
+    int tmp;
+    iss >> tmp;
+    type = static_cast<TetrominoType>(tmp);
+    iss >> pos.x >> pos.y;
     for (int j = 0; j < 4; j++){
-        blocks[j].x = serializedTetromino[i] - '0';
-        i += 2;
-        blocks[j].y = serializedTetromino[i] - '0';
-        i += 2;
+        iss >> blocks[j].x >> blocks[j].y;
     }
-    color = static_cast<Color>(serializedTetromino[i] - '0');
+    iss >> tmp;
+    color = static_cast<Color>(tmp);
 }

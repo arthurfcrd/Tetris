@@ -1,6 +1,7 @@
 #pragma once
 #include "graphics.hpp"
 #include <string>
+#include <sstream>
 
 class Tetromino; // forward declaration
 struct Point; // forward declaration
@@ -21,11 +22,12 @@ public:
         }
     }
     Grid(std::string serializedGrid) : Grid(GRID_WIDTH, GRID_HEIGHT){
-        int i = 0;
+        std::istringstream iss(serializedGrid);
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                matrix[y][x] = static_cast<Color>(serializedGrid[i] - '0');
-                i++;
+                int color;
+                iss >> color;
+                matrix[y][x] = static_cast<Color>(color);
             }
         }
     }
@@ -47,6 +49,7 @@ public:
     void insertTetromino(const Tetromino&); // inserts a tetromino into the grid
     bool isTopOut() const; // checks if the tetromino has been insert at least partially in the spawn zone
     int clearLines(); // clear full lines and return their number
+    void addGarbageLines(int nLines); // add nLines garbage lines at the bottom of the grid
     void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
     // draws the grid on the screen starting at position (startX, startY)
     void drawGrid(SDL_Renderer* renderer, int startX, int startY) const;

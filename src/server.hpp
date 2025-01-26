@@ -9,10 +9,12 @@ private:
     HUD hud; // TODO : handle HUD for online games
     Game game; // game of the player
     BaseGame otherGame; // game of the other player
+    int garbageToSend; // number of garbage lines to send to the other player
 public: 
-    OnlineGame() : hud(GameType::MULTIPLAYER), game(), otherGame() {}
-    void addGarbageLines(int nLines);
-    // void update()
+    OnlineGame() : hud(GameType::MULTIPLAYER), game(), otherGame(), garbageToSend(0) {}
+    // void update();
+    void updateFromServer(std::string serializedData);
+    std::string serialize();
 };
 
 class TetrisSession : public std::enable_shared_from_this<TetrisSession> {

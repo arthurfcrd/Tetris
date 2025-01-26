@@ -113,6 +113,10 @@ int Grid::clearLines() {
     return nCleared;
 }
 
+void Grid::addGarbageLines(int nLines){
+    // TODO: add nLines garbage lines at the bottom of the grid
+}
+
 bool Grid::isTopOut() const{ // checks if the tetromino has been insert at least partially in the spawn zone
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < width; j++){
