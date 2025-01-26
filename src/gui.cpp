@@ -73,7 +73,10 @@ void Button::setHighlighted(bool newVal) {
 
 void Button::drawButtonText() {
     TTF_Font* textFont = loadFont("../assets/fonts/mightysouly.ttf", btnRect.h*FONTSIZE_TO_BUTTON_RATIO);
-
+    if (!textFont) {
+        SDL_Log("Failed to load font: %s", TTF_GetError());
+        return;
+    }
     SDL_Color white = {255,255,255,255};
     SDL_Surface* textSurf = TTF_RenderText_Blended(textFont, text.c_str(), white);
     if (!textSurf) {
@@ -81,7 +84,6 @@ void Button::drawButtonText() {
         return;
     }
     SDL_Texture* textTex = SDL_CreateTextureFromSurface(renderer, textSurf);
-    SDL_FreeSurface(textSurf);
 
     SDL_Rect textRect = {0, 0, textSurf->w, textSurf->h};
     textRect.x  = btnRect.x + (btnRect.w - textRect.w) / 2;
@@ -89,6 +91,7 @@ void Button::drawButtonText() {
 
 
     SDL_RenderCopy(renderer, textTex, NULL, &textRect);
+    SDL_FreeSurface(textSurf);
     SDL_DestroyTexture(textTex);
 
     TTF_CloseFont(textFont);
