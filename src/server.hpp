@@ -5,11 +5,10 @@
 #include <asio.hpp>
 #include "game.hpp"
 
-class OnlineGame : public Game{
+class OnlineGame{
 private:
-    BaseTetromino otherTetromino;
-    Grid otherGrid;
-    bool running;
+    Game game; // game of the player
+    BaseGame otherGame; // game of the other player
 public: 
     void addGarbageLines(int nLines);
 };
@@ -51,7 +50,7 @@ private:
     enum { max_length = 1024 };
     char data_[max_length];
     int playerId_;
-    OnlineGame& onlineGame_;
+    OnlineGame onlineGame_;
 };
 
 class TetrisServer {

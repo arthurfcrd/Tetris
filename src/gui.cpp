@@ -244,7 +244,7 @@ void HUD::updateLevel() {
     }
 }
 
-void HUD::insertIntoBox(Grid* box, Tetromino& tetro) {
+void HUD::insertIntoBox(Grid* box, Tetromino& tetro) const {
     box->clearGrid();
     if (tetro.getType() == TetrominoType::I)
         tetro.setPos(1, 1);
@@ -264,7 +264,7 @@ double HUD::getTimeLeft() const {
     return timeLeft;
 }
 
-void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) {
+void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) const{
     SDL_SetRenderDrawColor(renderer, 15, 15, 15, 0);
     SDL_RenderClear(renderer); // TODO : maybe does not belong here
 

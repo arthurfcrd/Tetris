@@ -102,8 +102,8 @@ public:
     void increaseLevel();
     void updateLevel();
 
-    void insertIntoBox(Grid* box, Tetromino& tetro);
+    void insertIntoBox(Grid* box, Tetromino& tetro) const;
     double getTimeLeft() const;
-    void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
+    void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) const;
     ~HUD();
 };
