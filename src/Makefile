@@ -16,7 +16,7 @@ all: main.exe
 	./main.exe
 	rm -f *.o
 
-main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o
+main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o server.o
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) -v
 	rm -f *.o
 
