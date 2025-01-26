@@ -27,16 +27,16 @@ private:
     std::chrono::time_point<std::chrono::system_clock> lastVerticalMoveTime;
     std::chrono::time_point<std::chrono::system_clock> touchedGroundTime;
     KeyboardHandler keyboardHandler;
+
+    Mix_Chunk* lineClearedSound;
+    Mix_Chunk* hardDropSound;
+    Mix_Chunk* holdLockedSound;
+    Mix_Chunk* levelUpSound;
 public:
-    explicit Game(GameType gt, int nltc, int ttc) : 
-            hud(gt, nltc, ttc), grid(), tetroBag(), 
-            running(true), gameOver(false),
-            lastFallTime(std::chrono::system_clock::now()), 
-            lastHorizontalMoveTime(std::chrono::system_clock::now()), 
-            lastVerticalMoveTime(std::chrono::system_clock::now()), 
-            keyboardHandler() {}
-    // default gamemode
-    explicit Game() : Game(GameType::LINES_BASED, 10, 0) {}
+    explicit Game(GameType gt, int nltc, int ttc);
+    explicit Game(); // default gamemode
+    ~Game();
+
     void update(const SDL_Event& event);
     void update();
     void updateHandler(const SDL_Event& event);
