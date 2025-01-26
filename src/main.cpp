@@ -1,4 +1,3 @@
-#include <iostream>
 #include "game.hpp"
 #include <asio.hpp>
 #include <asio/ip/tcp.hpp>
