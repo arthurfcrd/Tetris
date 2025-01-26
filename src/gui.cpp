@@ -185,7 +185,9 @@ BaseUI::~BaseUI() {
 
 
 // HUD methods definition
-HUD::HUD(GameType gt, int nltc, int ttc) : nextBox(5, 4), holdBox(5, 4) {
+HUD::HUD(GameType gt, int nltc, int ttc){
+    nextBox = new Grid(5,4);
+    holdBox = new Grid(5,4);
     gameType = gt;
     score = 0;
     nLinesCleared = 0;
@@ -241,15 +243,15 @@ void HUD::updateLevel() {
     }
 }
 
-void HUD::insertIntoBox(Grid box, Tetromino& tetro) const {
-    box.clearGrid();
+void HUD::insertIntoBox(Grid* box, Tetromino& tetro) const {
+    box->clearGrid();
     if (tetro.getType() == TetrominoType::I)
         tetro.setPos(1, 1);
     else if (tetro.getType() == TetrominoType::O)
         tetro.setPos(1, 2);
     else
         tetro.setPos(2, 2);
-    box.insertTetromino(tetro);
+    box->insertTetromino(tetro);
 }
 
 double HUD::getTimeLeft() const {
@@ -275,33 +277,32 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     drawText(renderer, &nextTextRect, "NEXT", DEFAULT_PTSIZE);
 
     // Box holding the next tetromino
-    int startX = rightPaneX + (PANE_SIZE - nextBox.getWidth() * TILE_SIZE) / 2;
+    int startX = rightPaneX + (PANE_SIZE - nextBox->getWidth() * TILE_SIZE) / 2;
     int startY = nextTextRect.y + nextTextRect.h + PADDING;
      if (nextTetro.getType() != TetrominoType::NONE)
         insertIntoBox(nextBox, nextTetro);
-    nextBox.drawGrid(renderer, startX, startY);
+    nextBox->drawGrid(renderer, startX, startY);
 
     // Display the score
-    SDL_Rect scoreTextRect = {rightPaneX, startY + nextBox.getHeight() * TILE_SIZE + 2 * PADDING, 0, 0};
+    SDL_Rect scoreTextRect = {rightPaneX, startY + nextBox->getHeight() * TILE_SIZE + 2 * PADDING, 0, 0};
     drawText(renderer, &scoreTextRect, "SCORE", DEFAULT_PTSIZE);
     SDL_Rect scoreRect = {rightPaneX, scoreTextRect.y + scoreTextRect.h + PADDING, 0, 0};
     drawText(renderer, &scoreRect, std::to_string(score), DEFAULT_PTSIZE);
 
     // Display number of cleared lines or enemy score depending on gamemode
     SDL_Rect textRect = {rightPaneX, scoreRect.y + scoreRect.h + 3 * PADDING, 0, 0};
+    std::string text = gameType == GameType::MULTIPLAYER ? "ENEMY SCORE" : "LINES CLEARED";
+    drawText(renderer, &textRect, text, 30);
+    
     SDL_Rect numberRect = {rightPaneX, textRect.y + textRect.h + PADDING / 2, 0, 0};
-    std::string text;
     std::string number;
     if (gameType == GameType::MULTIPLAYER) {
-        text = "ENEMY SCORE";
         number = std::to_string(enemyScore);
     } else {
-        text = "LINES CLEARED";
         number = std::to_string(nLinesCleared);
         if (gameType == GameType::LINES_BASED)
             number += ("/" + std::to_string(nLinesToClear));
     }
-    drawText(renderer, &textRect, text, 30);
     drawText(renderer, &numberRect, number, DEFAULT_PTSIZE);
 
     /* Left pane */
@@ -309,11 +310,11 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     // Hold box
     SDL_Rect holdTextRect = {0, PADDING, 0, 0};
     drawText(renderer, &holdTextRect, "HOLD", 50);
-    int holdStartX = (PANE_SIZE - holdBox.getWidth() * TILE_SIZE) / 2;
+    int holdStartX = (PANE_SIZE - holdBox->getWidth() * TILE_SIZE) / 2;
     int holdStartY = holdTextRect.y + holdTextRect.h + PADDING;
     if (holdTetro.getType() != TetrominoType::NONE)
         insertIntoBox(holdBox, holdTetro);
-    holdBox.drawGrid(renderer, holdStartX, holdStartY);
+    holdBox->drawGrid(renderer, holdStartX, holdStartY);
 
     // Timer, current level, number of lines cleared depending on gamemode
     bool drawSomething = true;
@@ -339,12 +340,13 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
             drawSomething = false;
             break;
         }
-        if (drawSomething) {
-            SDL_Rect messTextRect = {0, holdStartY + TILE_SIZE * holdBox.getWidth() , 0, 0};
-            drawText(renderer, &messTextRect, messageTitle, 50);
-            SDL_Rect messRect = {0, messTextRect.y + messTextRect.h + PADDING, 0, 0};
-            drawText(renderer, &messRect, message, 50);
-        }
     }
+    if (drawSomething) {
+        SDL_Rect messTextRect = {0, holdStartY + TILE_SIZE * holdBox->getWidth() , 0, 0};
+        drawText(renderer, &messTextRect, messageTitle, 50);
+        SDL_Rect messRect = {0, messTextRect.y + messTextRect.h + PADDING, 0, 0};
+        drawText(renderer, &messRect, message, 50);
+    }
+    
 }
 

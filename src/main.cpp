@@ -31,6 +31,13 @@ void soloGame(SDL_Renderer* renderer, GameType gametype, int nLinesToClear, doub
     playGame(renderer, &game);
 }
 
+void multiGame(SDL_Window* window, SDL_Renderer* renderer) {
+    int newWidth = (TILE_SIZE * GRID_WIDTH)*2 + SPACE_BETWEEN_GRIDS + PANE_SIZE*2;
+    int newHeight = TILE_SIZE * GRID_HEIGHT;
+    SDL_SetWindowSize(window, newWidth, newHeight);
+    SDL_Delay(5000);
+}
+
 
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -74,7 +81,9 @@ int main(int argc, char* argv[]) {
                 if (currentUI == &mainUI) {
                     if (choice == "SOLO") {
                         currentUI = &soloUI;
-                    } else if (choice == "QUIT") {
+                    } else if (choice == "MULTIPLAYER") {
+                        multiGame(window, renderer);
+                    }else if (choice == "QUIT") {
                         isRunning = false;
                     }
                 } else if (currentUI == &soloUI) {
