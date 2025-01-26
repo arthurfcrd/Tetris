@@ -33,6 +33,7 @@ public:
     BaseTetromino(const BaseTetromino& other);
 
     void drawTetromino(SDL_Renderer* renderer) const;
+    void drawTetromino(SDL_Renderer* renderer, int startX, int startY) const;
     std::string serialize() const;
     TetrominoType getType() const;
 };

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <asio.hpp>
-#include "game.hpp"
+#include "server.cpp"
 
 void clientGame(SDL_Renderer* renderer, const std::string& host, const std::string& port) {
     try {
@@ -10,30 +10,29 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
         asio::ip::tcp::socket socket(io_context);
         asio::connect(socket, endpoints);
 
-        Game game;
+        OnlineGame onlineGame;
         SDL_Event event;
-        while (game.isRunning()) {
+        while (onlineGame.isRunning()) {
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_QUIT) {
-                    game.setRunning(false);
+                    onlineGame.game.setRunning(false);
                 } else {
-                    game.updateHandler(event);
+                    onlineGame.game.updateHandler(event);
                 }
             }
-            game.update();
-            game.draw(renderer);
+            onlineGame.game.update();
+            onlineGame.draw(renderer);
             SDL_RenderPresent(renderer);
 
             // Send game state to server
-            std::string gameState = "game state data"; // Replace with actual game state data
+            std::string gameState = onlineGame.serialize();
             asio::write(socket, asio::buffer(gameState));
 
             // Receive game state from server
             char reply[1024];
             size_t reply_length = asio::read(socket, asio::buffer(reply, 1024));
-            std::cout << "Reply is: ";
-            std::cout.write(reply, reply_length);
-            std::cout << "\n";
+            std::string receivedData(reply, reply_length);
+            onlineGame.updateFromServer(receivedData);
         }
     } catch (std::exception& e) {
         std::cerr << "Exception: " << e.what() << "\n";

@@ -146,7 +146,7 @@ void Game::draw(SDL_Renderer* renderer) const {
 }
 
 
-bool Game::isRunning() const{
+bool BaseGame::isRunning() const{
     return running;
 }
 

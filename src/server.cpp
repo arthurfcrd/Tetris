@@ -1,166 +1,135 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <asio.hpp>
-#include "game.hpp"
+#include "server.hpp"
 
-class TetrisServer;
+// --- OnlineGame Implementation ---
 
-class OnlineGame{
-private:
-    HUD hud; // TODO : handle HUD for online games
-    Game game; // game of the player
-    BaseGame otherGame; // game of the other player
-    int garbageToSend; // number of garbage lines to send to the other player
-public: 
-    OnlineGame() : hud(GameType::MULTIPLAYER), game(), otherGame(), garbageToSend(0) {}
-    // void update();
-    void updateFromServer(std::string serializedData){ // update the other player's game according to the data received from the server
-        // cut the string into 3 parts separated by ':'
-        std::istringstream iss(serializedData);
-        std::string serializedGrid, serializedTetromino, score, garbage;
-        std::getline(iss, serializedGrid, ':');
-        std::getline(iss, serializedTetromino, ':');
-        std::getline(iss, score, ':');
-        // update the other player's game
-        otherGame.grid = Grid(serializedGrid);
-        otherGame.curTetromino = BaseTetromino(serializedTetromino);
-        hud.setScore(std::stoi(score));
-        if (std::getline(iss, garbage)){
-            int nGarbageLines = std::stoi(garbage);
-            game.grid.addGarbageLines(nGarbageLines);
-        }
+OnlineGame::OnlineGame() : hud(GameType::MULTIPLAYER), game(), otherGame(), garbageToSend(0) {}
+
+bool OnlineGame::isRunning() const {
+    return game.isRunning() && otherGame.isRunning();
+}
+
+void OnlineGame::draw(SDL_Renderer* renderer) const {
+    hud.drawHUD(renderer, game.tetroBag.nextTetromino, game.tetroBag.heldTetromino);
+    game.draw(renderer);
+    int startX = PANE_SIZE + GRID_WIDTH * TILE_SIZE + SPACE_BETWEEN_GRIDS;
+    int startY = 0;
+    otherGame.grid.drawGrid(renderer, startX, startY);
+    otherGame.curTetromino.drawTetromino(renderer, startX, startY);
+}
+
+void OnlineGame::updateFromServer(std::string serializedData) {
+    // Cut the string into 3 parts separated by ':'
+    std::istringstream iss(serializedData);
+    std::string serializedGrid, serializedTetromino, score, garbage;
+    std::getline(iss, serializedGrid, ':');
+    std::getline(iss, serializedTetromino, ':');
+    std::getline(iss, score, ':');
+
+    // Update the other player's game
+    otherGame.grid = Grid(serializedGrid);
+    otherGame.curTetromino = BaseTetromino(serializedTetromino);
+    hud.setScore(std::stoi(score));
+    if (std::getline(iss, garbage)) {
+        int nGarbageLines = std::stoi(garbage);
+        game.grid.addGarbageLines(nGarbageLines);
     }
-    std::string serialize(){
-        std::string res = game.grid.serialize() + ":" + game.curTetromino.serialize() 
-        + ":" + std::to_string(hud.getScore());
-        if (garbageToSend > 0){
-            res += ":" + std::to_string(garbageToSend);
-            garbageToSend = 0;
-        }
-        return res;
+}
+
+std::string OnlineGame::serialize() {
+    std::string res = game.grid.serialize() + ":" + game.curTetromino.serialize()
+                      + ":" + std::to_string(hud.getScore());
+    if (garbageToSend > 0) {
+        res += ":" + std::to_string(garbageToSend);
+        garbageToSend = 0;
     }
-};
+    return res;
+}
 
-class TetrisSession : public std::enable_shared_from_this<TetrisSession> {
-public:
-    TetrisSession(asio::ip::tcp::socket socket, int playerId, TetrisServer& server)
-        : socket(std::move(socket)), playerId(playerId), server(server), onlineGame(){}
+// --- TetrisSession Implementation ---
 
-    void start() {
-        doRead();
-    }
+TetrisSession::TetrisSession(asio::ip::tcp::socket socket, int playerId, TetrisServer& server)
+    : socket(std::move(socket)), playerId(playerId), server(server), onlineGame() {}
 
-    int getPlayerId() const {
-        return playerId;
-    }
+void TetrisSession::start() {
+    doRead();
+}
 
-    void sendGameState(const std::string& gameState) {
-        auto self(shared_from_this());
-        asio::async_write(socket, asio::buffer(gameState),
-            [this, self](std::error_code ec, std::size_t /*length*/) {
-                if (!ec) {
-                    doRead();
-                }
-            });
-    }
+int TetrisSession::getPlayerId() const {
+    return playerId;
+}
 
-private:
-    void doRead() {
-        auto self(shared_from_this());
-        asio::async_read(socket, asio::buffer(data, max_length),
-            [this, self](std::error_code ec, std::size_t length) {
-                if (!ec) {
-                    handleData(length);
-                    doWrite(length);
-                }
-            });
-    }
-
-    void doWrite(std::size_t length) {
-        auto self(shared_from_this());
-        asio::async_write(socket, asio::buffer(data, length),
-            [this, self](std::error_code ec, std::size_t /*length*/) {
-                if (!ec) {
-                    doRead();
-                }
-            });
-    }
-
-    void handleData(std::size_t length) {
-        // handle incoming data from the client
-        std::string receivedData(data, length);
-        std::cout << "Received data: " << receivedData << std::endl;
-
-        // update this->otherGame (drawing) and this->game (add garbage lines)
-        // according to the data received from the server
-        onlineGame.updateFromServer(receivedData);
-
-        // send the serialized game to the server
-        std::string gameState = onlineGame.serialize();
-        std::copy(gameState.begin(), gameState.end(), data);
-    }
-
-    asio::ip::tcp::socket socket;
-    enum { max_length = 1024 };
-    char data[max_length];
-    int playerId;
-    TetrisServer& server;
-    OnlineGame onlineGame;
-};
-
-class TetrisServer {
-public:
-    TetrisServer(asio::io_context& io_context, short port)
-        : acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), playerCount_(0){
-        startAccept();
-    }
-
-    void broadcastGameState(const std::string& gameState, int senderId) {
-        for (auto& session : sessions) {
-            if (session->getPlayerId() != senderId) {
-                session->sendGameState(gameState);
+void TetrisSession::sendGameState(const std::string& gameState) {
+    auto self(shared_from_this());
+    asio::async_write(socket, asio::buffer(gameState),
+        [this, self](std::error_code ec, std::size_t /*length*/) {
+            if (!ec) {
+                doRead();
             }
+        });
+}
+
+void TetrisSession::doRead() {
+    auto self(shared_from_this());
+    asio::async_read(socket, asio::buffer(data, max_length),
+        [this, self](std::error_code ec, std::size_t length) {
+            if (!ec) {
+                handleData(length);
+                doWrite(length);
+            }
+        });
+}
+
+void TetrisSession::doWrite(std::size_t length) {
+    auto self(shared_from_this());
+    asio::async_write(socket, asio::buffer(data, length),
+        [this, self](std::error_code ec, std::size_t /*length*/) {
+            if (!ec) {
+                doRead();
+            }
+        });
+}
+
+void TetrisSession::handleData(std::size_t length) {
+    // Handle incoming data from the client
+    std::string receivedData(data, length);
+
+    // Update the game state based on received data
+    onlineGame.updateFromServer(receivedData);
+
+    // Serialize and broadcast the game state
+    std::string gameState = onlineGame.serialize();
+    std::copy(gameState.begin(), gameState.end(), data);
+    server.broadcastGameState(gameState, playerId);
+}
+
+// --- TetrisServer Implementation ---
+
+TetrisServer::TetrisServer(asio::io_context& io_context, short port)
+    : acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), playerCount(0) {
+    startAccept();
+}
+
+void TetrisServer::broadcastGameState(const std::string& gameState, int senderId) {
+    for (auto& session : sessions) {
+        if (session->getPlayerId() != senderId) {
+            session->sendGameState(gameState);
         }
     }
+}
 
-private:
-    void startAccept() {
-        acceptor_.async_accept(
-            [this](std::error_code ec, asio::ip::tcp::socket socket) {
-                if (!ec) {
-                    if (playerCount_ < 2){
-                        auto session = std::make_shared<TetrisSession>(std::move(socket), playerCount_++, *this);
-                        sessions.push_back(session);
-                        session->start();
-                    }
-                    else {
-                        // Refuse the connection if the server is full
-                        socket.close();
-                    }
+void TetrisServer::startAccept() {
+    acceptor.async_accept(
+        [this](std::error_code ec, asio::ip::tcp::socket socket) {
+            if (!ec) {
+                if (playerCount < 2) {
+                    auto session = std::make_shared<TetrisSession>(std::move(socket), playerCount++, *this);
+                    sessions.push_back(session);
+                    session->start();
+                } else {
+                    // Refuse the connection if the server is full
+                    socket.close();
                 }
-                startAccept();
-            });
-    }
-
-    asio::ip::tcp::acceptor acceptor_;
-    int playerCount_;
-    std::vector<std::shared_ptr<TetrisSession>> sessions;
-};
-
-int main(int argc, char* argv[]) {
-    try {
-        if (argc != 2) {
-            std::cerr << "Usage: server <port>\n";
-            return 1;
-        }
-
-        asio::io_context io_context;
-        TetrisServer server(io_context, std::atoi(argv[1]));
-        io_context.run();
-    } catch (std::exception& e) {
-        std::cerr << "Exception: " << e.what() << "\n";
-    }
-
-    return 0;
+            }
+            startAccept();
+        });
 }

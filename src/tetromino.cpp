@@ -259,6 +259,15 @@ void BaseTetromino::drawTetromino(SDL_Renderer* renderer) const{
     }
 }
 
+void BaseTetromino::drawTetromino(SDL_Renderer* renderer, int startX, int startY) const{
+    SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
+    for (const auto& block : blocks){
+        rect.x = startX + (pos.x + block.x) * rect.w;
+        rect.y = startY + (pos.y + block.y) * rect.h;
+        drawSquare(renderer, rect, color);
+    }
+}
+
 std::string BaseTetromino::serialize() const {
     // serialize the type, pos, blocks and color 
     std::string serializedTetromino = "";

@@ -21,12 +21,14 @@ private:
     BaseTetromino curTetromino;
 public:
     BaseGame() : grid(), running(true), curTetromino() {}
+    bool isRunning() const;
     friend class OnlineGame;
 };
 
 class Game : public BaseGame {
 private:
     HUD hud;
+    friend class OnlineGame;
 protected:
     TetrominoBag tetroBag;
     bool gameOver;
@@ -53,7 +55,6 @@ public:
     void draw(SDL_Renderer* renderer) const;
     bool hasWon() const;
 
-    bool isRunning() const;
     void setRunning(bool);
     void setHoldLock();
     void releaseHoldLock();
