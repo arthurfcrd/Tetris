@@ -52,6 +52,16 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
         asio::ip::tcp::socket socket(io_context);
         asio::connect(socket, endpoints);
 
+        // Get data port from server
+        char dataPortStr[6];
+        size_t dataPortLength = asio::read(socket, asio::buffer(dataPortStr, 6));
+        std::string dataPort(dataPortStr, dataPortLength);
+
+        // Connect to data port
+        auto dataEndpoints = resolver.resolve(host, dataPort);
+        asio::ip::tcp::socket dataSocket(io_context);
+        asio::connect(dataSocket, dataEndpoints);
+
         OnlineGame onlineGame;
         SDL_Event event;
         while (onlineGame.isRunning()) {
@@ -77,7 +87,7 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
             onlineGame.updateFromServer(receivedData);
         }
     } catch (std::exception& e) {
-        std::cerr << "Exception: " << e.what() << "\n";
+        std::cerr << "Exception in game loop: " << e.what() << "\n";
     }
 }
 
@@ -90,7 +100,7 @@ void hostAndPlayGame(SDL_Renderer* renderer, const std::string& port) {
         // Child process : run the server
         try {
             asio::io_context io_context;
-            TetrisServer server(io_context, std::stoi(port));
+            TetrisServer server(io_context, stoi(port));
             io_context.run();
         } catch (std::exception& e) {
             std::cerr << "Exception in server: " << e.what() << "\n";

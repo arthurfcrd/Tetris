@@ -65,6 +65,9 @@ void TetrisSession::sendGameState(const std::string& gameState) {
             if (!ec) {
                 doRead();
             }
+            else{
+                std::cerr << "Error sending game state: " << ec.message() << std::endl;
+            }
         });
 }
 
@@ -76,6 +79,9 @@ void TetrisSession::doRead() {
                 handleData(length);
                 doWrite(length);
             }
+            else{
+                std::cerr << "Error reading data: " << ec.message() << std::endl;
+            }
         });
 }
 
@@ -85,6 +91,9 @@ void TetrisSession::doWrite(std::size_t length) {
         [this, self](std::error_code ec, std::size_t /*length*/) {
             if (!ec) {
                 doRead();
+            }
+            else{
+                std::cerr << "Error sending data: " << ec.message() << std::endl;
             }
         });
 }
@@ -105,8 +114,13 @@ void TetrisSession::handleData(std::size_t length) {
 // --- TetrisServer Implementation ---
 
 TetrisServer::TetrisServer(asio::io_context& io_context, short port)
-    : acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), playerCount(0) {
+    : controlAcceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), 
+    playerCount(0), io_context(io_context), nextDataPort(port + 1), sessions() {
     startAccept();
+}
+
+void TetrisServer::getNextDataPort() {
+    nextDataPort++;
 }
 
 void TetrisServer::broadcastGameState(const std::string& gameState, int senderId) {
@@ -118,20 +132,36 @@ void TetrisServer::broadcastGameState(const std::string& gameState, int senderId
 }
 
 void TetrisServer::startAccept() {
-    acceptor.async_accept(
-        [this](std::error_code ec, asio::ip::tcp::socket socket) {
+    controlAcceptor.async_accept(
+        [this](std::error_code ec, asio::ip::tcp::socket controlSocket) {
             if (!ec) {
                 if (playerCount < 2) {
-                    auto session = std::make_shared<TetrisSession>(std::move(socket), playerCount++, *this);
-                    sessions.push_back(session);
-                    session->start();
+                    // Envoyer le port de données au client
+                    std::string dataPortStr = std::to_string(nextDataPort);
+                    asio::write(controlSocket, asio::buffer(dataPortStr));
+
+                    // Accepter la connexion sur le port de données
+                    auto dataAcceptor = 
+                        std::make_shared<asio::ip::tcp::acceptor>(io_context, 
+                                                                asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 
+                                                                nextDataPort));
+                    dataAcceptor->async_accept(
+                        [this, dataAcceptor, controlSocket = std::move(controlSocket)](std::error_code ec, asio::ip::tcp::socket data_socket) mutable {
+                            if (!ec) {
+                                auto session = std::make_shared<TetrisSession>(std::move(data_socket), playerCount++, *this);
+                                sessions.push_back(session);
+                                session->start();
+                            } else {
+                                std::cerr << "Error accepting data connection: " << ec.message() << std::endl;
+                            }
+                        });
+                        getNextDataPort();
                 } else {
                     // Refuse the connection if the server is full
-                    socket.close();
+                    controlSocket.close();
                 }
-            }
-            else{
-                std::cerr << "Error accepting connection: " << ec.message() << std::endl;
+            } else {
+                std::cerr << "Error accepting control connection: " << ec.message() << std::endl;
             }
             startAccept();
         });

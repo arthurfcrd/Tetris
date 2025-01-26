@@ -55,9 +55,12 @@ public:
 
 private:
     void startAccept();
+    void getNextDataPort();
 
-    asio::ip::tcp::acceptor acceptor;
+    asio::ip::tcp::acceptor controlAcceptor;
     int playerCount;
+    asio::io_context& io_context;
+    short nextDataPort;
     std::vector<std::shared_ptr<TetrisSession>> sessions;
 };
 
