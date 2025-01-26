@@ -23,7 +23,7 @@ public:
     BaseGame() : grid(), running(true), curTetromino() {}
 };
 
-class Game : public BaseGame{
+class Game : public BaseGame {
 private:
     HUD hud;
 protected:

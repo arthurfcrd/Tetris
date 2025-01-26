@@ -75,8 +75,8 @@ enum class GameType : int {
 
 class HUD {
 private:
-    Grid nextBox;
-    Grid holdBox;
+    Grid* nextBox;
+    Grid* holdBox;
 
     GameType gameType;
     int score;
@@ -89,14 +89,13 @@ private:
     double fallRate;
 public:
     HUD(GameType gt, int nltc, int ttc);
-    HUD(GameType gt){
+    HUD(GameType gt) : HUD(gt, 0, 0) {
         if (gt == GameType::LINES_BASED)
-            HUD(gt, 10, 0);
+            nLinesToClear = 10;
         else if (gt == GameType::TIME_BASED)
-            HUD(gt, 0, 3 * 60);
-        else if (gt == GameType::MULTIPLAYER){
-            
-        }
+            timeToClear = 3 * 60;
+        else if (gt == GameType::MULTIPLAYER){}
+            // TODO
     }
 
     int getScore() const;
@@ -112,7 +111,7 @@ public:
     void increaseLevel();
     void updateLevel();
 
-    void insertIntoBox(Grid box, Tetromino& tetro) const;
+    void insertIntoBox(Grid* box, Tetromino& tetro) const;
     double getTimeLeft() const;
     void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) const;
 };

@@ -2,14 +2,17 @@
 
 void TetrisSession::handleData(std::size_t length) {
     // handle incoming data from the client
-    std::string receivedData(data_, length);
+    std::string receivedData(data, length);
     std::cout << "Received data: " << receivedData << std::endl;
 
     // TODO: handle the received data
+    // update this->otherGame (drawing) and this->game (add garbage lines)
+
+    // send the serialized game to the server
 
     // Préparez les données à envoyer aux clients
     std::string gameState = "game state data"; // Remplacez par l'état réel du jeu
-    std::copy(gameState.begin(), gameState.end(), data_);
+    std::copy(gameState.begin(), gameState.end(), data);
 }
 
 

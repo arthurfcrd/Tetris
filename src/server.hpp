@@ -10,22 +10,38 @@ private:
     Game game; // game of the player
     BaseGame otherGame; // game of the other player
 public: 
+    OnlineGame() : hud(GameType::MULTIPLAYER), game(), otherGame() {}
     void addGarbageLines(int nLines);
+    // void update()
 };
 
 class TetrisSession : public std::enable_shared_from_this<TetrisSession> {
 public:
-    TetrisSession(asio::ip::tcp::socket socket, int playerId, OnlineGame& onlineGame)
-        : socket_(std::move(socket)), playerId_(playerId), onlineGame_(onlineGame) {}
+    TetrisSession(asio::ip::tcp::socket socket, int playerId, TetrisServer& server)
+        : socket(std::move(socket)), playerId(playerId), server(server), onlineGame(){}
 
     void start() {
         doRead();
     }
 
+    int getPlayerId() const {
+        return playerId;
+    }
+
+    void sendGameState(const std::string& gameState) {
+        auto self(shared_from_this());
+        asio::async_write(socket, asio::buffer(gameState),
+            [this, self](std::error_code ec, std::size_t /*length*/) {
+                if (!ec) {
+                    doRead();
+                }
+            });
+    }
+
 private:
     void doRead() {
         auto self(shared_from_this());
-        asio::async_read(socket_, asio::buffer(data_, max_length),
+        asio::async_read(socket, asio::buffer(data, max_length),
             [this, self](std::error_code ec, std::size_t length) {
                 if (!ec) {
                     handleData(length);
@@ -36,7 +52,7 @@ private:
 
     void doWrite(std::size_t length) {
         auto self(shared_from_this());
-        asio::async_write(socket_, asio::buffer(data_, length),
+        asio::async_write(socket, asio::buffer(data, length),
             [this, self](std::error_code ec, std::size_t /*length*/) {
                 if (!ec) {
                     doRead();
@@ -46,18 +62,27 @@ private:
 
     void handleData(std::size_t length);
 
-    asio::ip::tcp::socket socket_;
+    asio::ip::tcp::socket socket;
     enum { max_length = 1024 };
-    char data_[max_length];
-    int playerId_;
-    OnlineGame onlineGame_;
+    char data[max_length];
+    int playerId;
+    TetrisServer& server;
+    OnlineGame onlineGame;
 };
 
 class TetrisServer {
 public:
     TetrisServer(asio::io_context& io_context, short port)
-        : acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), playerCount_(0), onlineGame_() {
+        : acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), playerCount_(0){
         startAccept();
+    }
+
+    void broadcastGameState(const std::string& gameState, int senderId) {
+        for (auto& session : sessions) {
+            if (session->getPlayerId() != senderId) {
+                session->sendGameState(gameState);
+            }
+        }
     }
 
 private:
@@ -66,7 +91,9 @@ private:
             [this](std::error_code ec, asio::ip::tcp::socket socket) {
                 if (!ec) {
                     if (playerCount_ < 2){
-                        std::make_shared<TetrisSession>(std::move(socket), playerCount_++, onlineGame_)->start();
+                        auto session = std::make_shared<TetrisSession>(std::move(socket), playerCount_++, *this);
+                        sessions.push_back(session);
+                        session->start();
                     }
                     else {
                         // Refuse the connection if the server is full
@@ -79,5 +106,5 @@ private:
 
     asio::ip::tcp::acceptor acceptor_;
     int playerCount_;
-    OnlineGame onlineGame_;
+    std::vector<std::shared_ptr<TetrisSession>> sessions;
 };
