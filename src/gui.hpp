@@ -69,7 +69,7 @@ class BaseUI {
 };
 
 enum class GameType : int {
-    TIME_BASED, LINES_BASED, CLASSIC, INFINITE, GARBAGE
+    TIME_BASED, LINES_BASED, CLASSIC, INFINITE, MULTIPLAYER
 };
 
 
@@ -89,6 +89,15 @@ private:
     double fallRate;
 public:
     HUD(GameType gt, int nltc, int ttc);
+    HUD(GameType gt){
+        if (gt == GameType::LINES_BASED)
+            HUD(gt, 10, 0);
+        else if (gt == GameType::TIME_BASED)
+            HUD(gt, 0, 3 * 60);
+        else if (gt == GameType::MULTIPLAYER){
+            
+        }
+    }
 
     int getScore() const;
     void setScore(int newScore);
