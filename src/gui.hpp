@@ -8,6 +8,7 @@
 
 #include "grid.hpp"
 #include "graphics.hpp"
+#include "grid.hpp"
 
 class Tetromino; // forward declaration
 
@@ -74,8 +75,8 @@ enum class GameType : int {
 
 class HUD {
 private:
-    Grid* nextBox;
-    Grid* holdBox;
+    Grid nextBox;
+    Grid holdBox;
 
     GameType gameType;
     int score;
@@ -102,8 +103,7 @@ public:
     void increaseLevel();
     void updateLevel();
 
-    void insertIntoBox(Grid* box, Tetromino& tetro) const;
+    void insertIntoBox(Grid box, Tetromino& tetro) const;
     double getTimeLeft() const;
     void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) const;
-    ~HUD();
 };

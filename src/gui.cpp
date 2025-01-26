@@ -185,10 +185,7 @@ BaseUI::~BaseUI() {
 
 
 // HUD methods definition
-HUD::HUD(GameType gt, int nltc, int ttc){
-    nextBox = new Grid(5, 4);
-    holdBox = new Grid(5, 4);
-
+HUD::HUD(GameType gt, int nltc, int ttc) : nextBox(5, 4), holdBox(5, 4) {
     gameType = gt;
     score = 0;
     nLinesCleared = 0;
@@ -244,15 +241,15 @@ void HUD::updateLevel() {
     }
 }
 
-void HUD::insertIntoBox(Grid* box, Tetromino& tetro) const {
-    box->clearGrid();
+void HUD::insertIntoBox(Grid box, Tetromino& tetro) const {
+    box.clearGrid();
     if (tetro.getType() == TetrominoType::I)
         tetro.setPos(1, 1);
     else if (tetro.getType() == TetrominoType::O)
         tetro.setPos(1, 2);
     else
         tetro.setPos(2, 2);
-    box->insertTetromino(tetro);
+    box.insertTetromino(tetro);
 }
 
 double HUD::getTimeLeft() const {
@@ -276,14 +273,14 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     drawText(renderer, &nextTextRect, "NEXT", DEFAULT_PTSIZE);
 
     // Box holding the next tetromino
-    int startX = rightPaneX + (PANE_SIZE - nextBox->getWidth() * TILE_SIZE) / 2;
+    int startX = rightPaneX + (PANE_SIZE - nextBox.getWidth() * TILE_SIZE) / 2;
     int startY = nextTextRect.y + nextTextRect.h + PADDING;
      if (nextTetro.getType() != TetrominoType::NONE)
         insertIntoBox(nextBox, nextTetro);
-    nextBox->drawGrid(renderer, startX, startY);
+    nextBox.drawGrid(renderer, startX, startY);
 
     // Display the score
-    SDL_Rect scoreTextRect = {rightPaneX, startY + nextBox->getHeight() * TILE_SIZE + 2 * PADDING, 0, 0};
+    SDL_Rect scoreTextRect = {rightPaneX, startY + nextBox.getHeight() * TILE_SIZE + 2 * PADDING, 0, 0};
     drawText(renderer, &scoreTextRect, "SCORE", DEFAULT_PTSIZE);
     SDL_Rect scoreRect = {rightPaneX, scoreTextRect.y + scoreTextRect.h + PADDING, 0, 0};
     drawText(renderer, &scoreRect, std::to_string(score), DEFAULT_PTSIZE);
@@ -302,11 +299,11 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     // Hold box
     SDL_Rect holdTextRect = {0, PADDING, 0, 0};
     drawText(renderer, &holdTextRect, "HOLD", 50);
-    int holdStartX = (PANE_SIZE - holdBox->getWidth() * TILE_SIZE) / 2;
+    int holdStartX = (PANE_SIZE - holdBox.getWidth() * TILE_SIZE) / 2;
     int holdStartY = holdTextRect.y + holdTextRect.h + PADDING;
     if (holdTetro.getType() != TetrominoType::NONE)
         insertIntoBox(holdBox, holdTetro);
-    holdBox->drawGrid(renderer, holdStartX, holdStartY);
+    holdBox.drawGrid(renderer, holdStartX, holdStartY);
 
     // Timer or current level depending on gamemode
     if (gameType == GameType::TIME_BASED || gameType == GameType::CLASSIC) {
@@ -316,20 +313,16 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
             messageTitle = "TIME LEFT";
             double timeLeft = getTimeLeft();
             int minutes = timeLeft / 60;
-            int seconds = (timeLeft - 60*minutes);
+            int seconds = (timeLeft - 60 * minutes);
             message = std::to_string(minutes) + ":" + std::to_string(seconds);
         } else if (gameType == GameType::CLASSIC) {
             messageTitle = "LEVEL";
             message = std::to_string(currentLevel);
         }
-        SDL_Rect timeTextRect = {0, holdStartY+TILE_SIZE*holdBox->getWidth() , 0, 0};
+        SDL_Rect timeTextRect = {0, holdStartY + TILE_SIZE * holdBox.getWidth() , 0, 0};
         drawText(renderer, &timeTextRect, messageTitle, 50);
-        SDL_Rect timeRect = {0, timeTextRect.y+timeTextRect.h+PADDING, 0, 0};
+        SDL_Rect timeRect = {0, timeTextRect.y + timeTextRect.h + PADDING, 0, 0};
         drawText(renderer, &timeRect, message, 50);
     }
 }
 
-HUD::~HUD() {
-    delete nextBox;
-    delete holdBox;
-}
