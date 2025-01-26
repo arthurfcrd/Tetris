@@ -80,6 +80,7 @@ private:
 
     GameType gameType;
     int score;
+    int enemyScore;
     int nLinesCleared;
     int nLinesToClear;
     std::chrono::time_point<std::chrono::system_clock> gameChrono;

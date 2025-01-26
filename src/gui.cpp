@@ -267,6 +267,8 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
 
     // Draw the right pane
     int rightPaneX = PANE_SIZE + TILE_SIZE * GRID_WIDTH;
+    if (gameType == GameType::MULTIPLAYER)
+        rightPaneX += TILE_SIZE*GRID_WIDTH + SPACE_BETWEEN_GRIDS;
     
     // "Next" text
     SDL_Rect nextTextRect = {rightPaneX, PADDING, 0, 0};
@@ -285,14 +287,22 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     SDL_Rect scoreRect = {rightPaneX, scoreTextRect.y + scoreTextRect.h + PADDING, 0, 0};
     drawText(renderer, &scoreRect, std::to_string(score), DEFAULT_PTSIZE);
 
-    // Display number of cleared lines
-    SDL_Rect linesTextRect = {rightPaneX, scoreRect.y + scoreRect.h + 3 * PADDING, 0, 0};
-    drawText(renderer, &linesTextRect, "Lines cleared", 30);
-    SDL_Rect linesClearedRect = {rightPaneX, linesTextRect.y + linesTextRect.h + PADDING / 2, 0, 0};
-    std::string linesIndicator = std::to_string(nLinesCleared);
-    if (gameType == GameType::LINES_BASED)
-        linesIndicator += ("/" + std::to_string(nLinesToClear));
-    drawText(renderer, &linesClearedRect, linesIndicator, DEFAULT_PTSIZE);
+    // Display number of cleared lines or enemy score depending on gamemode
+    SDL_Rect textRect = {rightPaneX, scoreRect.y + scoreRect.h + 3 * PADDING, 0, 0};
+    SDL_Rect numberRect = {rightPaneX, textRect.y + textRect.h + PADDING / 2, 0, 0};
+    std::string text;
+    std::string number;
+    if (gameType == GameType::MULTIPLAYER) {
+        text = "ENEMY SCORE";
+        number = std::to_string(enemyScore);
+    } else {
+        text = "LINES CLEARED";
+        number = std::to_string(nLinesCleared);
+        if (gameType == GameType::LINES_BASED)
+            number += ("/" + std::to_string(nLinesToClear));
+    }
+    drawText(renderer, &textRect, text, 30);
+    drawText(renderer, &numberRect, number, DEFAULT_PTSIZE);
 
     /* Left pane */
 
@@ -305,24 +315,36 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
         insertIntoBox(holdBox, holdTetro);
     holdBox.drawGrid(renderer, holdStartX, holdStartY);
 
-    // Timer or current level depending on gamemode
-    if (gameType == GameType::TIME_BASED || gameType == GameType::CLASSIC) {
-        std::string messageTitle;
-        std::string message;
-        if (gameType == GameType::TIME_BASED) {
+    // Timer, current level, number of lines cleared depending on gamemode
+    bool drawSomething = true;
+    std::string messageTitle;
+    std::string message;
+    switch (gameType) {
+        case GameType::TIME_BASED: {
             messageTitle = "TIME LEFT";
             double timeLeft = getTimeLeft();
             int minutes = timeLeft / 60;
             int seconds = (timeLeft - 60 * minutes);
             message = std::to_string(minutes) + ":" + std::to_string(seconds);
-        } else if (gameType == GameType::CLASSIC) {
+            break;
+        } case GameType::CLASSIC: {
             messageTitle = "LEVEL";
             message = std::to_string(currentLevel);
+            break;
+        } case GameType::MULTIPLAYER: {
+            messageTitle = "LINES CLEARED";
+            message = std::to_string(nLinesCleared);
+            break;
+        } default: {
+            drawSomething = false;
+            break;
         }
-        SDL_Rect timeTextRect = {0, holdStartY + TILE_SIZE * holdBox.getWidth() , 0, 0};
-        drawText(renderer, &timeTextRect, messageTitle, 50);
-        SDL_Rect timeRect = {0, timeTextRect.y + timeTextRect.h + PADDING, 0, 0};
-        drawText(renderer, &timeRect, message, 50);
+        if (drawSomething) {
+            SDL_Rect messTextRect = {0, holdStartY + TILE_SIZE * holdBox.getWidth() , 0, 0};
+            drawText(renderer, &messTextRect, messageTitle, 50);
+            SDL_Rect messRect = {0, messTextRect.y + messTextRect.h + PADDING, 0, 0};
+            drawText(renderer, &messRect, message, 50);
+        }
     }
 }
 

@@ -7,7 +7,7 @@ endif
 
 ifeq ($(UNAME), Linux)
 CFLAGS= -Wall -Werror -std=c++14
-LDFLAGS= -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf -lasio
+LDFLAGS= -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf
 endif
 
 CC = g++
@@ -16,7 +16,7 @@ all: main.exe
 	./main.exe
 	rm -f *.o
 
-main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o server.o
+main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) -v
 	rm -f *.o
 
