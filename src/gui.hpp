@@ -78,6 +78,11 @@ private:
     Grid* nextBox;
     Grid* holdBox;
 
+    int leftGridX;
+    int leftGridY;
+    int rightGridX;
+    int rightGridY;
+
     GameType gameType;
     int score;
     int enemyScore;

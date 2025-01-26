@@ -188,6 +188,12 @@ BaseUI::~BaseUI() {
 HUD::HUD(GameType gt, int nltc, int ttc){
     nextBox = new Grid(5, 4);
     holdBox = new Grid(5, 4);
+
+    leftGridX = PANE_SIZE;
+    leftGridY = 0;
+    rightGridX = PANE_SIZE + TILE_SIZE*GRID_WIDTH + SPACE_BETWEEN_GRIDS;
+    rightGridY = 0;
+
     gameType = gt;
     score = 0;
     enemyScore = 0;
