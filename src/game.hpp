@@ -24,8 +24,9 @@ public:
 };
 
 class Game : public BaseGame{
-protected:
+private:
     HUD hud;
+protected:
     TetrominoBag tetroBag;
     bool gameOver;
     // after holding a tetromino the player must place the next tetromino before holding again

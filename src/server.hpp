@@ -7,6 +7,7 @@
 
 class OnlineGame{
 private:
+    HUD hud; // TODO : handle HUD for online games
     Game game; // game of the player
     BaseGame otherGame; // game of the other player
 public: 
