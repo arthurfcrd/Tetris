@@ -5,6 +5,9 @@
 #define ERROR 1
 
 void playGame(SDL_Renderer* renderer, Game* game) {
+    Music tetrisMusic("../assets/audio/musics/original-theme.mp3", MIX_MAX_VOLUME/2);
+    tetrisMusic.playOnLoop();
+
     SDL_Event event;
     while (game->isRunning()) {
         while (SDL_PollEvent(&event)) {
@@ -49,7 +52,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0) {
-        SDL_Log("Failed to load mixer: ", Mix_GetError());
+        SDL_Log("Failed to load mixer: %s", Mix_GetError());
         return ERROR;
     }
 
@@ -61,6 +64,10 @@ int main(int argc, char* argv[]) {
         SDL_Log("Unable to create window and renderer: %s", SDL_GetError());
         return 1;
     }
+
+    // Load music
+    Music introMusic("../assets/audio/musics/bp_MUS_SpaceCruise.ogg");
+    introMusic.playOnLoop();
 
     // Load the user inteface
     BaseUI mainUI(renderer, "TETRIS", {"SOLO", "MULTIPLAYER", "CONTROLS", "QUIT"});
@@ -85,24 +92,31 @@ int main(int argc, char* argv[]) {
                 } else if (currentUI == &soloUI) {
                     if (choice == "START") {
                         soloGame(renderer);
+                        introMusic.playOnLoop();
                     } else if (choice == "GAMEMODE") {
                         currentUI = &gamemodeUI;
                     } else if (choice == "BACK") {
                         currentUI = &mainUI;
                     }
                 } else if (currentUI == &gamemodeUI) {
-                    if (choice == "NORMAL")
+                    if (choice == "NORMAL") {
                         soloGame(renderer, GameType::LINES_BASED, 40, 0);
-                    else if (choice == "CLASSIC")
+                        introMusic.playOnLoop();
+                    } else if (choice == "CLASSIC") {
                         soloGame(renderer, GameType::CLASSIC, 0, 0);
-                    else if (choice == "MARATHON")
+                        introMusic.playOnLoop();
+                    } else if (choice == "MARATHON") {
                         soloGame(renderer, GameType::LINES_BASED, 150, 0);
-                    else if (choice == "ULTRA")
+                        introMusic.playOnLoop();
+                    } else if (choice == "ULTRA") {
                         soloGame(renderer, GameType::TIME_BASED, 0, 3*60);
-                    else if (choice == "INFINITE")
+                        introMusic.playOnLoop();
+                    } else if (choice == "INFINITE") {
                         soloGame(renderer, GameType::INFINITE, 0, 0);
-                    else if (choice == "BACK")
+                        introMusic.playOnLoop();
+                    } else if (choice == "BACK") {
                         currentUI = &mainUI;
+                    }
                 }
             }
             currentUI->drawUI();
