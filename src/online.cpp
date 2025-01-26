@@ -1,6 +1,6 @@
 #include <iostream>
 #include <asio.hpp>
-#include "server.cpp"
+#include "server.hpp"
 
 void clientGame(SDL_Renderer* renderer, const std::string& host, const std::string& port) {
     try {
