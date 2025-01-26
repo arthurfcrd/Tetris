@@ -14,7 +14,7 @@ const double ROTATE_RATE = 0.12; // seconds between rotations
 const double LOCK_DELAY = 0.5; // seconds before a locking a tetromino that has touched the ground
 
 class Game{
-private:
+protected:
     HUD hud;
     Grid grid;
     TetrominoBag tetroBag;
@@ -37,7 +37,6 @@ public:
             keyboardHandler() {}
     // default gamemode
     explicit Game() : Game(GameType::LINES_BASED, 10, 0) {}
-    void update(const SDL_Event& event);
     void update();
     void updateHandler(const SDL_Event& event);
     void updateHandler(Key key);
@@ -49,5 +48,4 @@ public:
     void setHoldLock();
     void releaseHoldLock();
     bool canHold() const;
-
 };

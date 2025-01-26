@@ -5,9 +5,10 @@
 #include <asio.hpp>
 #include "game.hpp"
 
-class OnlineGame {
+class OnlineGame : public Game{
 private:
-    Game game[2];
+    BaseTetromino otherTetromino;
+    Grid otherGrid;
     bool running;
 };
 

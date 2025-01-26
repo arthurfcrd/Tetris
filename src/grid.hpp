@@ -1,5 +1,6 @@
 #pragma once
 #include "graphics.hpp"
+#include <string>
 
 class Tetromino; // forward declaration
 struct Point; // forward declaration
@@ -16,6 +17,15 @@ public:
             matrix[i] = new Color[width];
             for(int j = 0; j < width; j++){
                 matrix[i][j] = Color::NONE;
+            }
+        }
+    }
+    Grid(std::string serializedGrid) : Grid(GRID_WIDTH, GRID_HEIGHT){
+        int i = 0;
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                matrix[y][x] = static_cast<Color>(serializedGrid[i] - '0');
+                i++;
             }
         }
     }
@@ -40,7 +50,7 @@ public:
     void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
     // draws the grid on the screen starting at position (startX, startY)
     void drawGrid(SDL_Renderer* renderer, int startX, int startY) const;
-
+    std::string serialize() const; // serialize the grid data
 private:
     bool lineIsFull(int lineNum) const; // Check if the line has to be cleared
     void moveLineDown(int lineNum); 
