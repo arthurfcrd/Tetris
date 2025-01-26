@@ -1,16 +1,24 @@
 #include "music.hpp"
 
-int main() {
-    Mix_Music* menuMusic = Mix_LoadMUS("../assets/audio/musics/bp_MUS_SpaceCruise.ogg");
-    Mix_Music* tetrisMusic = Mix_LoadMUS("../assets/audio/musics/original-theme.mp3");
-
-    if (menuMusic == NULL || tetrisMusic == NULL) {
+Music::Music(std::string path, int volumeVal) {
+    musicFile = Mix_LoadMUS(path.c_str());
+    if (musicFile == NULL)
         SDL_Log("Could not load the musics: %s", Mix_GetError());
-    
-    
-    }
+    volume = volumeVal;
+}
 
-    Mix_FreeMusic(menuMusic);
-    Mix_FreeMusic(tetrisMusic);
-    return 0;
+Music::Music(std::string path) : Music(path, MIX_MAX_VOLUME) {}
+
+Music::~Music() {
+    Mix_FreeMusic(musicFile);
+}
+
+void Music::playOnLoop() {
+    Mix_VolumeMusic(volume);
+    Mix_PlayMusic(musicFile, -1);
+}
+
+void Music::stop() {
+    Mix_PauseMusic();
+    Mix_VolumeMusic(MIX_MAX_VOLUME);
 }
