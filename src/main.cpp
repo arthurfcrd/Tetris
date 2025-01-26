@@ -1,5 +1,6 @@
 #include <iostream>
 #include "game.hpp"
+#include "music.hpp"
 
 #define ERROR 1
 
@@ -32,7 +33,7 @@ void soloGame(SDL_Renderer* renderer, GameType gametype, int nLinesToClear, doub
 
 
 int main(int argc, char* argv[]) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return ERROR;
     }
@@ -44,6 +45,11 @@ int main(int argc, char* argv[]) {
     int flags = IMG_INIT_PNG;
     if ((IMG_Init(flags) & flags) != flags) {
         SDL_Log("Failed to init png support: %s", IMG_GetError());
+        return ERROR;
+    }
+
+    if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0) {
+        SDL_Log("Failed to load mixer: ", Mix_GetError());
         return ERROR;
     }
 
@@ -106,7 +112,8 @@ int main(int argc, char* argv[]) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
-    SDL_Quit();
+    Mix_Quit();
     TTF_Quit();
+    SDL_Quit();
     return 0;
 }
