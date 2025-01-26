@@ -5,6 +5,18 @@
 
 #define ERROR 1
 
+void setMultiplayerWindow(SDL_Window* window, SDL_Renderer* renderer) {
+    int newWidth = (TILE_SIZE * GRID_WIDTH) * 2 + SPACE_BETWEEN_GRIDS + PANE_SIZE * 2;
+    int newHeight = TILE_SIZE * GRID_HEIGHT;
+    SDL_SetWindowSize(window, newWidth, newHeight);
+}
+
+void setRegularWindow(SDL_Window* window, SDL_Renderer* renderer) {
+    int newWidth = TILE_SIZE * GRID_WIDTH + PANE_SIZE * 2;
+    int newHeight = TILE_SIZE * GRID_HEIGHT;
+    SDL_SetWindowSize(window, newWidth, newHeight);
+}
+
 void playGame(SDL_Renderer* renderer, Game* game) {
     SDL_Event event;
     while (game->isRunning()) {
@@ -91,18 +103,6 @@ void hostAndPlayGame(SDL_Renderer* renderer, const std::string& port) {
     }
 }
 
-void setMultiplayerWindow(SDL_Window* window, SDL_Renderer* renderer) {
-    int newWidth = (TILE_SIZE * GRID_WIDTH) * 2 + SPACE_BETWEEN_GRIDS + PANE_SIZE * 2;
-    int newHeight = TILE_SIZE * GRID_HEIGHT;
-    SDL_SetWindowSize(window, newWidth, newHeight);
-}
-
-void setRegularWindow(SDL_Window* window, SDL_Renderer* renderer) {
-    int newWidth = TILE_SIZE * GRID_WIDTH + PANE_SIZE * 2;
-    int newHeight = TILE_SIZE * GRID_HEIGHT;
-    SDL_SetWindowSize(window, newWidth, newHeight);
-}
-
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -175,13 +175,13 @@ int main(int argc, char* argv[]) {
                         currentUI = &mainUI;
                 }
                 else if (currentUI == &multiplayerUI) {
-                    setMultiplayerWindow(window, renderer);
                     if (choice == "HOST") {
+                        setMultiplayerWindow(window, renderer);
                         hostAndPlayGame(renderer, "1234");
                     } else if (choice == "JOIN") {
+                        setMultiplayerWindow(window, renderer);
                         clientGame(renderer, "localhost", "1234");
                     } else if (choice == "BACK") {
-                        setRegularWindow(window, renderer);
                         currentUI = &mainUI;
                     }
                 }

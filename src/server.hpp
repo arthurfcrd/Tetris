@@ -11,7 +11,6 @@ class TetrisServer;
 
 class OnlineGame {
 private:
-    HUD hud;                     // Handle HUD for online games
     Game game;                   // Game of the player
     BaseGame otherGame;          // Game of the other player
     int garbageToSend;           // Number of garbage lines to send to the other player

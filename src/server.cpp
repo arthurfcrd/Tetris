@@ -2,14 +2,14 @@
 
 // --- OnlineGame Implementation ---
 
-OnlineGame::OnlineGame() : hud(GameType::MULTIPLAYER), game(), otherGame(), garbageToSend(0) {}
+OnlineGame::OnlineGame() : game(GameType::MULTIPLAYER, 10, 3 * 60), otherGame(), garbageToSend(0) {}
 
 bool OnlineGame::isRunning() const {
     return game.isRunning() && otherGame.isRunning();
 }
 
 void OnlineGame::draw(SDL_Renderer* renderer) const {
-    hud.drawHUD(renderer, game.tetroBag.nextTetromino, game.tetroBag.heldTetromino);
+    game.hud.drawHUD(renderer, game.tetroBag.nextTetromino, game.tetroBag.heldTetromino);
     game.draw(renderer);
     int startX = PANE_SIZE + GRID_WIDTH * TILE_SIZE + SPACE_BETWEEN_GRIDS;
     int startY = 0;
@@ -28,7 +28,7 @@ void OnlineGame::updateFromServer(std::string serializedData) {
     // Update the other player's game
     otherGame.grid = Grid(serializedGrid);
     otherGame.curTetromino = BaseTetromino(serializedTetromino);
-    hud.setScore(std::stoi(score));
+    game.hud.setScore(std::stoi(score));
     if (std::getline(iss, garbage)) {
         int nGarbageLines = std::stoi(garbage);
         game.grid.addGarbageLines(nGarbageLines);
@@ -37,7 +37,7 @@ void OnlineGame::updateFromServer(std::string serializedData) {
 
 std::string OnlineGame::serialize() {
     std::string res = game.grid.serialize() + ":" + game.curTetromino.serialize()
-                      + ":" + std::to_string(hud.getScore());
+                      + ":" + std::to_string(game.hud.getScore());
     if (garbageToSend > 0) {
         res += ":" + std::to_string(garbageToSend);
         garbageToSend = 0;
@@ -129,6 +129,9 @@ void TetrisServer::startAccept() {
                     // Refuse the connection if the server is full
                     socket.close();
                 }
+            }
+            else{
+                std::cerr << "Error accepting connection: " << ec.message() << std::endl;
             }
             startAccept();
         });

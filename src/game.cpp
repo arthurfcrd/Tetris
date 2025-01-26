@@ -50,9 +50,6 @@ void Game::update(){
     if (elapsedSecondsFromVerticalMove.count() > VERTICAL_MOVE_RATE){
         if (keyboardHandler.getKeyState(Key::DOWN)){
             curTetro->move(grid, 0, 1);
-            // // pressing the Down key while touching the ground activates the locking; TODO : maybe change that
-            // if (curTetro->hasTouchedGround())
-            //     curTetro->setLocked(true);
         }
         lastVerticalMoveTime = currentTime;
     }
