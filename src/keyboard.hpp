@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef __linux__
 #include <SDL2/SDL.h>
-#elif __APPLE__
-#include <SDL.h>
-#endif
 
 #include <vector>
 
