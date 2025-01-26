@@ -12,6 +12,7 @@
 #define GRID_HEIGHT (22)
 
 #define PANE_SIZE (260)
+#define SPACE_BETWEEN_GRIDS (50)
 #define PADDING (20)
 #define DEFAULT_PTSIZE (50) // font size
 #define SMALLGRID_SIZE (6)

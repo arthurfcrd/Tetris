@@ -1,5 +1,5 @@
 #include "game.hpp"
-#include <asio.hpp>
+//#include <asio.hpp>
 #include <iostream>
 
 #define ERROR 1
@@ -29,6 +29,13 @@ void soloGame(SDL_Renderer* renderer) {
 void soloGame(SDL_Renderer* renderer, GameType gametype, int nLinesToClear, double timeToClear) {
     Game game(gametype, nLinesToClear, timeToClear);
     playGame(renderer, &game);
+}
+
+void multiGame(SDL_Window* window, SDL_Renderer* renderer) {
+    int newWidth = (TILE_SIZE * GRID_WIDTH)*2 + SPACE_BETWEEN_GRIDS + PANE_SIZE*2;
+    int newHeight = TILE_SIZE * GRID_HEIGHT;
+    SDL_SetWindowSize(window, newWidth, newHeight);
+    soloGame(renderer, GameType::MULTIPLAYER, 0, 0);
 }
 
 
@@ -66,6 +73,7 @@ int main(int argc, char* argv[]) {
     bool isRunning = true;
     SDL_Event event;
     while (isRunning) {
+        SDL_SetWindowSize(window, width, height);
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 isRunning = false;
@@ -74,7 +82,9 @@ int main(int argc, char* argv[]) {
                 if (currentUI == &mainUI) {
                     if (choice == "SOLO") {
                         currentUI = &soloUI;
-                    } else if (choice == "QUIT") {
+                    } else if (choice == "MULTIPLAYER") {
+                        multiGame(window, renderer);
+                    }else if (choice == "QUIT") {
                         isRunning = false;
                     }
                 } else if (currentUI == &soloUI) {
