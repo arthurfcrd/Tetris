@@ -1,6 +1,5 @@
 #include "game.hpp"
 #include <asio.hpp>
-#include <asio/ip/tcp.hpp>
 #include <iostream>
 
 #define ERROR 1

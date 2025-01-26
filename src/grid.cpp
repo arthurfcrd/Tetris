@@ -123,3 +123,13 @@ bool Grid::isTopOut() const{ // checks if the tetromino has been insert at least
     }
     return false;
 }
+
+std::string Grid::serialize() const{
+    std::string serializedGrid = "";
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+            serializedGrid += std::to_string(static_cast<int>(matrix[i][j])) + " ";
+        }
+    }
+    return serializedGrid;
+}

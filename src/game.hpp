@@ -13,12 +13,21 @@ const double ROTATE_RATE = 0.12; // seconds between rotations
 
 const double LOCK_DELAY = 0.5; // seconds before a locking a tetromino that has touched the ground
 
-class Game{
+class BaseGame{
+protected:
+    Grid grid;
+    bool running;
+private:
+    BaseTetromino curTetromino;
+public:
+    BaseGame() : grid(), running(true), curTetromino() {}
+};
+
+class Game : public BaseGame{
 private:
     HUD hud;
-    Grid grid;
+protected:
     TetrominoBag tetroBag;
-    bool running;
     bool gameOver;
     // after holding a tetromino the player must place the next tetromino before holding again
     bool canHold_ = true; 
@@ -28,20 +37,19 @@ private:
     std::chrono::time_point<std::chrono::system_clock> touchedGroundTime;
     KeyboardHandler keyboardHandler;
 public:
-    explicit Game(GameType gt, int nltc, int ttc) : 
-            hud(gt, nltc, ttc), grid(), tetroBag(), 
-            running(true), gameOver(false),
+    explicit Game(GameType gt, int nltc, int ttc) : // nltc : number of lines to clear, ttc : time to clear the lines
+            BaseGame(), hud(gt, nltc, ttc),
+            tetroBag(), gameOver(false),
             lastFallTime(std::chrono::system_clock::now()), 
             lastHorizontalMoveTime(std::chrono::system_clock::now()), 
             lastVerticalMoveTime(std::chrono::system_clock::now()), 
             keyboardHandler() {}
     // default gamemode
     explicit Game() : Game(GameType::LINES_BASED, 10, 0) {}
-    void update(const SDL_Event& event);
     void update();
     void updateHandler(const SDL_Event& event);
     void updateHandler(Key key);
-    void draw(SDL_Renderer* renderer);
+    void draw(SDL_Renderer* renderer) const;
     bool hasWon() const;
 
     bool isRunning() const;
@@ -49,5 +57,4 @@ public:
     void setHoldLock();
     void releaseHoldLock();
     bool canHold() const;
-
 };

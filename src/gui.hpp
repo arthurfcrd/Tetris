@@ -2,18 +2,13 @@
 #include <vector>
 #include <chrono>
 
-#ifdef __linux__
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#elif __APPLE__
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#endif
 
 #include "grid.hpp"
 #include "graphics.hpp"
+#include "grid.hpp"
 
 class Tetromino; // forward declaration
 
@@ -74,42 +69,50 @@ class BaseUI {
 };
 
 enum class GameType : int {
-    TIME_BASED, LINES_BASED, CLASSIC, INFINITE
+    TIME_BASED, LINES_BASED, CLASSIC, INFINITE, MULTIPLAYER
 };
 
 
 class HUD {
-    private:
-        Grid* nextBox;
-        Grid* holdBox;
+private:
+    Grid nextBox;
+    Grid holdBox;
 
-        GameType gameType;
-        int score;
-        int nLinesCleared;
-        int nLinesToClear;
-        std::chrono::time_point<std::chrono::system_clock> gameChrono;
-        double timeToClear; // number of seconds the player has in time-based gamemodes
+    GameType gameType;
+    int score;
+    int nLinesCleared;
+    int nLinesToClear;
+    std::chrono::time_point<std::chrono::system_clock> gameChrono;
+    double timeToClear; // number of seconds the player has in time-based gamemodes
 
-        int currentLevel;
-        double fallRate;
-    public:
-        HUD(GameType gt, int nltc, int ttc);
+    int currentLevel;
+    double fallRate;
+public:
+    HUD(GameType gt, int nltc, int ttc);
+    HUD(GameType gt){
+        if (gt == GameType::LINES_BASED)
+            HUD(gt, 10, 0);
+        else if (gt == GameType::TIME_BASED)
+            HUD(gt, 0, 3 * 60);
+        else if (gt == GameType::MULTIPLAYER){
+            
+        }
+    }
 
-        int getScore() const;
-        void setScore(int newScore);
-        int getLinesCleared() const;
-        void setLinesCleared(int newVal);
-        int getLinesToClear() const;
-        GameType getGameType() const;
-        int getCurrentLevel() const;
-        double getFallRate() const;
-        void setFallRate(double newVal);
+    int getScore() const;
+    void setScore(int newScore);
+    int getLinesCleared() const;
+    void setLinesCleared(int newVal);
+    int getLinesToClear() const;
+    GameType getGameType() const;
+    int getCurrentLevel() const;
+    double getFallRate() const;
+    void setFallRate(double newVal);
 
-        void increaseLevel();
-        void updateLevel();
+    void increaseLevel();
+    void updateLevel();
 
-        void insertIntoBox(Grid* box, Tetromino& tetro);
-        double getTimeLeft() const;
-        void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
-        ~HUD();
+    void insertIntoBox(Grid box, Tetromino& tetro) const;
+    double getTimeLeft() const;
+    void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro) const;
 };

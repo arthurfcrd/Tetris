@@ -1,14 +1,16 @@
 #include <iostream>
-#include <thread>
 #include <vector>
 #include <string>
 #include <asio.hpp>
 #include "game.hpp"
 
-class OnlineGame {
+class OnlineGame{
 private:
-    Game game[2];
-    bool running;
+    HUD hud; // TODO : handle HUD for online games
+    Game game; // game of the player
+    BaseGame otherGame; // game of the other player
+public: 
+    void addGarbageLines(int nLines);
 };
 
 class TetrisSession : public std::enable_shared_from_this<TetrisSession> {
@@ -48,7 +50,7 @@ private:
     enum { max_length = 1024 };
     char data_[max_length];
     int playerId_;
-    OnlineGame& onlineGame_;
+    OnlineGame onlineGame_;
 };
 
 class TetrisServer {

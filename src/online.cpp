@@ -1,6 +1,5 @@
 #include <iostream>
 #include <asio.hpp>
-#include <asio/ip/tcp.hpp>
 #include "game.hpp"
 
 void clientGame(SDL_Renderer* renderer, const std::string& host, const std::string& port) {
