@@ -68,7 +68,7 @@ class BaseUI {
 };
 
 enum class GameType : int {
-    TIME_BASED, LINES_BASED, CLASSIC, INFINITE
+    TIME_BASED, LINES_BASED, CLASSIC, INFINITE, GARBAGE
 };
 
 

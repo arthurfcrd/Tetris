@@ -10,6 +10,8 @@ private:
     BaseTetromino otherTetromino;
     Grid otherGrid;
     bool running;
+public: 
+    void addGarbageLines(int nLines);
 };
 
 class TetrisSession : public std::enable_shared_from_this<TetrisSession> {
