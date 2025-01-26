@@ -190,6 +190,7 @@ HUD::HUD(GameType gt, int nltc, int ttc){
     holdBox = new Grid(5,4);
     gameType = gt;
     score = 0;
+    enemyScore = 0;
     nLinesCleared = 0;
     nLinesToClear = nltc;
     gameChrono = std::chrono::system_clock::now();
@@ -343,7 +344,7 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
     }
     if (drawSomething) {
         SDL_Rect messTextRect = {0, holdStartY + TILE_SIZE * holdBox->getWidth() , 0, 0};
-        drawText(renderer, &messTextRect, messageTitle, 50);
+        drawText(renderer, &messTextRect, messageTitle, 30);
         SDL_Rect messRect = {0, messTextRect.y + messTextRect.h + PADDING, 0, 0};
         drawText(renderer, &messRect, message, 50);
     }

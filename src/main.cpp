@@ -35,7 +35,7 @@ void multiGame(SDL_Window* window, SDL_Renderer* renderer) {
     int newWidth = (TILE_SIZE * GRID_WIDTH)*2 + SPACE_BETWEEN_GRIDS + PANE_SIZE*2;
     int newHeight = TILE_SIZE * GRID_HEIGHT;
     SDL_SetWindowSize(window, newWidth, newHeight);
-    SDL_Delay(5000);
+    soloGame(renderer, GameType::MULTIPLAYER, 0, 0);
 }
 
 
@@ -73,6 +73,7 @@ int main(int argc, char* argv[]) {
     bool isRunning = true;
     SDL_Event event;
     while (isRunning) {
+        SDL_SetWindowSize(window, width, height);
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 isRunning = false;
