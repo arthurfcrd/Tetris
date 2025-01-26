@@ -17,7 +17,7 @@ class Tetromino; // forward declaration
 #define MAX_LEVEL (15)
 #define STARTING_FALL_RATE (0.7)
 #define FALL_RATE_DECREASE (0.15)
-#define LINES_PER_LEVEL (5)
+#define LINES_PER_LEVEL (4)
 
 
 SDL_Texture* createTextureFromIMG(SDL_Renderer* renderer, std::string path);
@@ -57,6 +57,9 @@ class BaseUI {
         unsigned titlePaddding = 30;
         unsigned titleBottom;
         std::vector<Button> buttons;
+
+        Mix_Chunk* hoverSound;
+        Mix_Chunk* selectSound;
     public:
         explicit BaseUI(SDL_Renderer* r, std::string firstTitle, std::vector<std::string> buttonsText);
         void drawBackground();
@@ -86,8 +89,10 @@ class HUD {
 
         int currentLevel;
         double fallRate;
+        Mix_Chunk* levelUpSound;
     public:
         HUD(GameType gt, int nltc, int ttc);
+        ~HUD();
 
         int getScore() const;
         void setScore(int newScore);
@@ -105,5 +110,4 @@ class HUD {
         void insertIntoBox(Grid* box, Tetromino& tetro);
         double getTimeLeft() const;
         void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
-        ~HUD();
 };

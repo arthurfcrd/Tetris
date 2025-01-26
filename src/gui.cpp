@@ -128,6 +128,10 @@ BaseUI::BaseUI(SDL_Renderer* r, std::string firstTitle, std::vector<std::string>
     SDL_QueryTexture(background, NULL, NULL, &bgRect.x, &bgRect.y);
     bgRect.x = (bgRect.x - windowWidth) / 2;
     bgRect.y = (bgRect.y - windowHeight) / 2;
+
+    // Load the sound effects
+    hoverSound = Mix_LoadWAV("../assets/audio/sounds/select_light1.wav");
+    selectSound = Mix_LoadWAV("../assets/audio/sounds/select_up1.wav");
 }
 
 void BaseUI::drawTitle() {
@@ -160,7 +164,10 @@ std::string BaseUI::getChoice(SDL_Event& event) {
         SDL_Point curPos = {event.motion.x, event.motion.y};
         for (int i = 0; i < (int)buttons.size(); i++) {
             if (SDL_PointInRect(&curPos, &buttons[i].btnRect)) {
-                buttons[i].setHighlighted(true);
+                if (!buttons[i].getHighlighted()) {
+                    buttons[i].setHighlighted(true);
+                    Mix_PlayChannel(-1, hoverSound, 0);
+                }
             } else {
                 buttons[i].setHighlighted(false);
             }
@@ -170,8 +177,10 @@ std::string BaseUI::getChoice(SDL_Event& event) {
     if (event.type == SDL_MOUSEBUTTONUP) {
         SDL_Point curPos = {event.button.x, event.button.y};
         for (int i = 0; i < (int)buttons.size(); i++) {
-            if (SDL_PointInRect(&curPos, &buttons[i].btnRect))
+            if (SDL_PointInRect(&curPos, &buttons[i].btnRect)) {
+                Mix_PlayChannel(-1, selectSound, 0);
                 return buttons[i].text;
+            }
         }
     }
     return "NONE";
@@ -179,6 +188,8 @@ std::string BaseUI::getChoice(SDL_Event& event) {
 
 BaseUI::~BaseUI() {
     SDL_DestroyTexture(background);
+    Mix_FreeChunk(hoverSound);
+    Mix_FreeChunk(selectSound);
 }
 
 
@@ -198,8 +209,16 @@ HUD::HUD(GameType gt, int nltc, int ttc){
 
     currentLevel = 1;
     fallRate = STARTING_FALL_RATE;
+    levelUpSound = Mix_LoadWAV("../assets/audio/sounds/levelup.mp3");
+    if (levelUpSound == NULL)
+        SDL_Log("Error loading level up sound: %s", Mix_GetError());
 }
 
+HUD::~HUD() {
+    delete nextBox;
+    delete holdBox;
+    Mix_FreeChunk(levelUpSound);
+}
 
 int HUD::getScore() const {
     return score;
@@ -238,6 +257,8 @@ double HUD::getFallRate() const {
 void HUD::updateLevel() {
     if (gameType == GameType::CLASSIC) {
         if (nLinesCleared / LINES_PER_LEVEL >= currentLevel && currentLevel < MAX_LEVEL) {
+            SDL_Delay(100); // to not overlap with line cleared sound
+            Mix_PlayChannel(-1, levelUpSound, 0);
             currentLevel++;
             fallRate = fallRate*(1-FALL_RATE_DECREASE);
         }
@@ -327,9 +348,4 @@ void HUD::drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTet
         SDL_Rect timeRect = {0, timeTextRect.y+timeTextRect.h+PADDING, 0, 0};
         drawText(renderer, &timeRect, message, 50);
     }
-}
-
-HUD::~HUD() {
-    delete nextBox;
-    delete holdBox;
 }

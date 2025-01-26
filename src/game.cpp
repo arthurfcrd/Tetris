@@ -2,6 +2,28 @@
 #include <iostream>
 
 
+Game::Game(GameType gt, int nltc, int ttc) : 
+            hud(gt, nltc, ttc), grid(), tetroBag(), 
+            running(true), gameOver(false),
+            lastFallTime(std::chrono::system_clock::now()), 
+            lastHorizontalMoveTime(std::chrono::system_clock::now()), 
+            lastVerticalMoveTime(std::chrono::system_clock::now()), 
+            keyboardHandler() {
+    lineClearedSound = Mix_LoadWAV("../assets/audio/sounds/line-cleared.mp3");
+    holdLockedSound = Mix_LoadWAV("../assets/audio/sounds/select_b_fail1.wav");
+    hardDropSound = Mix_LoadWAV("../assets/audio/sounds/harddrop.mp3");
+    levelUpSound = Mix_LoadWAV("../assets/audio/sounds/levelup.mp3");
+}
+
+Game::Game() : Game(GameType::LINES_BASED, 10, 0) {}
+
+Game::~Game() {
+    Mix_FreeChunk(lineClearedSound);
+    Mix_FreeChunk(holdLockedSound);
+    Mix_FreeChunk(hardDropSound);
+    Mix_FreeChunk(levelUpSound);
+}
+
 bool Game::hasWon() const{
     if (hud.getGameType() == GameType::LINES_BASED)
         return hud.getLinesCleared() >= hud.getLinesToClear();
@@ -70,6 +92,7 @@ void Game::update(){
         int hardDropPos = curTetro->getPosY();
         while (!curTetro->checkCollision(grid))
             curTetro->move(grid, 0, 1);
+        Mix_PlayChannel(-1, hardDropSound, 0);
         // adds two times the hard drop distance to the score
         hud.setScore(hud.getScore() + 2*(curTetro->getPosY()-hardDropPos)); 
         curTetro->setTouchedGround(true);
@@ -83,6 +106,9 @@ void Game::update(){
         if (canHold()) {
             tetroBag.hold();
             setHoldLock();
+        } else {
+            Mix_Volume(0, MIX_MAX_VOLUME);
+            Mix_PlayChannel(0, holdLockedSound, 0);
         }
     }
 
@@ -126,6 +152,9 @@ void Game::update(){
         }
         int scoreTable[5] = {0, 100, 300, 500, 800};
         int n = grid.clearLines();
+        if (n > 0) {
+            Mix_PlayChannel(-1, lineClearedSound, 0);
+        }
         hud.setScore(hud.getScore() + scoreTable[n]);
         hud.setLinesCleared(hud.getLinesCleared() + n);
         hud.updateLevel();

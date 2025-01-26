@@ -1,18 +1,17 @@
 # TODO
 
 ## High priority
-- UI fine-tuning
+- UI fine-tuning (and sound accordingly)
     - GameOver message with Retry, Go to Main Menu options
     - Victory message with Play Again, Go to Main Menu options
     - Pause menu
     - Escape works everywhere
+- Ghost piece
 - Online multiplayer
-- Music and sounds
 - T-Spin functionality
 
 ## Low priority
 - Sonic drop
-- Ghost piece
 - Zero padding for the timer [EASY]
 - Controls window to display all controls (and maybe change them)
 - Better looking user-interface
@@ -27,3 +26,4 @@
 - User interface
 - Classic mode
 - Infinite mode
+- Music and sounds
