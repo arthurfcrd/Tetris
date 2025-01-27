@@ -46,6 +46,11 @@ void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color){
         case Color::NONE:
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             break;
+        case Color::GHOST: // 
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128); // White with 50% transparency
+            SDL_Rect innerBorder = {rect.x + 1, rect.y + 1, rect.w - 2, rect.h - 2};
+            SDL_RenderDrawRect(renderer, &innerBorder); // draw the outline
+            return;
     }
     SDL_RenderFillRect(renderer, &newRect);
 }

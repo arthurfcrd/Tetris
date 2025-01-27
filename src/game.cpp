@@ -140,6 +140,7 @@ void Game::draw(SDL_Renderer* renderer) const {
     hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
     grid.drawGrid(renderer);
     tetroBag.currentTetromino.drawTetromino(renderer);
+    tetroBag.currentTetromino.drawGhost(renderer, grid);
 }
 
 

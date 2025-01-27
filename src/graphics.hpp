@@ -26,6 +26,7 @@ enum class Color{
     MAGENTA,
     ORANGE,
     GRAY,
+    GHOST,
     NONE
 };
 

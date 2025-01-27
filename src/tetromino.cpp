@@ -56,6 +56,16 @@ void Tetromino::setTouchedGround(bool newVal) {
 
 
 /* Tetromino other methods*/
+
+void Tetromino::drawGhost(SDL_Renderer* renderer, const Grid& g) const {
+    Tetromino ghost = *this;
+    ghost.color = Color::GHOST; // color used for ghost
+    while (!ghost.checkCollision(g)){
+        ghost.move(g, 0, 1); // won't move if the tetromino has reached the bottom or another block
+    }
+    ghost.drawTetromino(renderer);
+}
+
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (const auto& point : blocks){
         Point dstTile = pos + point + Point{dx, dy};

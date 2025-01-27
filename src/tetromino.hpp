@@ -64,6 +64,7 @@ public:
     void setTouchedGround(bool newVal);
 
     // Other methods
+    void drawGhost(SDL_Renderer* renderer, const Grid& g) const;
     void move(const Grid&, int dx, int dy);
     void rotate(const Grid&, int direction); // direction = 1 for clockwise, -1 for counterclockwise
     bool checkCollision(const Grid& g) const;
