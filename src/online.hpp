@@ -13,7 +13,6 @@ public:
     BaseGame otherGame;          // Game of the other player
 
     friend void clientGame(SDL_Renderer* renderer, const std::string& host, const std::string& port);
-
 public:
     OnlineGame();
 
