@@ -77,8 +77,8 @@ void TetrisClient::readServerInfo() {
                                 asio::buffers_end(streambuf_.data()));
                 if (msg == "START;") {
                     std::cout << "ok starting the game" << std::endl;
-                    run();
-                    return;
+                    onlineGame.run();
+                    readGameState();
                 } else {
                     std::cout << "received bullshit\n\t" << msg << std::endl;
                 }
@@ -94,21 +94,22 @@ void TetrisClient::readServerInfo() {
 
 void TetrisClient::run() {
     SDL_Event event;
-    while (onlineGame.game.isRunning()) {
+    while (onlineGame.isRunning()) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 onlineGame.game.setRunning(false);
             } else {
                 onlineGame.game.updateHandler(event);
             }
-        onlineGame.game.update();
-        onlineGame.game.draw(renderer_);
-        SDL_RenderPresent(renderer_);
-        readGameState();
-        sendGameState();
         }
+        onlineGame.game.update();
+        onlineGame.draw(renderer_);
+        SDL_RenderPresent(renderer_);
+        //readGameState();
+        //sendGameState();
     }
 }
+
 
 int TetrisClient::getPlayerId() const {
     return playerId;
