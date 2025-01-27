@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
     introMusic.playOnLoop();
 
     // Load the user inteface
-    BaseUI mainUI(renderer, "TETRIS", {"SOLO", "MULTIPLAYER", "CONTROLS", "QUIT"});
+    BaseUI mainUI(renderer, "TETRIS", {"SOLO", "MULTIPLAYER", "QUIT"});
     BaseUI soloUI(renderer, "SOLO", {"START", "GAMEMODE", "BACK"});
     BaseUI gamemodeUI(renderer, "GAMEMODE", {"NORMAL", "CLASSIC", "MARATHON", "ULTRA", "INFINITE", "BACK"});
     BaseUI multiplayerUI(renderer, "MULTIPLAYER", {"HOST", "JOIN", "BACK"});

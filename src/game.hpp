@@ -5,6 +5,7 @@
 #include "keyboard.hpp"
 #include "graphics.hpp"
 #include "gui.hpp"
+#include "music.hpp"
 
 const double FALL_RATE = 0.7; // seconds between falls
 const double VERTICAL_MOVE_RATE = 0.03; // seconds between moves
@@ -58,6 +59,7 @@ public:
     void updateHandler(Key key);
     void draw(SDL_Renderer* renderer);
     bool hasWon() const;
+    void showGameOverInfos(SDL_Renderer* renderer);
 
     void setRunning(bool);
     void setHoldLock();

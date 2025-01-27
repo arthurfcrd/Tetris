@@ -62,6 +62,8 @@ TetrisClient::TetrisClient(asio::io_context& io_context,
 }
 
 void TetrisClient::connect(const asio::ip::tcp::resolver::results_type& endpoints) {
+    InfoUI waitingUI(renderer_,"WAITING FOR CONNECTION", "Please wait for the other player to join...");
+    waitingUI.showInfo();
     asio::connect(socket_, endpoints);
     //std::cout << "Connection error: " << ec.message() << std::endl;
     readServerInfo();
@@ -94,6 +96,8 @@ void TetrisClient::readServerInfo() {
 
 
 void TetrisClient::run() {
+    Music tetrisMusic("../assets/audio/musics/original-theme.mp3", MIX_MAX_VOLUME/2);
+    tetrisMusic.playOnLoop();
     SDL_Event event;
     while (onlineGame.isRunning()) {
         try {
