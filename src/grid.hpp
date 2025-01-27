@@ -2,6 +2,8 @@
 #include "graphics.hpp"
 #include <string>
 #include <sstream>
+#include <iostream>
+#include <cassert> 
 
 class Tetromino; // forward declaration
 struct Point; // forward declaration
@@ -23,15 +25,40 @@ public:
     }
     Grid(std::string serializedGrid) : Grid(GRID_WIDTH, GRID_HEIGHT){
         std::istringstream iss(serializedGrid);
+        //std::cout << "serialized data\n\t" << serializedGrid << std::endl;
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
                 int color;
                 iss >> color;
+                //std::cout << y << " " << x << color << std::endl;
                 matrix[y][x] = static_cast<Color>(color);
             }
         }
     }
     Grid() : Grid(GRID_WIDTH, GRID_HEIGHT){}
+
+    Grid(const Grid& other){
+        assert(other.width == width && other.height == height);
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                matrix[y][x] = other.matrix[y][x];
+            }
+        }
+    }
+
+    void fromSerialized(std::string serializedGrid) {
+        std::istringstream iss(serializedGrid);
+        //std::cout << "serialized data\n\t" << serializedGrid << std::endl;
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                int color;
+                iss >> color;
+                //std::cout << y << " " << x << color << std::endl;
+                matrix[y][x] = static_cast<Color>(color);
+            }
+        }
+    }
+
     ~Grid(){
         for(int i = 0; i < height; i++){
             delete[] matrix[i];

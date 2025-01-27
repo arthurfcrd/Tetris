@@ -43,7 +43,7 @@ public:
     int getPlayerId() const;
     void sendGameState();
     void readServerInfo();
-    void readGameState(); 
+    //void readGameState(); 
     void close();
 };                  
 
