@@ -94,6 +94,7 @@ void TetrisClient::readServerInfo() {
 
 void TetrisClient::run() {
     SDL_Event event;
+    readGameState(); // Start reading from the server
     while (onlineGame.game.isRunning()) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -101,11 +102,10 @@ void TetrisClient::run() {
             } else {
                 onlineGame.game.updateHandler(event);
             }
-        onlineGame.game.update();
-        onlineGame.game.draw(renderer_);
-        SDL_RenderPresent(renderer_);
-        readGameState();
-        sendGameState();
+            onlineGame.game.update();
+            onlineGame.game.draw(renderer_);
+            SDL_RenderPresent(renderer_);
+            sendGameState();
         }
     }
 }
@@ -124,7 +124,7 @@ void TetrisClient::readGameState() {
                     streambuf_.consume(streambuf_.size());
                     readGameState();
                 } else {
-                    std::cout << "Error: " << ec.message() << std::endl;
+                    std::cout << "Error reading game state: " << ec.message() << std::endl;
                     socket_.close();
                 }
             });
@@ -188,7 +188,11 @@ void TetrisServer::startRead(std::shared_ptr<asio::ip::tcp::socket> client) {
                     buffer->consume(buffer->size());
                     broadcastMsg(msg, client);
                     startRead(client);
+                } else if (ec == asio::error::eof) {
+                    std::cout << "Client disconnected normally." << std::endl;
+                    clients_.erase(client);
                 } else {
+                    std::cout << "Error reading from client: " << ec.message() << std::endl;
                     clients_.erase(client);
                 }
             });
@@ -208,13 +212,3 @@ void TetrisServer::broadcastMsg(const std::string& gameState,
         }
     }
 }
-
-
-
-/*void TetrisServer::removeSession(int playerId) {
-    sessions.erase(std::remove_if(sessions.begin(), sessions.end(),
-        [playerId](const std::shared_ptr<TetrisSession>& session) {
-            return session->getPlayerId() == playerId;
-        }),
-        sessions.end());
-}*/
