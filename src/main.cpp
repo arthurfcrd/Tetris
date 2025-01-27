@@ -2,7 +2,7 @@
 #include "music.hpp"
 //#include <asio.hpp>
 #include <iostream>
-#include "server.cpp"
+#include "server.hpp"
 
 #define ERROR 1
 
