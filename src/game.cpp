@@ -23,10 +23,13 @@ Game::~Game() {
 }
 
 bool Game::hasWon() const{
-    if (hud.getGameType() == GameType::LINES_BASED)
+    GameType gt = hud.getGameType();
+    if (gt == GameType::LINES_BASED)
         return hud.getLinesCleared() >= hud.getLinesToClear();
-    else if (hud.getGameType() == GameType::TIME_BASED)
+    else if (gt == GameType::TIME_BASED)
         return hud.getTimeLeft() == 0;
+    else if (gt == GameType::CLASSIC)
+        return hud.getCurrentLevel() == 15;
     return false;
 }
 
@@ -43,13 +46,6 @@ void Game::updateHandler(Key key){
 void Game::update(){
     if (keyboardHandler.getKeyState(Key::ESC) || keyboardHandler.getKeyState(Key::Q)){
         running = false;
-        return;
-    }
-    if (gameOver){
-        return;
-    }
-
-    if (hasWon()) {
         return;
     }
 
@@ -158,6 +154,10 @@ void Game::update(){
         garbageToSend += n;
         hud.setLinesCleared(hud.getLinesCleared() + n);
         hud.updateLevel();
+        if (hasWon()) {
+            gameOver = true;
+            return;
+        }
         tetroBag.switchTetromino();
         releaseHoldLock();
     }
@@ -165,10 +165,52 @@ void Game::update(){
 
 
 void Game::draw(SDL_Renderer* renderer) {
-    hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
-    grid.drawGrid(renderer);
-    tetroBag.currentTetromino.drawGhost(renderer, grid);
-    tetroBag.currentTetromino.drawTetromino(renderer);
+    if (gameOver) {
+        showGameOverInfos(renderer);
+        running = false;
+    } else {
+        hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
+        grid.drawGrid(renderer);
+        tetroBag.currentTetromino.drawTetromino(renderer);
+        tetroBag.currentTetromino.drawGhost(renderer, grid);
+    }
+}
+
+void Game::showGameOverInfos(SDL_Renderer* renderer) {
+    std::string text;
+    std::string musicFile;
+    if (hasWon()) {
+        musicFile = "../assets/audio/sounds/victory.mp3";
+        text = "You won!\n";
+        if (hud.getGameType() == GameType::CLASSIC)
+            text += "You reached level 15\n";
+        text += ("You cleared " + std::to_string(hud.getLinesCleared()) + " lines\n");
+        text += "Your score is " + std::to_string(hud.getScore()) + "\n";
+    } else {
+        musicFile = "../assets/audio/sounds/gameover.mp3";
+        text = "You lost!\n";
+        if (hud.getGameType() == GameType::CLASSIC)
+            text += "You were at level " + std::to_string(hud.getCurrentLevel()) + "\n";
+        else if (hud.getGameType() != GameType::INFINITE)
+            text += "You only cleared " + std::to_string(hud.getLinesCleared()) + " lines over "
+                + std::to_string(hud.getLinesToClear()) + "\n";
+        text += "Your score is " + std::to_string(hud.getScore()) + "\n";
+
+    }
+    text += "Press Escape to continue...";
+
+    InfoUI infoUI(renderer, "GAME OVER", text);
+    SDL_Event event;
+    Music infoMusic(musicFile);
+    infoMusic.playOnce();
+    while (true) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
+                return;
+            }
+        }
+        infoUI.showInfo();
+    }
 }
 
 
