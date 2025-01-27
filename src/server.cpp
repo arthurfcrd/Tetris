@@ -76,7 +76,10 @@ void TetrisSession::doRead() {
     asio::async_read(socket, asio::buffer(data, max_length),
         [this, self](std::error_code ec, std::size_t length) {
             if (!ec) {
-                server.broadcastGameState(data, playerId);
+                std::string gameState = std::string(data, length);
+                server.broadcastGameState(gameState, playerId);
+                // empty the data 
+                std::fill(data, data + max_length, 0);
                 doWrite(length);
             }
             else{
