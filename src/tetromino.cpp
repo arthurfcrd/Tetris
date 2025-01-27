@@ -4,7 +4,7 @@
 #include <cassert>
 #include <sstream>
 
-const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T and Z
+static const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T and Z
     {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
     {{0, 0}, {-1, 0}, {0, 0}, {1, 0}},
     {{0, 0}, {-1, -1}, {0, 0}, {1, -1}},
@@ -12,7 +12,7 @@ const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T and Z
     {{0, 0}, {-1, 2}, {0, 0}, {1, 2}}
 };
 
-const Point wallkicksI[5][4] = { // wallkick offsets for I
+static const Point wallkicksI[5][4] = { // wallkick offsets for I
     {{0, 0}, {1, 0}, {1, 1}, {0, 1}},
     {{1, 0}, {0, 0}, {-1, 1}, {0, 1}},
     {{-2, 0}, {0, 0}, {2, 1}, {0, 1}},
@@ -20,7 +20,7 @@ const Point wallkicksI[5][4] = { // wallkick offsets for I
     {{-2, 0}, {0, -2}, {2, 0}, {0, 2}}
 };
 
-std::mt19937 rng(std::random_device{}());
+static std::mt19937 rng(std::random_device{}());
 
 
 /* Tetromino getters and setters */

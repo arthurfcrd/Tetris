@@ -40,6 +40,9 @@ void drawSquare(SDL_Renderer* renderer, const SDL_Rect& rect, Color color){
         case Color::ORANGE:
             SDL_SetRenderDrawColor(renderer, 255, 165, 0, 255);
             break;
+        case Color::GRAY:
+            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+            break;
         case Color::NONE:
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             break;

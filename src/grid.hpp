@@ -49,7 +49,7 @@ public:
     void insertTetromino(const Tetromino&); // inserts a tetromino into the grid
     bool isTopOut() const; // checks if the tetromino has been insert at least partially in the spawn zone
     int clearLines(); // clear full lines and return their number
-    void addGarbageLines(int nLines); // add nLines garbage lines at the bottom of the grid
+    bool addGarbageLines(int nLines); // add nLines garbage lines at the bottom of the grid
     void drawGrid(SDL_Renderer* renderer) const; // draws the grid on the screen
     // draws the grid on the screen starting at position (startX, startY)
     void drawGrid(SDL_Renderer* renderer, int startX, int startY) const;
@@ -58,6 +58,8 @@ private:
     bool lineIsFull(int lineNum) const; // Check if the line has to be cleared
     void moveLineDown(int lineNum); 
     void moveLinesDown(int baseLine); // move every lines above (when seeing in game) lineNum down 1 block
+    bool moveLineUp(int lineNum); // move the line up 1 block
+    bool moveLinesUp(int nbOfLines); // move every lines up (when seeing in game) nbOfLines
     
     friend class Tetromino;
 };
