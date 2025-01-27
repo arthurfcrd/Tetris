@@ -219,7 +219,7 @@ void InfoUI::showInfo() {
        textBottomY = drawCenteredText(renderer_, textBottomY+25, line, 55);
     
     }
-    
+    SDL_RenderPresent(renderer_);
 }
 
 

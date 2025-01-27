@@ -209,7 +209,6 @@ void Game::showGameOverInfos(SDL_Renderer* renderer) {
             }
         }
         infoUI.showInfo();
-        SDL_RenderPresent(renderer);
     }
 }
 
