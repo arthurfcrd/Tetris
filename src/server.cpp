@@ -42,6 +42,10 @@ std::string OnlineGame::serialize() {
         res += ":" + std::to_string(garbageToSend);
         garbageToSend = 0;
     }
+    // add header to the message
+    std::string header = std::to_string(res.size());
+    header = std::string(4 - header.size(), '0') + header;
+    res = header + res;
     return res;
 }
 
@@ -51,7 +55,8 @@ TetrisSession::TetrisSession(asio::ip::tcp::socket socketVal, int playerIdVal, T
     : socket(std::move(socketVal)), playerId(playerIdVal), server(serverVal) {}
 
 void TetrisSession::start() {
-    doRead();
+    std::cout << "Session started for playerId = " << playerId << std::endl;
+    doReadHeader();
 }
 
 int TetrisSession::getPlayerId() const {
@@ -63,7 +68,7 @@ void TetrisSession::sendGameState(const std::string& gameState) {
     asio::async_write(socket, asio::buffer(gameState),
         [this, self](std::error_code ec, std::size_t /*length*/) {
             if (!ec) {
-                doRead();
+                doReadHeader();
             }
             else{
                 std::cerr << "Error sending game state: " << ec.message() << std::endl;
@@ -71,34 +76,37 @@ void TetrisSession::sendGameState(const std::string& gameState) {
         });
 }
 
-void TetrisSession::doRead() {
+void TetrisSession::doReadHeader() {
     auto self(shared_from_this());
-    asio::async_read(socket, asio::buffer(data, max_length),
-        [this, self](std::error_code ec, std::size_t length) {
+    asio::async_read(socket, asio::buffer(header, header_length),  // Read the fixed-length header
+        [this, self](std::error_code ec, std::size_t /*length*/) {
             if (!ec) {
-                std::string gameState = std::string(data, length);
-                server.broadcastGameState(gameState, playerId);
-                // empty the data 
-                std::fill(data, data + max_length, 0);
-                doWrite(length);
-            }
-            else{
-                std::cerr << "Error reading data: " << ec.message() << std::endl;
+                message_length = std::stoi(std::string(header, header_length));  // Extract message length
+                data.resize(message_length);  // Resize buffer for the payload
+                doReadBody();  // Read the actual payload
+            } else {
+                handleError(ec);
             }
         });
 }
 
-void TetrisSession::doWrite(std::size_t length) {
+void TetrisSession::doReadBody() {
     auto self(shared_from_this());
-    asio::async_write(socket, asio::buffer(data, length),
+    asio::async_read(socket, asio::buffer(data.data(), data.size()),  // Read the payload
         [this, self](std::error_code ec, std::size_t /*length*/) {
             if (!ec) {
-                doRead();
-            }
-            else{
-                std::cerr << "Error sending data: " << ec.message() << std::endl;
+                std::string gameState(data.begin(), data.end());  // Convert payload to string
+                server.broadcastGameState(gameState, playerId);  // Relay to other clients
+                doReadHeader();  // Prepare for the next message
+            } else {
+                handleError(ec);
             }
         });
+}
+
+void TetrisSession::handleError(const std::error_code& ec) {
+    std::cerr << "Session error (playerId = " << playerId << "): " << ec.message() << std::endl;
+    server.removeSession(playerId);  // Ensure this session is removed
 }
 
 /*void TetrisSession::handleData(std::size_t length) {
@@ -119,7 +127,7 @@ void TetrisSession::doWrite(std::size_t length) {
 // --- TetrisServer Implementation ---
 
 TetrisServer::TetrisServer(asio::io_context& io_context, short port)
-    : controlAcceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), 
+    : acceptor(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), 
     socket(io_context), playerCount(0), sessions() {
     startAccept();
 }
@@ -133,10 +141,10 @@ void TetrisServer::broadcastGameState(const std::string& gameState, int senderId
 }
 
 void TetrisServer::startAccept() {
-    controlAcceptor.async_accept(socket,
+    acceptor.async_accept(socket,
             [this](std::error_code ec) {
                 if (!ec) {
-                    std::cout << "Accepting connecting (playerId=)" << playerCount << std::endl;
+                    std::cout << "Accepting connecting, playerId = " << playerCount << std::endl;
                     auto session = std::make_shared<TetrisSession>(std::move(socket), playerCount++, *this);
                     sessions.push_back(session);
                     session->start();
@@ -145,4 +153,12 @@ void TetrisServer::startAccept() {
                 }
                 startAccept();
             });
+}
+
+void TetrisServer::removeSession(int playerId) {
+    sessions.erase(std::remove_if(sessions.begin(), sessions.end(),
+        [playerId](const std::shared_ptr<TetrisSession>& session) {
+            return session->getPlayerId() == playerId;
+        }),
+        sessions.end());
 }
