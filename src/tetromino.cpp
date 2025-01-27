@@ -305,3 +305,17 @@ BaseTetromino::BaseTetromino(std::string serializedTetromino) {
     iss >> tmp;
     color = static_cast<Color>(tmp);
 }
+
+void BaseTetromino::fromSerialized(std::string serializedTetromino) {
+    std::istringstream iss(serializedTetromino);
+    // set type
+    int tmp;
+    iss >> tmp;
+    type = static_cast<TetrominoType>(tmp);
+    iss >> pos.x >> pos.y;
+    for (int j = 0; j < 4; j++){
+        iss >> blocks[j].x >> blocks[j].y;
+    }
+    iss >> tmp;
+    color = static_cast<Color>(tmp);
+}

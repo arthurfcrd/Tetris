@@ -17,10 +17,11 @@ class BaseGame{
 protected:
     Grid grid;
     bool running;
-private:
-    BaseTetromino curTetromino;
+    TetrominoBag tetroBag;
 public:
-    BaseGame() : grid(), running(true), curTetromino() {}
+
+    BaseGame(bool isRunning) : grid(), running(isRunning), tetroBag() {}
+    BaseGame() : BaseGame(true) {}
     bool isRunning() const;
     friend class OnlineGame;
 };
@@ -30,7 +31,6 @@ private:
     HUD hud;
     friend class OnlineGame;
 protected:
-    TetrominoBag tetroBag;
     bool gameOver;
     // after holding a tetromino the player must place the next tetromino before holding again
     bool canHold_ = true; 
@@ -40,13 +40,15 @@ protected:
     std::chrono::time_point<std::chrono::system_clock> touchedGroundTime;
     KeyboardHandler keyboardHandler;
 public:
-    explicit Game(GameType gt, int nltc, int ttc) : // nltc : number of lines to clear, ttc : time to clear the lines
-            BaseGame(), hud(gt, nltc, ttc),
-            tetroBag(), gameOver(false),
+    explicit Game(GameType gt, int nltc, int ttc, bool isRunning) : // nltc : number of lines to clear, ttc : time to clear the lines
+            BaseGame(isRunning), hud(gt, nltc, ttc),
+            gameOver(false),
             lastFallTime(std::chrono::system_clock::now()), 
             lastHorizontalMoveTime(std::chrono::system_clock::now()), 
             lastVerticalMoveTime(std::chrono::system_clock::now()), 
             keyboardHandler() {}
+    explicit Game(GameType gt, int nLinesToClear, int timeToClear) : 
+        Game(gt, nLinesToClear, timeToClear, true) {}
     // default gamemode
     explicit Game() : Game(GameType::LINES_BASED, 10, 0) {}
     void update();
