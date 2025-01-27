@@ -72,6 +72,22 @@ class BaseUI {
         ~BaseUI();
 };
 
+class InfoUI {
+    SDL_Renderer* renderer_;
+    int windowWidth_;
+    int windowHeight_;
+
+    SDL_Texture* background_;
+    SDL_Rect bgRect_;
+
+    std::string title_;
+    std::string text_;
+
+    public:
+        InfoUI(SDL_Renderer* renderer, std::string title, std::string text);
+        void showInfo();
+};
+
 enum class GameType : int {
     TIME_BASED, LINES_BASED, CLASSIC, INFINITE, MULTIPLAYER
 };

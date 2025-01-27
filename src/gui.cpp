@@ -195,10 +195,35 @@ BaseUI::~BaseUI() {
     Mix_FreeChunk(selectSound);
 }
 
+/* --------------- InfoUI definition --------------------- */
+
+InfoUI::InfoUI(SDL_Renderer* renderer, std::string title, std::string text) :
+    renderer_(renderer), title_(title), text_(text) {
+    SDL_GetRendererOutputSize(renderer, &windowWidth_, &windowHeight_);
+
+    // Load the background texture once
+    background_ = createTextureFromIMG(renderer, "../assets/img/background/bg_dullstars5.png");
+    bgRect_ = {0, 0, windowWidth_, windowWidth_};
+    SDL_QueryTexture(background_, NULL, NULL, &bgRect_.x, &bgRect_.y);
+    bgRect_.x = (bgRect_.x - windowWidth_) / 2;
+    bgRect_.y = (bgRect_.y - windowHeight_) / 2;
+}
+
+void InfoUI::showInfo() {
+    SDL_RenderCopy(renderer_, background_, &bgRect_, NULL);
+    int textBottomY = drawCenteredText(renderer_, 50, title_, 100);
+
+    std::istringstream iss(text_);
+    std::string line;
+    while (std::getline(iss, line)) {
+       textBottomY = drawCenteredText(renderer_, textBottomY+25, line, 55);
+    
+    }
+    
+}
 
 
-
-// HUD methods definition
+/* --------------- HUD methods definition ---------------- */
 HUD::HUD(GameType gt, int nltc, int ttc){
     nextBox = new Grid(5, 4);
     holdBox = new Grid(5, 4);
