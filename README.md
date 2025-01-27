@@ -13,9 +13,7 @@ Implementation of the Tetris game in the context of the IN204 course
 - See what the next tetromino will be
 - Do a hard drop : the current tetromino will fall immediatly
 - Hold one tetromino for later use
-- [TODO] Perform a T-Spin
-- [TODO] Swap current tetromino with the next
-- [TODO] Add a Ghost piece to see the outline of the falling tetromino
+- Ghost piece to see the outline of the falling tetromino
 
 ### Scoring system
 - Clear lines to score points
@@ -24,7 +22,6 @@ Implementation of the Tetris game in the context of the IN204 course
     - 3 lines = 500
     - 4 lines = 800
 - Hard drop = 2 x distance
-- [TODO] T-spin
 
 
 ### Gamemodes
@@ -33,7 +30,7 @@ Implementation of the Tetris game in the context of the IN204 course
 - Marathon: Clear 150 lines with no time limit
 - Ultra: Clear as many lines as possible within 3 minutes
 - Infinite: Play as long as you want in constant speed
-- [TODO] 1v1 multiplayer: each player has its own grid
+- Multiplayer: each player has its own grid
 
 ### Controls:
     - Left: move the tetromino left
@@ -43,12 +40,12 @@ Implementation of the Tetris game in the context of the IN204 course
     - Z : rotate counter-clockwise
     - Space : do a hard drop
     - H : hold a tetromino
-    - [TODO] ?? : swap current and next tetrominos
     - [TODO] Enter: Pause
     - Escape (or Q): Quit the game
 
 
 ## Ideas
+- T-Spin implementation
 - Multiplayer mode with more players ?
 - Mutliplayer within the same grid ?
 - Dig mode: clear generated broken lines
