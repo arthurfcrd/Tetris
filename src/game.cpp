@@ -38,6 +38,10 @@ void Game::updateHandler(const SDL_Event& event){
     }
 }
 
+void Game::updateHandler(Key key){
+    keyboardHandler.setKeyState(key, true);
+}
+
 void Game::update(){
     if (keyboardHandler.getKeyState(Key::ESC) || keyboardHandler.getKeyState(Key::Q)){
         running = false;
@@ -68,9 +72,6 @@ void Game::update(){
     if (elapsedSecondsFromVerticalMove.count() > VERTICAL_MOVE_RATE){
         if (keyboardHandler.getKeyState(Key::DOWN)){
             curTetro->move(grid, 0, 1);
-            // // pressing the Down key while touching the ground activates the locking; TODO : maybe change that
-            // if (curTetro->hasTouchedGround())
-            //     curTetro->setLocked(true);
         }
         lastVerticalMoveTime = currentTime;
     }
@@ -164,14 +165,15 @@ void Game::update(){
 }
 
 
-void Game::draw(SDL_Renderer* renderer) {
+void Game::draw(SDL_Renderer* renderer) const {
     hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
     grid.drawGrid(renderer);
     tetroBag.currentTetromino.drawTetromino(renderer);
+    tetroBag.currentTetromino.drawGhost(renderer, grid);
 }
 
 
-bool Game::isRunning() const{
+bool BaseGame::isRunning() const{
     return running;
 }
 

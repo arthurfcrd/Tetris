@@ -9,6 +9,7 @@
 
 #include "grid.hpp"
 #include "graphics.hpp"
+#include "grid.hpp"
 
 class Tetromino; // forward declaration
 
@@ -72,43 +73,59 @@ class BaseUI {
 };
 
 enum class GameType : int {
-    TIME_BASED, LINES_BASED, CLASSIC, INFINITE
+    TIME_BASED, LINES_BASED, CLASSIC, INFINITE, MULTIPLAYER
 };
 
 
 class HUD {
-    private:
-        Grid* nextBox;
-        Grid* holdBox;
+private:
+    Grid* nextBox;
+    Grid* holdBox;
 
-        GameType gameType;
-        int score;
-        int nLinesCleared;
-        int nLinesToClear;
-        std::chrono::time_point<std::chrono::system_clock> gameChrono;
-        double timeToClear; // number of seconds the player has in time-based gamemodes
+    int leftGridX;
+    int leftGridY;
+    int rightGridX;
+    int rightGridY;
 
-        int currentLevel;
-        double fallRate;
-        Mix_Chunk* levelUpSound;
-    public:
-        HUD(GameType gt, int nltc, int ttc);
-        ~HUD();
+    Mix_Chunk* levelUpSound;
+    
+    GameType gameType;
+    int score;
+    int enemyScore;
+    int nLinesCleared;
+    int nLinesToClear;
+    std::chrono::time_point<std::chrono::system_clock> gameChrono;
+    double timeToClear; // number of seconds the player has in time-based gamemodes
 
-        int getScore() const;
-        void setScore(int newScore);
-        int getLinesCleared() const;
-        void setLinesCleared(int newVal);
-        int getLinesToClear() const;
-        GameType getGameType() const;
-        int getCurrentLevel() const;
-        double getFallRate() const;
-        void setFallRate(double newVal);
+    int currentLevel;
+    double fallRate;
+public:
+    HUD(GameType gt, int nltc, int ttc);
+    HUD(GameType gt) : HUD(gt, 0, 0) {
+        if (gt == GameType::LINES_BASED)
+            nLinesToClear = 10;
+        else if (gt == GameType::TIME_BASED)
+            timeToClear = 3 * 60;
+        else if (gt == GameType::MULTIPLAYER){}
+            // TODO
+    }
+    ~HUD();
 
-        void increaseLevel();
-        void updateLevel();
+    int getScore() const;
+    void setScore(int newScore);
+    void setEnemyScore(int newScore);
+    int getLinesCleared() const;
+    void setLinesCleared(int newVal);
+    int getLinesToClear() const;
+    GameType getGameType() const;
+    int getCurrentLevel() const;
+    double getFallRate() const;
+    void setFallRate(double newVal);
 
-        void insertIntoBox(Grid* box, Tetromino& tetro);
-        double getTimeLeft() const;
-        void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
+    void increaseLevel();
+    void updateLevel();
+
+    void insertIntoBox(Grid* box, Tetromino& tetro) const;
+    double getTimeLeft() const;
+    void drawHUD(SDL_Renderer* renderer, Tetromino nextTetro, Tetromino holdTetro);
 };

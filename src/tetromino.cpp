@@ -2,8 +2,9 @@
 #include "grid.hpp"
 #include <random>
 #include <cassert>
+#include <sstream>
 
-const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T and Z
+static const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T and Z
     {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
     {{0, 0}, {-1, 0}, {0, 0}, {1, 0}},
     {{0, 0}, {-1, -1}, {0, 0}, {1, -1}},
@@ -11,7 +12,7 @@ const Point wallkicksJLSTZ[5][4] = { // wallkick offsets for J, L, S, T and Z
     {{0, 0}, {-1, 2}, {0, 0}, {1, 2}}
 };
 
-const Point wallkicksI[5][4] = { // wallkick offsets for I
+static const Point wallkicksI[5][4] = { // wallkick offsets for I
     {{0, 0}, {1, 0}, {1, 1}, {0, 1}},
     {{1, 0}, {0, 0}, {-1, 1}, {0, 1}},
     {{-2, 0}, {0, 0}, {2, 1}, {0, 1}},
@@ -19,88 +20,10 @@ const Point wallkicksI[5][4] = { // wallkick offsets for I
     {{-2, 0}, {0, -2}, {2, 0}, {0, 2}}
 };
 
-std::mt19937 rng(std::random_device{}());
-
-
-/* Tetromino constructors */
-Tetromino::Tetromino(TetrominoType tetroType) : // TODO : change pos to be not hardcoded if the size of the grid changes
-    type(tetroType), pos({5, 1}), rotationIndex(0), 
-    touchedGround(false), locked(false) {
-    switch(tetroType){
-        case TetrominoType::I:
-            blocks[0] = {-1, 0};
-            blocks[1] = {0, 0};
-            blocks[2] = {1, 0};
-            blocks[3] = {2, 0};
-            color = Color::CYAN;
-            pos.y = 0;
-            break;
-        case TetrominoType::O:
-            blocks[0] = {0, -1};
-            blocks[1] = {0, 0};
-            blocks[2] = {1, -1};
-            blocks[3] = {1, 0};
-            color = Color::YELLOW;
-            break;
-        case TetrominoType::T:
-            blocks[0] = {-1, 0};
-            blocks[1] = {0, 0};
-            blocks[2] = {0, -1};
-            blocks[3] = {1, 0};
-            color = Color::MAGENTA;
-            break;
-        case TetrominoType::S:
-            blocks[0] = {-1, 0};
-            blocks[1] = {0, 0};
-            blocks[2] = {0, -1};
-            blocks[3] = {1, -1};
-            color = Color::GREEN;
-            break;
-        case TetrominoType::Z:
-            blocks[0] = {-1, -1};
-            blocks[1] = {0, -1};
-            blocks[2] = {0, 0};
-            blocks[3] = {1, 0};
-            color = Color::RED;
-            break;
-        case TetrominoType::J:
-            blocks[0] = {-1, -1};
-            blocks[1] = {-1, 0};
-            blocks[2] = {0, 0};
-            blocks[3] = {1, 0};
-            color = Color::BLUE;
-            break;
-        case TetrominoType::L:
-            blocks[0] = {-1, 0};
-            blocks[1] = {0, 0};
-            blocks[2] = {1, 0};
-            blocks[3] = {1, -1};
-            color = Color::ORANGE;
-            break;
-        case TetrominoType::NONE:
-            break;
-        }
-
-}
-
-Tetromino::Tetromino() : Tetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}
-
-Tetromino::Tetromino(const Tetromino& other) {
-    type = other.type;
-    pos.x = other.pos.x; 
-    pos.y = other.pos.y;
-    for (int i = 0; i < 4; i++)
-        blocks[i] = other.blocks[i];
-    color = other.color;
-    rotationIndex = other.rotationIndex;
-}
+static std::mt19937 rng(std::random_device{}());
 
 
 /* Tetromino getters and setters */
-TetrominoType Tetromino::getType() const {
-    return type;
-}
-
 int Tetromino::getPosX() const {
     return pos.x;
 }
@@ -133,6 +56,16 @@ void Tetromino::setTouchedGround(bool newVal) {
 
 
 /* Tetromino other methods*/
+
+void Tetromino::drawGhost(SDL_Renderer* renderer, const Grid& g) const {
+    Tetromino ghost = *this;
+    ghost.color = Color::GHOST; // color used for ghost
+    while (!ghost.checkCollision(g)){
+        ghost.move(g, 0, 1); // won't move if the tetromino has reached the bottom or another block
+    }
+    ghost.drawTetromino(renderer);
+}
+
 void Tetromino::move(const Grid& g, int dx, int dy){
     for (const auto& point : blocks){
         Point dstTile = pos + point + Point{dx, dy};
@@ -195,23 +128,6 @@ bool Tetromino::checkCollision(const Grid& g) const{
     return false;
 }
 
-void Tetromino::drawTetromino(SDL_Renderer* renderer) const{
-    SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
-    for (const auto& block : blocks){
-        rect.x = PANE_SIZE + (pos.x + block.x) * rect.w;
-        rect.y = (pos.y + block.y) * rect.h;
-        drawSquare(renderer, rect, color);
-    }
-    //drawCenter(renderer); // for debugging 
-}
-
-void Tetromino::drawCenter(SDL_Renderer* renderer) const{
-    SDL_Rect rect = {PANE_SIZE + pos.x * TILE_SIZE + TILE_SIZE * 3 / 8, pos.y * TILE_SIZE + TILE_SIZE * 3 / 8, TILE_SIZE / 4, TILE_SIZE / 4};
-    drawSquare(renderer, rect, Color::NONE);
-}
-
-
-
 
 
 /* TetrominoBag methods */
@@ -235,7 +151,7 @@ void TetrominoBag::pickTetromino() {
     if (tetroList.empty()) {
         createBag();
     }
-    currentTetromino = Tetromino(tetroList.back());
+    currentTetromino = BaseTetromino(tetroList.back());
     tetroList.pop_back();
 }
 
@@ -243,7 +159,7 @@ void TetrominoBag::pickNextTetromino() {
     if (tetroList.empty()) {
         createBag();
     }
-    nextTetromino = Tetromino(tetroList.back());
+    nextTetromino = BaseTetromino(tetroList.back());
     tetroList.pop_back();
 }
 
@@ -255,12 +171,151 @@ void TetrominoBag::switchTetromino() {
 
 void TetrominoBag::hold() {
     if (heldTetromino.getType() == TetrominoType::NONE) {
-        heldTetromino = Tetromino(currentTetromino.getType());
+        heldTetromino = BaseTetromino(currentTetromino.getType());
         switchTetromino();
     } else if (heldTetromino.getType() != currentTetromino.getType()){
         // do not switch if current tetromino is the same as the held one
         TetrominoType heldType = heldTetromino.getType();
-        heldTetromino = Tetromino(currentTetromino.getType());
-        currentTetromino = Tetromino(heldType);
+        heldTetromino = BaseTetromino(currentTetromino.getType());
+        currentTetromino = BaseTetromino(heldType);
     }
+}
+
+// BaseTetromino methods
+
+BaseTetromino::BaseTetromino(TetrominoType tetroType) : // TODO : change pos to be not hardcoded if the size of the grid changes
+    type(tetroType), pos({5, 1}){
+    color = Color::NONE;
+    switch(tetroType){
+        case TetrominoType::I:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, 0};
+            blocks[3] = {2, 0};
+            color = Color::CYAN;
+            pos.y = 0;
+            break;
+        case TetrominoType::O:
+            blocks[0] = {0, -1};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, -1};
+            blocks[3] = {1, 0};
+            color = Color::YELLOW;
+            break;
+        case TetrominoType::T:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {0, -1};
+            blocks[3] = {1, 0};
+            color = Color::MAGENTA;
+            break;
+        case TetrominoType::S:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {0, -1};
+            blocks[3] = {1, -1};
+            color = Color::GREEN;
+            break;
+        case TetrominoType::Z:
+            blocks[0] = {-1, -1};
+            blocks[1] = {0, -1};
+            blocks[2] = {0, 0};
+            blocks[3] = {1, 0};
+            color = Color::RED;
+            break;
+        case TetrominoType::J:
+            blocks[0] = {-1, -1};
+            blocks[1] = {-1, 0};
+            blocks[2] = {0, 0};
+            blocks[3] = {1, 0};
+            color = Color::BLUE;
+            break;
+        case TetrominoType::L:
+            blocks[0] = {-1, 0};
+            blocks[1] = {0, 0};
+            blocks[2] = {1, 0};
+            blocks[3] = {1, -1};
+            color = Color::ORANGE;
+            break;
+        case TetrominoType::NONE:
+            break;
+        default:
+            assert(false); // should never happen
+            break;
+        }
+}
+
+BaseTetromino::BaseTetromino() : BaseTetromino(static_cast<TetrominoType>(std::uniform_int_distribution<int>(0, 6)(rng))){}
+
+BaseTetromino::BaseTetromino(const BaseTetromino& other) {
+    type = other.type;
+    pos.x = other.pos.x; 
+    pos.y = other.pos.y;
+    for (int i = 0; i < 4; i++)
+        blocks[i] = other.blocks[i];
+    color = other.color;
+}
+
+TetrominoType BaseTetromino::getType() const {
+    return type;
+}
+
+void BaseTetromino::drawTetromino(SDL_Renderer* renderer) const{
+    SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
+    for (const auto& block : blocks){
+        rect.x = PANE_SIZE + (pos.x + block.x) * rect.w;
+        rect.y = (pos.y + block.y) * rect.h;
+        drawSquare(renderer, rect, color);
+    }
+}
+
+void BaseTetromino::drawTetromino(SDL_Renderer* renderer, int startX, int startY) const{
+    SDL_Rect rect = {0, 0, TILE_SIZE, TILE_SIZE};
+    for (const auto& block : blocks){
+        rect.x = startX + (pos.x + block.x) * rect.w;
+        rect.y = startY + (pos.y + block.y) * rect.h;
+        drawSquare(renderer, rect, color);
+    }
+}
+
+std::string BaseTetromino::serialize() const {
+    // serialize the type, pos, blocks and color 
+    std::string serializedTetromino = "";
+    serializedTetromino += std::to_string(static_cast<int>(type));
+    serializedTetromino += " " + std::to_string(pos.x) + " " + std::to_string(pos.y);
+    for (int i = 0; i < 4; i++){
+        serializedTetromino += " " + std::to_string(blocks[i].x) + " " + std::to_string(blocks[i].y);
+    }
+    serializedTetromino += " " + std::to_string(static_cast<int>(color));
+    return serializedTetromino;
+}
+
+BaseTetromino::BaseTetromino(std::string serializedTetromino) { 
+    // Tetrominoes reconstructed this way will only be displayed and not interacted with
+    // so rotationIndex, touchedGround and locked are not set
+    std::istringstream iss(serializedTetromino);
+    // set type
+    int tmp;
+    iss >> tmp;
+    type = static_cast<TetrominoType>(tmp);
+    iss >> pos.x >> pos.y;
+    for (int j = 0; j < 4; j++){
+        iss >> blocks[j].x >> blocks[j].y;
+    }
+    iss >> tmp;
+    color = static_cast<Color>(tmp);
+}
+
+void BaseTetromino::fromSerialized(std::string serializedTetromino) {
+    std::istringstream iss(serializedTetromino);
+    // set type
+    int tmp;
+    iss >> tmp;
+    type = static_cast<TetrominoType>(tmp);
+    iss >> pos.x >> pos.y;
+    for (int j = 0; j < 4; j++){
+        iss >> blocks[j].x >> blocks[j].y;
+    }
+    iss >> tmp;
+    color = static_cast<Color>(tmp);
 }

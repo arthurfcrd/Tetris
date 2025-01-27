@@ -13,12 +13,24 @@ const double ROTATE_RATE = 0.12; // seconds between rotations
 
 const double LOCK_DELAY = 0.5; // seconds before a locking a tetromino that has touched the ground
 
-class Game{
+class BaseGame{
+protected:
+    Grid grid;
+    bool running;
+    TetrominoBag tetroBag;
+public:
+
+    BaseGame(bool isRunning) : grid(), running(isRunning), tetroBag() {}
+    BaseGame() : BaseGame(true) {}
+    bool isRunning() const;
+    friend class OnlineGame;
+};
+
+class Game : public BaseGame {
 private:
     HUD hud;
-    Grid grid;
-    TetrominoBag tetroBag;
-    bool running;
+    friend class OnlineGame;
+protected:
     bool gameOver;
     // after holding a tetromino the player must place the next tetromino before holding again
     bool canHold_ = true; 
@@ -33,20 +45,25 @@ private:
     Mix_Chunk* holdLockedSound;
     Mix_Chunk* levelUpSound;
 public:
-    explicit Game(GameType gt, int nltc, int ttc);
-    explicit Game(); // default gamemode
-    ~Game();
-
-    void update(const SDL_Event& event);
+    explicit Game(GameType gt, int nltc, int ttc, bool isRunning) : // nltc : number of lines to clear, ttc : time to clear the lines
+            BaseGame(isRunning), hud(gt, nltc, ttc),
+            gameOver(false),
+            lastFallTime(std::chrono::system_clock::now()), 
+            lastHorizontalMoveTime(std::chrono::system_clock::now()), 
+            lastVerticalMoveTime(std::chrono::system_clock::now()), 
+            keyboardHandler() {}
+    explicit Game(GameType gt, int nLinesToClear, int timeToClear) : 
+        Game(gt, nLinesToClear, timeToClear, true) {}
+    // default gamemode
+    explicit Game() : Game(GameType::LINES_BASED, 10, 0) {}
     void update();
     void updateHandler(const SDL_Event& event);
-    void draw(SDL_Renderer* renderer);
+    void updateHandler(Key key);
+    void draw(SDL_Renderer* renderer) const;
     bool hasWon() const;
 
-    bool isRunning() const;
     void setRunning(bool);
     void setHoldLock();
     void releaseHoldLock();
     bool canHold() const;
-
 };

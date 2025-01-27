@@ -3,6 +3,7 @@
 #include "point.hpp"
 #include <cassert>
 
+static std::mt19937 rng(std::random_device{}());
 
 int Grid::getWidth() const {
     return width;
@@ -71,7 +72,6 @@ void Grid::moveLineDown(int lineNum) {
         matrix[lineNum + 1][col] = matrix[lineNum][col];
         matrix[lineNum][col] = Color::NONE;
     }
-
 }
 
 // move every lines above baseLine down 1 block
@@ -81,6 +81,22 @@ void Grid::moveLinesDown(int baseLine) {
     }
 }
 
+bool Grid::moveLineUp(int lineNum){
+    if (lineNum == 0) return false;
+    assert(lineNum > 0 && lineNum < height);
+    for (int col = 0; col < width; col++) {
+        matrix[lineNum - 1][col] = matrix[lineNum][col];
+        matrix[lineNum][col] = Color::NONE;
+    }
+    return true;
+}
+
+bool Grid::moveLinesUp(int nbOfLines){
+    for (int i = nbOfLines; i < height; i++){
+        if (!moveLineUp(i)) return false;
+    }
+    return true;
+}
 
 bool Grid::lineIsFull(int lineNum) const {
     for (int col = 0; col < width; col++) {
@@ -113,6 +129,20 @@ int Grid::clearLines() {
     return nCleared;
 }
 
+bool Grid::addGarbageLines(int nLines){
+    // add nLines garbage lines at the bottom of the grid
+    // each tile of the lines at the bottom will have be garbage with a probability of 0.9
+    if (!moveLinesUp(nLines)) return false;
+    for (int i = 0; i < nLines; i++){
+        for (int j = 0; j < width; j++){
+            if (std::uniform_real_distribution<double>(0, 1)(rng) < 0.9){
+                matrix[height - 1 - i][j] = Color::GRAY;
+            }
+        }
+    }
+    return true;
+}
+
 bool Grid::isTopOut() const{ // checks if the tetromino has been insert at least partially in the spawn zone
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < width; j++){
@@ -122,4 +152,14 @@ bool Grid::isTopOut() const{ // checks if the tetromino has been insert at least
         }
     }
     return false;
+}
+
+std::string Grid::serialize() const{
+    std::string serializedGrid = "";
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+            serializedGrid += std::to_string(static_cast<int>(matrix[i][j])) + " ";
+        }
+    }
+    return serializedGrid;
 }

@@ -2,12 +2,21 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 CFLAGS = -I/opt/homebrew/include -D_THREAD_SAFE -std=c++14 -g -Werror -Wall
+<<<<<<< HEAD
 LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf -lSDL2_mixer
 endif
 
 ifeq ($(UNAME), Linux)
 CFLAGS= -Wall -Werror -std=c++14
 LDFLAGS= -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf -lSDL2_mixer
+=======
+LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf
+endif
+
+ifeq ($(UNAME), Linux)
+CFLAGS= -g -Wall -Werror -std=c++14
+LDFLAGS= -lSDL2 -lSDL2_image -lSDL2_net -lSDL2_ttf
+>>>>>>> features/online
 endif
 
 CC = g++
@@ -16,7 +25,11 @@ all: main.exe
 	./main.exe
 	rm -f *.o
 
+<<<<<<< HEAD
 main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o music.o
+=======
+main.exe: main.o graphics.o tetromino.o grid.o game.o keyboard.o point.o gui.o # server.o
+>>>>>>> features/online
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) -v
 	rm -f *.o
 
