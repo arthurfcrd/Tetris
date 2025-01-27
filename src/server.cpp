@@ -96,11 +96,12 @@ void TetrisClient::run() {
             } else {
                 onlineGame.game.updateHandler(event);
             }
-            onlineGame.game.update();
-            onlineGame.draw(renderer_);
-            SDL_RenderPresent(renderer_);
-            sendGameState();
         }
+
+        onlineGame.game.update();
+        onlineGame.draw(renderer_);
+        SDL_RenderPresent(renderer_);
+        sendGameState();
     }
 }
 
