@@ -218,6 +218,10 @@ void HUD::setScore(int newScore) {
     score = newScore;
 }
 
+void HUD::setEnemyScore(int newScore) {
+    enemyScore = newScore;
+}
+
 int HUD::getLinesCleared() const {
     return nLinesCleared;
 }

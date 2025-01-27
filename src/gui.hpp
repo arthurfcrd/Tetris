@@ -106,6 +106,7 @@ public:
 
     int getScore() const;
     void setScore(int newScore);
+    void setEnemyScore(int newScore);
     int getLinesCleared() const;
     void setLinesCleared(int newVal);
     int getLinesToClear() const;

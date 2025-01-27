@@ -24,28 +24,23 @@ void OnlineGame::updateFromServer(std::string serializedData) {
     std::getline(iss, serializedGrid, ':');
     std::getline(iss, serializedTetromino, ':');
     std::getline(iss, score, ':');
+    std::getline(iss, garbage);
 
     // Update the other player's game
     otherGame.grid = Grid(serializedGrid);
     otherGame.curTetromino = BaseTetromino(serializedTetromino);
-    game.hud.setScore(std::stoi(score));
-    if (std::getline(iss, garbage)) {
-        int nGarbageLines = std::stoi(garbage);
-        game.grid.addGarbageLines(nGarbageLines);
-    }
+    game.hud.setEnemyScore(std::stoi(score));
+
+    // Add garbage lines to the grid if necessary
+    int nGarbageLines = std::stoi(garbage);
+    if (nGarbageLines > 0) game.grid.addGarbageLines(nGarbageLines);
 }
 
 std::string OnlineGame::serialize() {
     std::string res = game.grid.serialize() + ":" + game.curTetromino.serialize()
-                      + ":" + std::to_string(game.hud.getScore());
-    if (garbageToSend > 0) {
-        res += ":" + std::to_string(garbageToSend);
-        garbageToSend = 0;
-    }
-    // add header to the message
-    std::string header = std::to_string(res.size());
-    header = std::string(4 - header.size(), '0') + header;
-    res = header + res;
+                      + ":" + std::to_string(game.hud.getScore()) 
+                      + ":" + std::to_string(garbageToSend);
+    garbageToSend = 0;  // Reset the garbage to send
     return res;
 }
 
@@ -133,9 +128,14 @@ TetrisServer::TetrisServer(asio::io_context& io_context, short port)
 }
 
 void TetrisServer::broadcastGameState(const std::string& gameState, int senderId) {
+    // add header to the message
+    std::string header = std::to_string(gameState.size());
+    header = std::string(4 - header.size(), '0') + header;
+    std::string framedMessage = header + gameState;
+    std::cout << "Broadcasting from player " << senderId << ": " << framedMessage << std::endl;
     for (auto& session : sessions) {
         if (session->getPlayerId() != senderId) {
-            session->sendGameState(gameState);
+            session->sendGameState(framedMessage);
         }
     }
 }

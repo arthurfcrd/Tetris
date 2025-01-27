@@ -44,6 +44,50 @@ void soloGame(SDL_Renderer* renderer, GameType gametype, int nLinesToClear, doub
     playGame(renderer, &game);
 }
 
+void doReadHeader(asio::ip::tcp::socket& socket, const std::function<void(const std::string&)>& onMessageReceived);
+void doReadBody(asio::ip::tcp::socket& socket, std::shared_ptr<std::vector<char>> payload,
+    const std::function<void(const std::string&)>& onMessageReceived);
+
+void doReadHeader(asio::ip::tcp::socket& socket, const std::function<void(const std::string&)>& onMessageReceived) {
+    char header[4];  // Assuming a 4-byte header
+    asio::async_read(socket, asio::buffer(header, 4),  // Assuming a 4-byte header
+        [&socket, header, onMessageReceived](std::error_code ec, std::size_t /*length*/) {
+            if (!ec) {
+                try {
+                    // Convert header to an integer to get the payload length
+                    int message_length = std::stoi(std::string(header, 4));
+                    if (message_length > 0) {
+                        auto payload = std::make_shared<std::vector<char>>(message_length);
+
+                        // Read the payload
+                        doReadBody(socket, payload, onMessageReceived);
+                    }
+                } catch (const std::exception& e) {
+                    std::cerr << "Error parsing header: " << e.what() << std::endl;
+                }
+            } else {
+                std::cerr << "Error reading header: " << ec.message() << std::endl;
+            }
+        });
+}
+
+void doReadBody(asio::ip::tcp::socket& socket, std::shared_ptr<std::vector<char>> payload,
+    const std::function<void(const std::string&)>& onMessageReceived) {
+    asio::async_read(socket, asio::buffer(*payload),
+        [&socket, payload, onMessageReceived](std::error_code ec, std::size_t /*length*/) {
+            if (!ec) {
+                // Convert the payload to a string and notify the game logic
+                std::string message(payload->begin(), payload->end());
+                onMessageReceived(message);
+
+                // Trigger the next read (header)
+                doReadHeader(socket, onMessageReceived);
+            } else {
+                std::cerr << "Error reading body: " << ec.message() << std::endl;
+            }
+        });
+}
+
 void clientGame(SDL_Renderer* renderer, const std::string& host, const std::string& port) {
     try {
         asio::io_context io_context;
@@ -53,6 +97,15 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
         asio::connect(socket, endpoints);
 
         OnlineGame onlineGame;
+
+        auto onMessageReceived = [&onlineGame](const std::string& message) {
+            // Update the game state based on the server message
+            onlineGame.updateFromServer(message);
+        };
+
+        // Setup asynchronous reads
+        doReadHeader(socket, onMessageReceived);
+
         SDL_Event event;
         while (onlineGame.isRunning()) {
             while (SDL_PollEvent(&event)) {
@@ -68,13 +121,11 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
 
             // Send game state to server
             std::string gameState = onlineGame.serialize();
-            asio::write(socket, asio::buffer(gameState));
-
-            // Receive game state from server
-            char reply[1024];
-            size_t reply_length = asio::read(socket, asio::buffer(reply, 1024));
-            std::string receivedData(reply, reply_length);
-            onlineGame.updateFromServer(receivedData);
+            // add header to the message
+            std::string header = std::to_string(gameState.size());
+            header = std::string(4 - header.size(), '0') + header;
+            std::string framedMessage = header + gameState;
+            asio::write(socket, asio::buffer(framedMessage));
         }
     } catch (std::exception& e) {
         std::cerr << "Exception in game loop: " << e.what() << "\n";
