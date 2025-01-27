@@ -29,6 +29,7 @@ public:
 class Game : public BaseGame {
 private:
     HUD hud;
+    int garbageToSend; // only used online
     friend class OnlineGame;
 protected:
     bool gameOver;

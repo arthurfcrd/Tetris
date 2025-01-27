@@ -4,7 +4,7 @@
 
 Game::Game(GameType gt, int nltc, int ttc, bool isRunning) : 
             BaseGame(isRunning), hud(gt, nltc, ttc), 
-            gameOver(false),
+            garbageToSend(0), gameOver(false),
             lastFallTime(std::chrono::system_clock::now()), 
             lastHorizontalMoveTime(std::chrono::system_clock::now()), 
             lastVerticalMoveTime(std::chrono::system_clock::now()), 
@@ -93,7 +93,7 @@ void Game::update(){
             curTetro->move(grid, 0, 1);
         Mix_PlayChannel(-1, hardDropSound, 0);
         // adds two times the hard drop distance to the score
-        hud.setScore(hud.getScore() + 2*(curTetro->getPosY()-hardDropPos)); 
+        hud.setScore(hud.getScore() + 2 * (curTetro->getPosY() - hardDropPos)); 
         curTetro->setTouchedGround(true);
         curTetro->setLocked(true);
     }
@@ -155,6 +155,7 @@ void Game::update(){
             Mix_PlayChannel(-1, lineClearedSound, 0);
         }
         hud.setScore(hud.getScore() + scoreTable[n]);
+        garbageToSend += n;
         hud.setLinesCleared(hud.getLinesCleared() + n);
         hud.updateLevel();
         tetroBag.switchTetromino();
@@ -166,8 +167,8 @@ void Game::update(){
 void Game::draw(SDL_Renderer* renderer) {
     hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
     grid.drawGrid(renderer);
-    tetroBag.currentTetromino.drawTetromino(renderer);
     tetroBag.currentTetromino.drawGhost(renderer, grid);
+    tetroBag.currentTetromino.drawTetromino(renderer);
 }
 
 
