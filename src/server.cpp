@@ -15,7 +15,7 @@ void OnlineGame::draw(SDL_Renderer* renderer) const {
     int startX = PANE_SIZE + GRID_WIDTH * TILE_SIZE + SPACE_BETWEEN_GRIDS;
     int startY = 0;
     otherGame.grid.drawGrid(renderer, startX, startY);
-    otherGame.curTetromino.drawTetromino(renderer, startX, startY);
+    otherGame.tetroBag.currentTetromino.drawTetromino(renderer, startX, startY);
 }
 
 void OnlineGame::updateFromServer(std::string serializedData) {
@@ -29,7 +29,7 @@ void OnlineGame::updateFromServer(std::string serializedData) {
 
     // Update the other player's game
     otherGame.grid.fromSerialized(serializedGrid);
-    otherGame.curTetromino.fromSerialized(serializedTetromino);
+    otherGame.tetroBag.currentTetromino.fromSerialized(serializedTetromino);
     game.hud.setEnemyScore(std::stoi(score));
 
     // Add garbage lines to the grid if necessary
@@ -38,7 +38,7 @@ void OnlineGame::updateFromServer(std::string serializedData) {
 }
 
 std::string OnlineGame::serialize() {
-    std::string res = game.grid.serialize() + ":" + game.curTetromino.serialize()
+    std::string res = game.grid.serialize() + ":" + game.tetroBag.currentTetromino.serialize()
                       + ":" + std::to_string(game.hud.getScore()) 
                       + ":" + std::to_string(garbageToSend);
     garbageToSend = 0;  // Reset the garbage to send
@@ -76,7 +76,7 @@ void TetrisClient::readServerInfo() {
             close();
         } else {
             msg.pop_back();
-            std::cout << "[CLIENT] received\n\t" << msg << std::endl;
+            //std::cout << "[CLIENT] received\n\t" << msg << std::endl;
             onlineGame.updateFromServer(msg);
         }
     } else {
@@ -183,8 +183,8 @@ void TetrisServer::broadcastMsg(const std::string& gameState,
 {
     for (auto& client : clients_) {
         if (client != sendingClient) {
-            std::cout << "[SERVER] broadcasting to " << client << std::endl;
-            std::cout << "\t" << gameState << std::endl;
+            //std::cout << "[SERVER] broadcasting to " << client << std::endl;
+            //std::cout << "\t" << gameState << std::endl;
             asio::async_write(*client, asio::buffer(gameState),
                 [this, client](asio::error_code ec, std::size_t) {
                     if (ec) {

@@ -17,10 +17,10 @@ class BaseGame{
 protected:
     Grid grid;
     bool running;
-    BaseTetromino curTetromino;
+    TetrominoBag tetroBag;
 public:
 
-    BaseGame(bool isRunning) : grid(), running(isRunning), curTetromino() {}
+    BaseGame(bool isRunning) : grid(), running(isRunning), tetroBag() {}
     BaseGame() : BaseGame(true) {}
     bool isRunning() const;
     friend class OnlineGame;
@@ -31,7 +31,6 @@ private:
     HUD hud;
     friend class OnlineGame;
 protected:
-    TetrominoBag tetroBag;
     bool gameOver;
     // after holding a tetromino the player must place the next tetromino before holding again
     bool canHold_ = true; 
@@ -43,7 +42,7 @@ protected:
 public:
     explicit Game(GameType gt, int nltc, int ttc, bool isRunning) : // nltc : number of lines to clear, ttc : time to clear the lines
             BaseGame(isRunning), hud(gt, nltc, ttc),
-            tetroBag(), gameOver(false),
+            gameOver(false),
             lastFallTime(std::chrono::system_clock::now()), 
             lastHorizontalMoveTime(std::chrono::system_clock::now()), 
             lastVerticalMoveTime(std::chrono::system_clock::now()), 
