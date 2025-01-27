@@ -28,7 +28,7 @@ public:
 
 class TetrisSession : public std::enable_shared_from_this<TetrisSession> {
 public:
-    TetrisSession(asio::ip::tcp::socket socket, int playerId, TetrisServer& server);
+    TetrisSession(asio::ip::tcp::socket socketVal, int playerIdVal, TetrisServer& serverVal);
 
     void start();
     int getPlayerId() const;
@@ -40,11 +40,11 @@ private:
     void handleData(std::size_t length);
 
     asio::ip::tcp::socket socket;
-    enum { max_length = 1024 };
-    char data[max_length];
     int playerId;
     TetrisServer& server;
-    OnlineGame onlineGame;
+
+    enum { max_length = 1024 };
+    char data[max_length];
 };
 
 class TetrisServer {
@@ -58,9 +58,8 @@ private:
     void getNextDataPort();
 
     asio::ip::tcp::acceptor controlAcceptor;
+    asio::ip::tcp::socket socket;
     int playerCount;
-    asio::io_context& io_context;
-    short nextDataPort;
     std::vector<std::shared_ptr<TetrisSession>> sessions;
 };
 

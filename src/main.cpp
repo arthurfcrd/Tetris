@@ -52,16 +52,6 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
         asio::ip::tcp::socket socket(io_context);
         asio::connect(socket, endpoints);
 
-        // Get data port from server
-        char dataPortStr[6];
-        size_t dataPortLength = asio::read(socket, asio::buffer(dataPortStr, 6));
-        std::string dataPort(dataPortStr, dataPortLength);
-
-        // Connect to data port
-        auto dataEndpoints = resolver.resolve(host, dataPort);
-        asio::ip::tcp::socket dataSocket(io_context);
-        asio::connect(dataSocket, dataEndpoints);
-
         OnlineGame onlineGame;
         SDL_Event event;
         while (onlineGame.isRunning()) {
@@ -114,6 +104,10 @@ void hostAndPlayGame(SDL_Renderer* renderer, const std::string& port) {
 }
 
 int main(int argc, char* argv[]) {
+    std::string port = "12128";
+    if (argc == 2) {
+        port = argv[1];
+    }
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return ERROR;
@@ -187,10 +181,10 @@ int main(int argc, char* argv[]) {
                 else if (currentUI == &multiplayerUI) {
                     if (choice == "HOST") {
                         setMultiplayerWindow(window, renderer);
-                        hostAndPlayGame(renderer, "1234");
+                        hostAndPlayGame(renderer, port);
                     } else if (choice == "JOIN") {
                         setMultiplayerWindow(window, renderer);
-                        clientGame(renderer, "localhost", "1234");
+                        clientGame(renderer, "localhost", port);
                     } else if (choice == "BACK") {
                         currentUI = &mainUI;
                     }
