@@ -90,7 +90,6 @@ void TetrisClient::run() {
     SDL_Event event;
     readGameState(); // Start reading from the server
     while (onlineGame.isRunning()) {
-        std::cout << "test" << std::endl;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 onlineGame.game.setRunning(false);

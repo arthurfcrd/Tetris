@@ -51,9 +51,8 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
         asio::ip::tcp::resolver resolver(io_context);
         auto endpoints = resolver.resolve(host, port);
         TetrisClient client(io_context, endpoints, renderer);
-
-        std::thread t([&io_context]() { io_context.run(); });
-        t.join();
+        io_context.run();
+        std::cout << "about to close" << std::endl;
         client.close();
     } catch (std::exception& e) {
         std::cerr << "Exception in game loop: " << e.what() << "\n";
