@@ -234,3 +234,6 @@ bool Game::canHold() const {
     return canHold_;
 }
 
+bool Game::getGameOver(){
+    return gameOver;
+}

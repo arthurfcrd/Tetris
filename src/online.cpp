@@ -99,7 +99,7 @@ void TetrisClient::run() {
     Music tetrisMusic("../assets/audio/musics/original-theme.mp3", MIX_MAX_VOLUME/2);
     tetrisMusic.playOnLoop();
     SDL_Event event;
-    while (onlineGame.isRunning()) {
+    while (onlineGame.isRunning() && !onlineGame.game.getGameOver()) {
         try {
             sendGameState();   // Send the player's game state to the server
             readServerInfo();  // Read server messages (blocks until a message is received)
@@ -110,15 +110,21 @@ void TetrisClient::run() {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 onlineGame.game.setRunning(false);
-                // notify the server of the disconnection
                 asio::write(socket_, asio::buffer("DISCONNECT;"));
                 close();
+                break;
             } else {
                 onlineGame.game.updateHandler(event);
             }
         }
 
         onlineGame.game.update();
+        if (onlineGame.game.getGameOver()) {
+            asio::write(socket_, asio::buffer("DISCONNECT;"));
+            close();
+            onlineGame.game.showGameOverInfos(renderer_);
+            break;
+        }
         onlineGame.draw(renderer_);
         SDL_RenderPresent(renderer_);
     }

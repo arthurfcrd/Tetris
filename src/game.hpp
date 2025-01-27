@@ -65,4 +65,5 @@ public:
     void setHoldLock();
     void releaseHoldLock();
     bool canHold() const;
+    bool getGameOver();
 };
