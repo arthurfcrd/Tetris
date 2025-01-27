@@ -2,9 +2,9 @@
 #include <iostream>
 
 
-Game::Game(GameType gt, int nltc, int ttc) : 
-            hud(gt, nltc, ttc), grid(), tetroBag(), 
-            running(true), gameOver(false),
+Game::Game(GameType gt, int nltc, int ttc, bool isRunning) : 
+            BaseGame(isRunning), hud(gt, nltc, ttc), 
+            gameOver(false),
             lastFallTime(std::chrono::system_clock::now()), 
             lastHorizontalMoveTime(std::chrono::system_clock::now()), 
             lastVerticalMoveTime(std::chrono::system_clock::now()), 
@@ -14,8 +14,6 @@ Game::Game(GameType gt, int nltc, int ttc) :
     hardDropSound = Mix_LoadWAV("../assets/audio/sounds/harddrop.mp3");
     levelUpSound = Mix_LoadWAV("../assets/audio/sounds/levelup.mp3");
 }
-
-Game::Game() : Game(GameType::LINES_BASED, 10, 0) {}
 
 Game::~Game() {
     Mix_FreeChunk(lineClearedSound);
@@ -165,7 +163,7 @@ void Game::update(){
 }
 
 
-void Game::draw(SDL_Renderer* renderer) const {
+void Game::draw(SDL_Renderer* renderer) {
     hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
     grid.drawGrid(renderer);
     tetroBag.currentTetromino.drawTetromino(renderer);

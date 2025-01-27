@@ -9,7 +9,7 @@ bool OnlineGame::isRunning() const {
     return game.isRunning() && otherGame.isRunning();
 }
 
-void OnlineGame::draw(SDL_Renderer* renderer) const {
+void OnlineGame::draw(SDL_Renderer* renderer) {
     game.hud.drawHUD(renderer, game.tetroBag.nextTetromino, game.tetroBag.heldTetromino);
     game.draw(renderer);
     int startX = PANE_SIZE + GRID_WIDTH * TILE_SIZE + SPACE_BETWEEN_GRIDS;

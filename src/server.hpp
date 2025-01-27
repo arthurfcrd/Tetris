@@ -22,7 +22,7 @@ public:
 
     bool isRunning() const;
     void run();
-    void draw(SDL_Renderer* renderer) const;
+    void draw(SDL_Renderer* renderer);
     void updateFromServer(std::string serializedData);
     std::string serialize();
 };

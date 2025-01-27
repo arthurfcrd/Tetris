@@ -45,21 +45,17 @@ protected:
     Mix_Chunk* holdLockedSound;
     Mix_Chunk* levelUpSound;
 public:
-    explicit Game(GameType gt, int nltc, int ttc, bool isRunning) : // nltc : number of lines to clear, ttc : time to clear the lines
-            BaseGame(isRunning), hud(gt, nltc, ttc),
-            gameOver(false),
-            lastFallTime(std::chrono::system_clock::now()), 
-            lastHorizontalMoveTime(std::chrono::system_clock::now()), 
-            lastVerticalMoveTime(std::chrono::system_clock::now()), 
-            keyboardHandler() {}
+    explicit Game(GameType gt, int nltc, int ttc, bool isRunning);
     explicit Game(GameType gt, int nLinesToClear, int timeToClear) : 
         Game(gt, nLinesToClear, timeToClear, true) {}
     // default gamemode
     explicit Game() : Game(GameType::LINES_BASED, 10, 0) {}
+    ~Game();
+
     void update();
     void updateHandler(const SDL_Event& event);
     void updateHandler(Key key);
-    void draw(SDL_Renderer* renderer) const;
+    void draw(SDL_Renderer* renderer);
     bool hasWon() const;
 
     void setRunning(bool);
