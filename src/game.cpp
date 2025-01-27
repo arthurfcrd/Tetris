@@ -171,8 +171,8 @@ void Game::draw(SDL_Renderer* renderer) {
     } else {
         hud.drawHUD(renderer, tetroBag.nextTetromino, tetroBag.heldTetromino);
         grid.drawGrid(renderer);
-        tetroBag.currentTetromino.drawTetromino(renderer);
         tetroBag.currentTetromino.drawGhost(renderer, grid);
+        tetroBag.currentTetromino.drawTetromino(renderer);
     }
 }
 
