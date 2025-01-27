@@ -45,8 +45,6 @@ public:
     void readServerInfo();
     void readGameState(); 
     void close();
-
-    
 };                  
 
 class TetrisServer {
@@ -62,6 +60,5 @@ private:
     void startAccept();
     void startRead(std::shared_ptr<asio::ip::tcp::socket> client);
     void broadcastMsg(const std::string& msg, std::shared_ptr<asio::ip::tcp::socket> sendingClient);
-    //void removeSession(int playerId);
 };
 
