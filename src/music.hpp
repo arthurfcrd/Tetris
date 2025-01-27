@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 
@@ -12,6 +14,7 @@ class Music {
         Music(std::string path);
         ~Music();
 
-        void playOnLoop();
-        void stop();
+        void playOnce() const;
+        void playOnLoop() const;
+        void stop() const;
 };
