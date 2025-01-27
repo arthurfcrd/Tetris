@@ -59,14 +59,9 @@ TetrisClient::TetrisClient(asio::io_context& io_context,
 }
 
 void TetrisClient::connect(const asio::ip::tcp::resolver::results_type& endpoints) {
-        asio::async_connect(socket_, endpoints,
-            [this](asio::error_code ec, asio::ip::tcp::endpoint) {
-                if (!ec) {
-                    readServerInfo();
-                } else {
-                    std::cout << "Connection error: " << ec.message() << std::endl;
-                }
-            });
+    asio::connect(socket_, endpoints);
+    //std::cout << "Connection error: " << ec.message() << std::endl;
+    readServerInfo();
 }
 
 void TetrisClient::readServerInfo() {
@@ -77,8 +72,7 @@ void TetrisClient::readServerInfo() {
                                 asio::buffers_end(streambuf_.data()));
                 if (msg == "START;") {
                     std::cout << "ok starting the game" << std::endl;
-                    onlineGame.run();
-                    readGameState();
+                    run();
                 } else {
                     std::cout << "received bullshit\n\t" << msg << std::endl;
                 }
@@ -95,7 +89,8 @@ void TetrisClient::readServerInfo() {
 void TetrisClient::run() {
     SDL_Event event;
     readGameState(); // Start reading from the server
-    while (onlineGame.game.isRunning()) {
+    while (onlineGame.isRunning()) {
+        std::cout << "test" << std::endl;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 onlineGame.game.setRunning(false);
@@ -103,7 +98,7 @@ void TetrisClient::run() {
                 onlineGame.game.updateHandler(event);
             }
             onlineGame.game.update();
-            onlineGame.game.draw(renderer_);
+            onlineGame.draw(renderer_);
             SDL_RenderPresent(renderer_);
             sendGameState();
         }
@@ -121,6 +116,7 @@ void TetrisClient::readGameState() {
                 if (!ec) {
                     std::string msg(asio::buffers_begin(streambuf_.data()),
                                     asio::buffers_end(streambuf_.data()));
+                    msg.pop_back();
                     onlineGame.updateFromServer(msg);
                     streambuf_.consume(streambuf_.size());
                     readGameState();
