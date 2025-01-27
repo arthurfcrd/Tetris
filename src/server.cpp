@@ -88,7 +88,7 @@ void TetrisClient::readServerInfo() {
 
 void TetrisClient::run() {
     SDL_Event event;
-    readGameState(); // Start reading from the server
+    readGameState();
     while (onlineGame.isRunning()) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -133,6 +133,7 @@ void TetrisClient::sendGameState() {
         [this](asio::error_code ec, std::size_t) {
             if (!ec) {
                 // Message sent successfully
+                sendGameState();
             } else {
                 std::cout << "Error: " << ec.message() << std::endl;
                 socket_.close();
