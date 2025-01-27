@@ -78,8 +78,6 @@ void TetrisSession::doRead() {
             if (!ec) {
                 std::string gameState = std::string(data, length);
                 server.broadcastGameState(gameState, playerId);
-                // empty the data 
-                std::fill(data, data + max_length, 0);
                 doWrite(length);
             }
             else{
