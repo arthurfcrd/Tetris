@@ -2,12 +2,12 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
 #include <string>
 #include <memory>
 #include <asio.hpp>
 #include "game.hpp"
 
-class TetrisServer;
 
 class OnlineGame {
 private:
@@ -26,42 +26,39 @@ public:
     std::string serialize();
 };
 
-class TetrisSession : public std::enable_shared_from_this<TetrisSession> {
-public:
-    TetrisSession(asio::ip::tcp::socket socketVal, int playerIdVal, TetrisServer& serverVal);
 
-    void start();
+
+class TetrisClient {
+    asio::io_context& io_context_;
+    asio::ip::tcp::socket socket_;
+    asio::streambuf streambuf_;
+    int playerId;
+public:
+    OnlineGame onlineGame;
+    TetrisClient(asio::io_context& io_context, const asio::ip::tcp::resolver::results_type& endpoints);
     int getPlayerId() const;
-    void sendGameState(const std::string& gameState);
+    void sendGameState();
+    void readGameState(); 
+    void close();
 
 private:
-    void doReadHeader();
-    void doReadBody();
-    void handleError(const std::error_code& ec);
-
-    asio::ip::tcp::socket socket;
-    int playerId;
-    TetrisServer& server;
-
-    static constexpr std::size_t header_length = 4; // Fixed size for the header
-    char header[header_length];                     // Buffer for the message header
-    std::size_t message_length;                     // Length of the incoming message payload
-    std::vector<char> data;                         // Buffer for the message payload
-};
+    void connect(const asio::ip::tcp::resolver::results_type& endpoints);
+    
+};                  
 
 class TetrisServer {
 public:
-    TetrisServer(asio::io_context& io_context, short port);
-
-    void broadcastGameState(const std::string& gameState, int senderId);
-    void removeSession(int playerId);
+    TetrisServer(asio::io_context& io_context, const asio::ip::tcp::endpoint& endpoint);
 
 private:
-    void startAccept();
-
-    asio::ip::tcp::acceptor acceptor;
-    asio::ip::tcp::socket socket;
+    asio::io_context& io_context_;
+    asio::ip::tcp::acceptor acceptor_;
+    std::set<std::shared_ptr<asio::ip::tcp::socket>> clients_;
     int playerCount;
-    std::vector<std::shared_ptr<TetrisSession>> sessions;
+
+    void startAccept();
+    void startRead(std::shared_ptr<asio::ip::tcp::socket> client);
+    void broadcastGameState(const std::string& gameState, std::shared_ptr<asio::ip::tcp::socket> sendingClient);
+    //void removeSession(int playerId);
 };
 
