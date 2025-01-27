@@ -50,26 +50,11 @@ void clientGame(SDL_Renderer* renderer, const std::string& host, const std::stri
         asio::io_context io_context;
         asio::ip::tcp::resolver resolver(io_context);
         auto endpoints = resolver.resolve(host, port);
-        TetrisClient client(io_context, endpoints);
-        std::thread t([&io_context]() { io_context.run(); });
+        TetrisClient client(io_context, endpoints, renderer);
 
-        SDL_Event event;
-        while (client.onlineGame.isRunning()) {
-            while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT) {
-                    client.onlineGame.game.setRunning(false);
-                } else {
-                    client.onlineGame.game.updateHandler(event);
-                }
-            }
-            client.onlineGame.game.update();
-            client.onlineGame.draw(renderer);
-            SDL_RenderPresent(renderer);
-            client.readGameState();
-            client.sendGameState();
-        }
-        client.close();
+        std::thread t([&io_context]() { io_context.run(); });
         t.join();
+        client.close();
     } catch (std::exception& e) {
         std::cerr << "Exception in game loop: " << e.what() << "\n";
     }

@@ -2,7 +2,8 @@
 
 // --- OnlineGame Implementation ---
 
-OnlineGame::OnlineGame() : game(GameType::MULTIPLAYER, 10, 3 * 60), otherGame(), garbageToSend(0) {}
+OnlineGame::OnlineGame() : game(GameType::MULTIPLAYER, 10, 3 * 60), otherGame(), 
+                           garbageToSend(0) {}
 
 bool OnlineGame::isRunning() const {
     return game.isRunning() && otherGame.isRunning();
@@ -50,8 +51,9 @@ std::string OnlineGame::serialize() {
 // --- TetrisClient Implementation ---
 
 TetrisClient::TetrisClient(asio::io_context& io_context, 
-                const asio::ip::tcp::resolver::results_type& endpoints) 
-            : io_context_(io_context), socket_(io_context)
+                const asio::ip::tcp::resolver::results_type& endpoints, 
+                SDL_Renderer* renderer) 
+            : io_context_(io_context), socket_(io_context), renderer_(renderer)
 {
     connect(endpoints);
 }
@@ -60,11 +62,52 @@ void TetrisClient::connect(const asio::ip::tcp::resolver::results_type& endpoint
         asio::async_connect(socket_, endpoints,
             [this](asio::error_code ec, asio::ip::tcp::endpoint) {
                 if (!ec) {
-                    readGameState();
+                    readServerInfo();
                 } else {
                     std::cout << "Connection error: " << ec.message() << std::endl;
                 }
             });
+}
+
+void TetrisClient::readServerInfo() {
+    asio::async_read_until(socket_, streambuf_, ';',
+        [this](asio::error_code ec, std::size_t) {
+            if (!ec) {
+                std::string msg(asio::buffers_begin(streambuf_.data()),
+                                asio::buffers_end(streambuf_.data()));
+                if (msg == "START;") {
+                    std::cout << "ok starting the game" << std::endl;
+                    run();
+                    return;
+                } else {
+                    std::cout << "received bullshit\n\t" << msg << std::endl;
+                }
+                streambuf_.consume(streambuf_.size());
+            } else {
+                std::cout << "Error: " << ec.message() << std::endl;
+                socket_.close();
+            }
+            readServerInfo();
+        });
+}
+
+
+void TetrisClient::run() {
+    SDL_Event event;
+    while (onlineGame.game.isRunning()) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                onlineGame.game.setRunning(false);
+            } else {
+                onlineGame.game.updateHandler(event);
+            }
+        onlineGame.game.update();
+        onlineGame.game.draw(renderer_);
+        SDL_RenderPresent(renderer_);
+        readGameState();
+        sendGameState();
+        }
+    }
 }
 
 int TetrisClient::getPlayerId() const {
@@ -121,7 +164,13 @@ void TetrisServer::startAccept() {
                 if (!ec) {
                     std::cout << "Accepting connecting, playerId = " << playerCount++ << std::endl;
                     clients_.insert(newClient);
-                    startRead(newClient);
+                    if (playerCount == 2) {
+                        std::cout << "broadcasting 'START'" << std::endl;
+                        broadcastMsg("START;", NULL);
+                        for (auto& client : clients_)
+                            startRead(client);
+                        return;
+                    }
                 } else {
                     std::cerr << "Error accepting data connection: " << ec.message() << std::endl;
                 }
@@ -137,7 +186,7 @@ void TetrisServer::startRead(std::shared_ptr<asio::ip::tcp::socket> client) {
                     std::string msg(asio::buffers_begin(buffer->data()),
                                     asio::buffers_end(buffer->data()));
                     buffer->consume(buffer->size());
-                    broadcastGameState(msg, client);
+                    broadcastMsg(msg, client);
                     startRead(client);
                 } else {
                     clients_.erase(client);
@@ -145,7 +194,7 @@ void TetrisServer::startRead(std::shared_ptr<asio::ip::tcp::socket> client) {
             });
 }
 
-void TetrisServer::broadcastGameState(const std::string& gameState, 
+void TetrisServer::broadcastMsg(const std::string& gameState, 
     std::shared_ptr<asio::ip::tcp::socket> sendingClient)
 {
     for (auto& client : clients_) {

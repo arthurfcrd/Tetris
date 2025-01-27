@@ -10,8 +10,8 @@
 
 
 class OnlineGame {
-private:
-    Game game;                   // Game of the player
+public:
+    Game game;               // Game of the player
     BaseGame otherGame;          // Game of the other player
     int garbageToSend;           // Number of garbage lines to send to the other player
 
@@ -21,6 +21,7 @@ public:
     OnlineGame();
 
     bool isRunning() const;
+    void run();
     void draw(SDL_Renderer* renderer) const;
     void updateFromServer(std::string serializedData);
     std::string serialize();
@@ -32,17 +33,19 @@ class TetrisClient {
     asio::io_context& io_context_;
     asio::ip::tcp::socket socket_;
     asio::streambuf streambuf_;
+    SDL_Renderer* renderer_;
     int playerId;
 public:
     OnlineGame onlineGame;
-    TetrisClient(asio::io_context& io_context, const asio::ip::tcp::resolver::results_type& endpoints);
+    TetrisClient(asio::io_context& io_context, const asio::ip::tcp::resolver::results_type& endpoints, SDL_Renderer* renderer);
+    void connect(const asio::ip::tcp::resolver::results_type& endpoints);
+    void run();
     int getPlayerId() const;
     void sendGameState();
+    void readServerInfo();
     void readGameState(); 
     void close();
 
-private:
-    void connect(const asio::ip::tcp::resolver::results_type& endpoints);
     
 };                  
 
@@ -58,7 +61,7 @@ private:
 
     void startAccept();
     void startRead(std::shared_ptr<asio::ip::tcp::socket> client);
-    void broadcastGameState(const std::string& gameState, std::shared_ptr<asio::ip::tcp::socket> sendingClient);
+    void broadcastMsg(const std::string& msg, std::shared_ptr<asio::ip::tcp::socket> sendingClient);
     //void removeSession(int playerId);
 };
 
