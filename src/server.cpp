@@ -1,9 +1,12 @@
 #include "server.hpp"
 
+#include <mutex>
+
+std::mutex clientsMutex_;
+
 // --- OnlineGame Implementation ---
 
-OnlineGame::OnlineGame() : game(GameType::MULTIPLAYER, 10, 3 * 60), otherGame(), 
-                           garbageToSend(0) {}
+OnlineGame::OnlineGame() : game(GameType::MULTIPLAYER, 10, 3 * 60), otherGame() {}
 
 bool OnlineGame::isRunning() const {
     return game.isRunning() && otherGame.isRunning();
@@ -40,8 +43,8 @@ void OnlineGame::updateFromServer(std::string serializedData) {
 std::string OnlineGame::serialize() {
     std::string res = game.grid.serialize() + ":" + game.tetroBag.currentTetromino.serialize()
                       + ":" + std::to_string(game.hud.getScore()) 
-                      + ":" + std::to_string(garbageToSend);
-    garbageToSend = 0;  // Reset the garbage to send
+                      + ":" + std::to_string(game.garbageToSend);
+    game.garbageToSend = 0;  // Reset the garbage to send
     return res;
 }
 
@@ -74,14 +77,18 @@ void TetrisClient::readServerInfo() {
         if (msg == "START;") {
             run();
             close();
+        } else if (msg == "DISCONNECT;") {
+            // Handle disconnection gracefully
+            std::cout << "The other player disconnected. Exiting the game." << std::endl;
+            onlineGame.game.setRunning(false); // Stop the game loop
+            close();
         } else {
             msg.pop_back();
-            //std::cout << "[CLIENT] received\n\t" << msg << std::endl;
             onlineGame.updateFromServer(msg);
         }
     } else {
         std::cout << "Error: " << ec.message() << std::endl;
-        socket_.close();
+        close();
     }  
 }
 
@@ -89,11 +96,19 @@ void TetrisClient::readServerInfo() {
 void TetrisClient::run() {
     SDL_Event event;
     while (onlineGame.isRunning()) {
-        sendGameState();
-        readServerInfo();
+        try {
+            sendGameState();   // Send the player's game state to the server
+            readServerInfo();  // Read server messages (blocks until a message is received)
+        } catch (std::exception& e) {
+            std::cout << "Error during game loop: " << e.what() << std::endl;
+            onlineGame.game.setRunning(false); // Stop the game loop on error
+        }
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 onlineGame.game.setRunning(false);
+                // notify the server of the disconnection
+                asio::write(socket_, asio::buffer("DISCONNECT;"));
+                close();
             } else {
                 onlineGame.game.updateHandler(event);
             }
@@ -103,6 +118,7 @@ void TetrisClient::run() {
         onlineGame.draw(renderer_);
         SDL_RenderPresent(renderer_);
     }
+    std::cout << "Exiting the game loop." << std::endl;
 }
 
 
@@ -119,15 +135,18 @@ void TetrisClient::sendGameState() {
         //std::cout << "\t succesfluy sent" << std::endl;
     } else {
         std::cout << "Error: " << ec.message() << std::endl;
-        socket_.close();
+        close();
     }
 }
 
 void TetrisClient::close() {
-    asio::post(io_context_, [this]() { socket_.close(); });
+    asio::post(io_context_, [this]() {
+        if (socket_.is_open()) {
+            socket_.cancel(); // Cancel ongoing operations
+            socket_.close();  // Close the socket
+        }
+    });
 }
-
-
 
 
 // --- TetrisServer Implementation ---
@@ -167,14 +186,25 @@ void TetrisServer::startRead(std::shared_ptr<asio::ip::tcp::socket> client) {
                     buffer->consume(buffer->size());
                     //std::cout << "[SERVER] Reading\n\t" << msg << std::endl;
                     broadcastMsg(msg, client);
+                    if (msg == "DISCONNECT;") {
+                        std::lock_guard<std::mutex> lock(clientsMutex_);
+                        clients_.erase(client);
+                        return;
+                    }
                     startRead(client);
-                } else if (ec == asio::error::eof) {
-                    std::cout << "Client disconnected normally." << std::endl;
-                    clients_.erase(client);
-                } else {
-                    std::cout << "Error reading from client: " << ec.message() << std::endl;
-                    clients_.erase(client);
                 }
+                else{
+                    if (ec == asio::error::eof) {
+                        std::cout << "Client disconnected cleanly (EOF)." << std::endl;
+                    } else if (ec == asio::error::connection_reset) {
+                        std::cout << "Client disconnected unexpectedly (connection reset)." << std::endl;
+                    } else {
+                        std::cout << "Error reading from client: " << ec.message() << std::endl;
+                    }
+                    std::lock_guard<std::mutex> lock(clientsMutex_);
+                    clients_.erase(client);
+                    broadcastMsg("DISCONNECT;", NULL);
+                } 
             });
 }
 
@@ -183,8 +213,11 @@ void TetrisServer::broadcastMsg(const std::string& gameState,
 {
     for (auto& client : clients_) {
         if (client != sendingClient) {
-            //std::cout << "[SERVER] broadcasting to " << client << std::endl;
-            //std::cout << "\t" << gameState << std::endl;
+            if (!client->is_open()) {
+                std::lock_guard<std::mutex> lock(clientsMutex_);
+                clients_.erase(client);
+                continue;
+            }
             asio::async_write(*client, asio::buffer(gameState),
                 [this, client](asio::error_code ec, std::size_t) {
                     if (ec) {

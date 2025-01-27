@@ -11,7 +11,6 @@ class OnlineGame {
 public:
     Game game;               // Game of the player
     BaseGame otherGame;          // Game of the other player
-    int garbageToSend;           // Number of garbage lines to send to the other player
 
     friend void clientGame(SDL_Renderer* renderer, const std::string& host, const std::string& port);
 
@@ -41,7 +40,6 @@ public:
     int getPlayerId() const;
     void sendGameState();
     void readServerInfo();
-    //void readGameState(); 
     void close();
 };                  
 

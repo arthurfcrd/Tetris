@@ -131,13 +131,14 @@ int Grid::clearLines() {
 
 bool Grid::addGarbageLines(int nLines){
     // add nLines garbage lines at the bottom of the grid
-    // each tile of the lines at the bottom will have be garbage with a probability of 0.9
+    // each garbage line will have a hole with a random position
     if (!moveLinesUp(nLines)) return false;
     for (int i = 0; i < nLines; i++){
+        // decide number of holes in the line
+        int holeJ = std::uniform_int_distribution<int>(0, width - 1)(rng);
         for (int j = 0; j < width; j++){
-            if (std::uniform_real_distribution<double>(0, 1)(rng) < 0.9){
-                matrix[height - 1 - i][j] = Color::GRAY;
-            }
+            if (j == holeJ) continue;
+            matrix[height - 1 - i][j] = Color::GRAY;
         }
     }
     return true;
