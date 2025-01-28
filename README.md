@@ -7,13 +7,13 @@ Implementation of the Tetris game in the context of the IN204 course
 - Matrix of 10x22
 - One tetromino at a time falls down from the top of the matrix and can be moved horizontally or rotated 
 - Once the tetromino touches the ground or another piece, you have half a brief daly to move the piece before it locks down
-- [TODO?] Rotating or moving the block during this half second resets the counter
 
 ### Features
 - See what the next tetromino will be
 - Do a hard drop : the current tetromino will fall immediatly
 - Hold one tetromino for later use
 - Ghost piece to see the outline of the falling tetromino
+- Wallkicks
 
 ### Scoring system
 - Clear lines to score points

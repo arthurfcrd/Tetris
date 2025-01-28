@@ -1,25 +1,8 @@
 # TODO
 
 ## High priority
-
-- Powerpoint
-
-- Online doesn't really work
-(maybe rent a server ?)
-
-
-- Handle other player quitting the game
-
-[THEO]
-- Display waiting for connection message
-- Music for multiplayer mode
-- [OK]Remove Controls button
-
-- UI fine-tuning (and sound accordingly)
-    - [OK] GameOver message with Retry, Go to Main Menu options
-    - [OK] Victory message with Play Again, Go to Main Menu options
-    - Pause menu
-    - Escape works everywhere
+- Pause menu
+- Escape works everywhere
 
 
 ## Low priority
